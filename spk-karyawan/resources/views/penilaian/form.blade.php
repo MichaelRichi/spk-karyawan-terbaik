@@ -1,50 +1,63 @@
 @extends('layouts.app')
-@section('title','Nilai — '.$karyawan->nama)
+@section('title','Penilaian — '.$karyawan->nama)
 @section('content')
-<div class="d-flex align-items-center gap-2 mb-3">
-    <a href="{{ route('penilaian.index',$periode) }}" class="btn btn-sm btn-outline-secondary"><i class="ti ti-arrow-left"></i></a>
-    <div>
-        <h6 class="mb-0 fw-semibold">{{ $karyawan->nama }}</h6>
-        <small class="text-muted">{{ $periode->bulan }}/{{ $periode->tahun }}</small>
+<div class="ph">
+    <div style="display:flex;align-items:center;gap:10px">
+        <a href="{{ route('penilaian.index', $periode) }}" class="btn btn-outline-secondary btn-sm">
+            <i class="ti ti-arrow-left"></i>
+        </a>
+        @php $initials = strtoupper(substr($karyawan->nama,0,2)); @endphp
+        <div style="width:40px;height:40px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#1e40af;flex-shrink:0">{{ $initials }}</div>
+        <div>
+            <div class="ph-title">{{ $karyawan->nama }}</div>
+            <div class="ph-sub">{{ $periode->bulan }}/{{ $periode->tahun }} · Pilih skor untuk setiap kriteria</div>
+        </div>
     </div>
+    <button type="submit" form="form-penilaian" class="btn btn-primary">
+        <i class="ti ti-device-floppy"></i> Simpan Penilaian
+    </button>
 </div>
 
-<form method="POST" action="{{ route('penilaian.simpan',[$periode,$karyawan]) }}">
+<form id="form-penilaian" method="POST" action="{{ route('penilaian.simpan', [$periode, $karyawan]) }}">
     @csrf
     <div class="row g-3">
         @foreach($periode->periodeKriteria as $pk)
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white">
-                    <span class="fw-semibold">{{ $pk->nama_kriteria }}</span>
-                    <span class="badge bg-{{ $pk->jenis=='benefit'?'success':'danger' }} ms-1">{{ $pk->jenis }}</span>
-                    <span class="badge bg-secondary ms-1">{{ $pk->bobot }}%</span>
+            <div class="card h-100">
+                <div class="card-header">
+                    <span>
+                        <i class="ti ti-adjustments"></i>
+                        {{ $pk->nama_kriteria }}
+                        <span class="badge {{ $pk->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }} ms-1">{{ $pk->jenis }}</span>
+                    </span>
+                    <span class="badge bg-info-soft">{{ $pk->bobot }}%</span>
                 </div>
-                <div class="card-body">
+                <div style="padding:12px 14px;display:flex;flex-direction:column;gap:6px">
+                    @if($pk->jenis === 'cost')
+                    <div style="font-size:10px;color:#854F0B;margin-bottom:2px">
+                        <i class="ti ti-info-circle"></i> Skor rendah = lebih baik (Cost)
+                    </div>
+                    @endif
                     @foreach($pk->periodeSubKriteria->sortByDesc('skor') as $psk)
                     @php $terpilih = isset($nilaiExisting[$pk->id]) && $nilaiExisting[$pk->id]->periode_sub_kriteria_id == $psk->id; @endphp
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio"
-                            name="penilaian[{{ $pk->id }}]"
-                            id="psk_{{ $psk->id }}"
-                            value="{{ $psk->id }}"
-                            {{ $terpilih ? 'checked' : '' }} required>
-                        <label class="form-check-label" for="psk_{{ $psk->id }}">
-                            <span class="badge bg-primary me-1">{{ $psk->skor }}</span>
-                            {{ $psk->nama }}
-                        </label>
-                    </div>
+                    <label style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:{{ $terpilih?'1.5px solid #2563eb':'0.5px solid #e2e8f0' }};border-radius:7px;cursor:pointer;background:{{ $terpilih?'#E6F1FB':'#fff' }};transition:all .15s">
+                        <input type="radio" name="penilaian[{{ $pk->id }}]" value="{{ $psk->id }}" {{ $terpilih?'checked':'' }} required>
+                        <div style="flex:1">
+                            <span style="font-weight:600;color:{{ $terpilih?'#0C447C':'#374151' }}">Skor {{ $psk->skor }}</span>
+                            <span style="color:{{ $terpilih?'#185FA5':'#64748b' }};font-size:11px"> — {{ $psk->nama }}</span>
+                        </div>
+                    </label>
                     @endforeach
                 </div>
             </div>
         </div>
         @endforeach
     </div>
-    <div class="mt-3 d-flex gap-2">
+    <div style="margin-top:16px;display:flex;gap:8px">
         <button type="submit" class="btn btn-primary">
-            <i class="ti ti-device-floppy me-1"></i> Simpan Penilaian
+            <i class="ti ti-device-floppy"></i> Simpan Penilaian
         </button>
-        <a href="{{ route('penilaian.index',$periode) }}" class="btn btn-outline-secondary">Batal</a>
+        <a href="{{ route('penilaian.index', $periode) }}" class="btn btn-outline-secondary">Batal</a>
     </div>
 </form>
 @endsection
