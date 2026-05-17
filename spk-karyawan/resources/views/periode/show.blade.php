@@ -14,6 +14,16 @@
         <a href="{{ route('periode.index') }}" class="btn btn-outline-secondary">
             <i class="ti ti-arrow-left"></i> Kembali
         </a>
+        @if($periode->status === 'draft')
+        <form method="POST" action="{{ route('periode.aktifkan', $periode) }}" style="display:inline">
+            @csrf
+            <button type="submit" class="btn btn-primary"
+                onclick="return confirm('Aktifkan periode ini? Bobot tidak dapat diubah setelah diaktifkan.')"
+                {{ $totalBobot != 100 ? 'disabled' : '' }}>
+                <i class="ti ti-player-play"></i> Aktifkan Periode
+            </button>
+        </form>
+        @endif
         @if($periode->status === 'aktif')
         <a href="{{ route('penilaian.index', $periode) }}" class="btn btn-primary">
             <i class="ti ti-pencil-check"></i> Input Penilaian
@@ -74,10 +84,24 @@
         </tfoot>
     </table>
     @if($periode->status === 'draft')
-    <div style="padding:10px 14px;border-top:0.5px solid #e2e8f0">
+    <div style="padding:10px 14px;border-top:0.5px solid #e2e8f0;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <a href="{{ route('periode.bobot', $periode) }}" class="btn btn-outline-primary btn-sm">
             <i class="ti ti-pencil"></i> Ubah Bobot
         </a>
+        @if($totalBobot == 100)
+        <form method="POST" action="{{ route('periode.aktifkan', $periode) }}" style="display:inline;margin:0">
+            @csrf
+            <button type="submit" class="btn btn-success btn-sm"
+                onclick="return confirm('Aktifkan periode ini? Bobot tidak dapat diubah setelah diaktifkan.')">
+                <i class="ti ti-player-play"></i> Aktifkan &amp; Mulai Input Penilaian
+            </button>
+        </form>
+        @else
+        <span style="color:#A32D2D;font-size:0.85rem">
+            <i class="ti ti-alert-circle"></i>
+            Total bobot harus 100% sebelum periode dapat diaktifkan. (Saat ini: {{ $totalBobot }}%)
+        </span>
+        @endif
     </div>
     @endif
 </div>

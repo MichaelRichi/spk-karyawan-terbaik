@@ -22,7 +22,7 @@
     </div>
     <table class="table mb-0">
         <thead>
-            <tr><th class="text-center" style="width:80px">Skor</th><th>Nama</th><th class="text-center">Aksi</th></tr>
+            <tr><th class="text-center" style="width:80px">Skor</th><th>Label</th><th>Keterangan</th><th class="text-center">Aksi</th></tr>
         </thead>
         <tbody>
             @forelse($k->subKriteria->sortByDesc('skor') as $sk)
@@ -31,6 +31,7 @@
                     <span class="badge bg-primary" style="font-size:13px;padding:4px 10px">{{ $sk->skor }}</span>
                 </td>
                 <td style="font-weight:600">{{ $sk->nama }}</td>
+                <td style="color:#64748b;font-size:13px">{{ $sk->keterangan ?? '—' }}</td>
                 <td class="text-center">
                     <div style="display:flex;gap:5px;justify-content:center">
                         <a href="{{ route('kriteria.sub-kriteria', $k) }}" class="btn btn-outline-primary btn-sm">

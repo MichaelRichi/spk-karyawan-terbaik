@@ -11,7 +11,7 @@ class SubKriteria extends Model
     protected $table = 'sub_kriteria';
 
     protected $fillable = [
-        'kriteria_id', 'nama', 'skor',
+        'kriteria_id', 'nama', 'skor', 'keterangan',
     ];
 
     protected $casts = [

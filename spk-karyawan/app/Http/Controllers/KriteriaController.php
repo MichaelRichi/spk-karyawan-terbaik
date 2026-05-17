@@ -68,6 +68,7 @@ class KriteriaController extends Controller
             'nama' => ['required', 'string', 'max:100'],
             'skor' => ['required', 'integer', 'min:1', 'max:10',
                 'unique:sub_kriteria,skor,NULL,id,kriteria_id,' . $kriteria->id],
+            'keterangan' => ['nullable', 'string', 'max:255'],
         ], ['skor.unique' => 'Skor ini sudah ada untuk kriteria tersebut.']);
 
         $kriteria->subKriteria()->create($data);
@@ -80,6 +81,7 @@ class KriteriaController extends Controller
             'nama' => ['required', 'string', 'max:100'],
             'skor' => ['required', 'integer', 'min:1', 'max:10',
                 'unique:sub_kriteria,skor,' . $subKriteria->id . ',id,kriteria_id,' . $kriteria->id],
+            'keterangan' => ['nullable', 'string', 'max:255'],
         ], ['skor.unique' => 'Skor ini sudah ada untuk kriteria tersebut.']);
 
         $subKriteria->update($data);

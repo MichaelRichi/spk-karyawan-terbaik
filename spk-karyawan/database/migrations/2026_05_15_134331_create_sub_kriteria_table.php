@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->foreignId('kriteria_id')->constrained('kriteria')->cascadeOnDelete();
             $table->string('nama', 100);  // contoh: ">= 26 hari", "Sangat Bagus"
             $table->integer('skor');      // nilai numerik: 1-5
+            $table->text('keterangan')->nullable(); // penjelasan detail skala
             $table->timestamps();
         });
     }
