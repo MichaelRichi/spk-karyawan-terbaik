@@ -201,31 +201,43 @@ function recalc() {
         const bar = document.getElementById(inp.dataset.bar);
         if (bar) bar.style.width = Math.min(val, 100) + '%';
     });
-    const kurang = Math.round((100 - sum) * 100) / 100;
-    const ok = sum === 100;
+    const selisih = Math.round((100 - sum) * 100) / 100;
+    const ok      = sum === 100;
+    const lebih   = sum > 100;
+    const kurang  = sum < 100;
 
     // --- Update total row di tabel ---
     if (ok) {
         totalEl.style.color = '#27500A';
         totalEl.textContent = '100%';
+    } else if (lebih) {
+        totalEl.style.color = '#ef4444';
+        totalEl.textContent = sum + '% (kelebihan ' + Math.abs(selisih) + '%)';
     } else {
         totalEl.style.color = '#ef4444';
-        totalEl.textContent = sum + '% (kurang ' + Math.abs(kurang) + '%)';
+        totalEl.textContent = sum + '% (kurang ' + Math.abs(selisih) + '%)';
     }
 
     // --- Update stat card Total ---
-    cardTotal.style.borderColor = ok ? '#97C459' : '#f59e0b';
-    cardTotal.style.background  = ok ? '#EAF3DE' : '#FAEEDA';
-    lblTotal.style.color  = ok ? '#3B6D11' : '#854F0B';
-    valTotal.style.color  = ok ? '#27500A' : '#633806';
-    valTotal.textContent  = sum + '%';
+    const totalColor = ok ? {border:'#97C459',bg:'#EAF3DE',lbl:'#3B6D11',val:'#27500A'}
+                     : lebih ? {border:'#fca5a5',bg:'#FCEBEB',lbl:'#791F1F',val:'#ef4444'}
+                     : {border:'#f59e0b',bg:'#FAEEDA',lbl:'#854F0B',val:'#633806'};
+    cardTotal.style.borderColor = totalColor.border;
+    cardTotal.style.background  = totalColor.bg;
+    lblTotal.style.color = totalColor.lbl;
+    valTotal.style.color = totalColor.val;
+    valTotal.textContent = sum + '%';
 
-    // --- Update stat card Kekurangan ---
-    cardKurang.style.borderColor = ok ? '#97C459' : '#fca5a5';
-    cardKurang.style.background  = ok ? '#EAF3DE' : '#FCEBEB';
-    lblKurang.style.color  = ok ? '#3B6D11' : '#791F1F';
-    valKurang.style.color  = ok ? '#27500A' : '#ef4444';
-    valKurang.textContent  = kurang + '%';
+    // --- Update stat card Kekurangan (judul berubah jika lebih) ---
+    const kurangColor = ok    ? {border:'#97C459',bg:'#EAF3DE',lbl:'#3B6D11',val:'#27500A'}
+                      : lebih ? {border:'#fca5a5',bg:'#FCEBEB',lbl:'#791F1F',val:'#ef4444'}
+                      :         {border:'#fca5a5',bg:'#FCEBEB',lbl:'#791F1F',val:'#ef4444'};
+    cardKurang.style.borderColor = kurangColor.border;
+    cardKurang.style.background  = kurangColor.bg;
+    lblKurang.style.color = kurangColor.lbl;
+    valKurang.style.color = kurangColor.val;
+    lblKurang.textContent = lebih ? 'Kelebihan bobot' : 'Kekurangan bobot';
+    valKurang.textContent = ok ? '0%' : Math.abs(selisih) + '%';
 
     // --- Update tombol Aktifkan ---
     if (ok) {
@@ -234,11 +246,15 @@ function recalc() {
             style="background:#22c55e;border-color:#22c55e;color:#fff">
             <i class="ti ti-player-play"></i> Aktifkan periode
         </button>`;
-        // re-bind modal trigger
         const newBtn = document.getElementById('btn-aktifkan');
         newBtn.addEventListener('click', () => {
             new bootstrap.Modal(document.getElementById('modalAktifkan')).show();
         });
+    } else if (lebih) {
+        wrapBtn.innerHTML = `<button class="btn" disabled
+            style="background:#FCEBEB;border:0.5px solid #fca5a5;color:#ef4444;cursor:not-allowed">
+            <i class="ti ti-alert-triangle"></i> Kelebihan ${Math.abs(selisih)}% — kurangi bobot
+        </button>`;
     } else {
         wrapBtn.innerHTML = `<button class="btn" disabled
             style="background:#f1f5f9;border:0.5px solid #e2e8f0;color:#94a3b8;cursor:not-allowed">
