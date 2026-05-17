@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -79,15 +80,11 @@ class PenggunaController extends Controller
             ->with('success', 'Data pengguna berhasil diperbarui.');
     }
 
-    public function destroy(Request $request, User $pengguna)
+    public function destroy(User $pengguna)
     {
-        /** @var User $user */
-        $user = $request->user();
-
-        if ($pengguna->id === $user->id) {
+        if ($pengguna->id === Auth::id()) {
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
-
         $pengguna->delete();
         return redirect()->route('pengguna.index')
             ->with('success', 'Pengguna berhasil dihapus.');

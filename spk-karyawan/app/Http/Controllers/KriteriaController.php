@@ -42,6 +42,20 @@ class KriteriaController extends Controller
             ->with('success', "Kriteria {$nama} beserta sub-kriterianya berhasil dihapus.");
     }
 
+    // ── Sub-Kriteria via menu sidebar ─────────────────────────
+
+    /**
+     * Tampilkan semua sub-kriteria dari semua kriteria
+     * Diakses dari menu sidebar → Sub-Kriteria
+     */
+    public function subKriteriaAll()
+    {
+        $kriteria = Kriteria::with('subKriteria')->orderBy('nama')->get();
+        return view('sub_kriteria.all', compact('kriteria'));
+    }
+
+    // ── Sub-Kriteria via halaman Kriteria ─────────────────────
+
     public function subKriteriaIndex(Kriteria $kriteria)
     {
         $kriteria->load('subKriteria');

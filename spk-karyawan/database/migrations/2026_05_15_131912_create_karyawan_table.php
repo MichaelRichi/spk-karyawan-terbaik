@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->string('jabatan', 100);
             $table->enum('jenis_kelamin', ['laki-laki', 'perempuan']);
             $table->date('tanggal_masuk');
-            $table->enum('status', ['tetap', 'tidak_tetap'])->default('tetap');
+            $table->enum('status', ['aktif', 'tidak_aktif'])->default('aktif');
             $table->timestamps();
         });
     }

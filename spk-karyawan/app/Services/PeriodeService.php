@@ -46,9 +46,10 @@ class PeriodeService
             // Simpan snapshot sub-kriteria
             foreach ($k->subKriteria as $sk) {
                 PeriodeSubKriteria::create([
+                    'periode_id'          => $periode->id,   // PERBAIKAN 1: wajib diisi, tidak ada default
                     'periode_kriteria_id' => $pk->id,
                     'sub_kriteria_id'     => $sk->id,
-                    'nama'                => $sk->nama,  // pakai nama bukan label
+                    'label'               => $sk->nama,      // PERBAIKAN 2: kolom bernama 'label', bukan 'nama'
                     'skor'                => $sk->skor,
                 ]);
             }

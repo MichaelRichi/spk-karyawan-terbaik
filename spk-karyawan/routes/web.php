@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KaryawanController;
@@ -40,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:direktur')->group(function () {
         Route::resource('kriteria', KriteriaController::class)->except(['show']);
 
+        // Sub-kriteria dengan kriteria_id (dari tombol di halaman kriteria)
         Route::prefix('kriteria/{kriteria}/sub-kriteria')
             ->name('kriteria.sub-kriteria')
             ->group(function () {
@@ -48,7 +49,11 @@ Route::middleware(['auth'])->group(function () {
                 Route::put('/{subKriteria}',    [KriteriaController::class, 'subKriteriaUpdate'])->name('.update');
                 Route::delete('/{subKriteria}', [KriteriaController::class, 'subKriteriaDestroy'])->name('.destroy');
             });
+
     });
+
+    // Sub-Kriteria standalone — untuk menu sidebar (hanya direktur)
+    Route::middleware('role:direktur')->get('/sub-kriteria', [KriteriaController::class, 'subKriteriaAll'])->name('sub-kriteria.index');
 
     // ── PERIODE & PENILAIAN — hanya direktur ───────────
     Route::middleware('role:direktur')->group(function () {
@@ -68,7 +73,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/periode/{periode}/hitung', [RankingController::class, 'hitung'])->name('ranking.hitung');
     });
 
-    // ── HASIL RANKING — admin, direktur, karyawan ──────
+    // ── HASIL RANKING — semua role ─────────────────────
     Route::get('/ranking',                         [RankingController::class, 'index'])->name('ranking.index');
     Route::get('/periode/{periode}/ranking',       [RankingController::class, 'hasil'])->name('ranking.hasil');
     Route::get('/periode/{periode}/ranking/cetak', [RankingController::class, 'cetak'])->name('ranking.cetak');

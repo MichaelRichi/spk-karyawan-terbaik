@@ -4,7 +4,7 @@
 <div class="ph">
     <div>
         <div class="ph-title">Kelola Karyawan</div>
-        <div class="ph-sub">Data seluruh karyawan PT Cempaka Indah Abadi</div>
+        <div class="ph-sub">Data seluruh karyawan PT Cempaka Indah Abadi · Hanya karyawan <strong>Aktif</strong> yang dapat dinilai</div>
     </div>
     <a href="{{ route('karyawan.create') }}" class="btn btn-primary">
         <i class="ti ti-user-plus"></i> Tambah Karyawan
@@ -14,7 +14,10 @@
 <div class="card">
     <div class="card-header">
         <span><i class="ti ti-id-badge-2"></i> Daftar Karyawan</span>
-        <span style="font-size:11px;color:#64748b">Total: {{ $karyawan->total() }} karyawan</span>
+        <span style="font-size:11px;color:#64748b">
+            <span style="color:#27500A;font-weight:600">{{ $karyawan->where('status','aktif')->count() }}</span> aktif ·
+            <span style="color:#A32D2D;font-weight:600">{{ $karyawan->where('status','tidak_aktif')->count() }}</span> tidak aktif
+        </span>
     </div>
     <table class="table mb-0">
         <thead>
@@ -22,15 +25,20 @@
         </thead>
         <tbody>
             @forelse($karyawan as $k)
-            <tr>
+            <tr style="{{ $k->status=='tidak_aktif'?'opacity:.6':'' }}">
                 <td style="color:#64748b">{{ $loop->iteration }}</td>
-                <td style="font-weight:600">{{ $k->nama }}</td>
+                <td style="font-weight:600">
+                    {{ $k->nama }}
+                    @if($k->status=='tidak_aktif')
+                    <span style="font-size:9px;color:#A32D2D;font-weight:400"> (tidak aktif)</span>
+                    @endif
+                </td>
                 <td style="color:#64748b">{{ $k->jabatan }}</td>
                 <td>{{ ucfirst($k->jenis_kelamin) }}</td>
                 <td style="color:#64748b">{{ $k->tanggal_masuk->format('d/m/Y') }}</td>
                 <td>
-                    <span class="badge {{ $k->status=='tetap'?'bg-success-soft':'bg-warning-soft' }}">
-                        {{ ucfirst(str_replace('_',' ',$k->status)) }}
+                    <span class="badge {{ $k->status=='aktif'?'bg-success-soft':'bg-danger-soft' }}">
+                        {{ $k->status=='aktif'?'Aktif':'Tidak Aktif' }}
                     </span>
                 </td>
                 <td class="text-center">
@@ -47,7 +55,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="7" class="text-center py-4" style="color:#64748b">Belum ada karyawan. <a href="{{ route('karyawan.create') }}">Tambah sekarang</a></td></tr>
+            <tr><td colspan="7" class="text-center py-4" style="color:#64748b">Belum ada karyawan.</td></tr>
             @endforelse
         </tbody>
     </table>

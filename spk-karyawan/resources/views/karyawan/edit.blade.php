@@ -44,8 +44,8 @@
                 <div class="col-md-12">
                     <label class="form-label">Status <span style="color:#ef4444">*</span></label>
                     <select name="status" class="form-select" required>
-                        <option value="tetap" {{ old('status',$karyawan->status)=='tetap'?'selected':'' }}>Tetap</option>
-                        <option value="tidak_tetap" {{ old('status',$karyawan->status)=='tidak_tetap'?'selected':'' }}>Tidak Tetap</option>
+                        <option value="aktif" {{ old('status',$karyawan->status)=='tetap'?'selected':'' }}>Aktif</option>
+                        <option value="tidak_aktif" {{ old('status',$karyawan->status)=='tidak_tetap'?'selected':'' }}>Tidak Aktif</option>
                     </select>
                 </div>
             </div>

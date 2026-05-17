@@ -8,7 +8,7 @@ class StoreKaryawanRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->canManage();
+        return true;
     }
 
     public function rules(): array
@@ -17,17 +17,16 @@ class StoreKaryawanRequest extends FormRequest
             'nama'          => ['required', 'string', 'max:100'],
             'jabatan'       => ['required', 'string', 'max:100'],
             'jenis_kelamin' => ['required', 'in:laki-laki,perempuan'],
-            'tanggal_masuk' => ['required', 'date', 'before_or_equal:today'],
-            'status'        => ['required', 'in:tetap,tidak_tetap'],
+            'tanggal_masuk' => ['required', 'date'],
+            'status'        => ['required', 'in:aktif,tidak_aktif'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'jenis_kelamin.in'              => 'Jenis kelamin tidak valid.',
-            'tanggal_masuk.before_or_equal' => 'Tanggal masuk tidak boleh lebih dari hari ini.',
-            'status.in'                     => 'Status harus tetap atau tidak tetap.',
+            'jenis_kelamin.in' => 'Jenis kelamin harus laki-laki atau perempuan.',
+            'status.in'        => 'Status harus aktif atau tidak aktif.',
         ];
     }
 }

@@ -47,8 +47,8 @@
                 <div class="col-md-12">
                     <label class="form-label">Status <span style="color:#ef4444">*</span></label>
                     <select name="status" class="form-select @error('status') is-invalid @enderror" required>
-                        <option value="tetap" {{ old('status','tetap')=='tetap'?'selected':'' }}>Tetap</option>
-                        <option value="tidak_tetap" {{ old('status')=='tidak_tetap'?'selected':'' }}>Tidak Tetap</option>
+                        <option value="aktif" {{ old('status','aktif')=='aktif'?'selected':'' }}>Aktif</option>
+                        <option value="tidak_aktif" {{ old('status')=='tidak_aktif'?'selected':'' }}>Tidak Aktif</option>
                     </select>
                     @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>

@@ -44,7 +44,7 @@ class PeriodeController extends Controller
 
         $data = array_merge($request->validated(), [
             'nama'        => $namaBulan[$request->bulan] . ' ' . $request->tahun,
-            'dibuat_oleh' => Auth::id(),
+            'dibuat_oleh' => Auth::user()->id,
         ]);
 
         $periode = $this->periodeService->buat($data);

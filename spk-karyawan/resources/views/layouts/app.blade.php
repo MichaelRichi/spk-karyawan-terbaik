@@ -25,7 +25,7 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
 .sbi.on{background:rgba(37,99,235,.2);color:#93c5fd}
 .sbi.on::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:3px;height:16px;background:#3b82f6;border-radius:0 2px 2px 0}
 .sbi i{font-size:17px;flex-shrink:0;width:20px;text-align:center}
-.sb-user{padding:10px 14px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px}
+.sb-user{padding:10px 14px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px;position:sticky;bottom:0;background:#0f172a;margin-top:auto;flex-shrink:0}
 .sb-av{width:32px;height:32px;border-radius:50%;background:#1e40af;display:flex;align-items:center;justify-content:center;color:#bfdbfe;font-size:11px;font-weight:600;flex-shrink:0}
 .sb-un{font-size:11px;font-weight:500;color:#e2e8f0}
 .sb-ur{font-size:9px;color:#64748b}
@@ -188,14 +188,15 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
     <div class="sb-user">
         @php $initials = strtoupper(substr(auth()->user()->username, 0, 2)); @endphp
         <div class="sb-av">{{ $initials }}</div>
-        <div>
-            <div class="sb-un">{{ auth()->user()->username }}</div>
+        <div style="flex:1;min-width:0">
+            <div class="sb-un" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ auth()->user()->username }}</div>
             <div class="sb-ur">{{ ucfirst(auth()->user()->role) }}</div>
         </div>
-        <form method="POST" action="{{ route('logout') }}" class="ms-auto">
+        <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:4px">
-                <i class="ti ti-box-arrow-right" style="font-size:16px"></i>
+            <button type="submit" title="Keluar"
+                style="background:rgba(239,68,68,.15);border:none;color:#ef4444;cursor:pointer;padding:5px 7px;border-radius:6px;display:flex;align-items:center;justify-content:center">
+                <i class="ti ti-logout" style="font-size:15px"></i>
             </button>
         </form>
     </div>

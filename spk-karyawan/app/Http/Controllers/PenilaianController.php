@@ -9,12 +9,10 @@ use App\Models\Periode;
 use App\Models\PeriodeSubKriteria;
 use App\Models\HasilRanking;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PenilaianController extends Controller
 {
-    /** Daftar karyawan beserta status penilaiannya */
     public function index(Periode $periode)
     {
         if ($periode->status === 'draft') {
@@ -22,58 +20,60 @@ class PenilaianController extends Controller
                 ->with('error', 'Aktifkan periode terlebih dahulu sebelum input penilaian.');
         }
 
-        $karyawan        = Karyawan::aktif()->orderBy('nama')->get();
-        $periodeKriteria = $periode->periodeKriteria()->get();
-        $jumlahKriteria  = $periodeKriteria->count();
+        // Hanya karyawan AKTIF yang bisa dinilai
+        $karyawan = Karyawan::aktif()->orderBy('nama')->get();
 
-        $semuaPenilaian = Penilaian::where('periode_id', $periode->id)
+        $jumlahKriteria = $periode->periodeKriteria()->count();
+
+        // ID karyawan yang sudah dinilai lengkap (semua kriteria)
+        $penilaianSelesai = Penilaian::where('periode_id', $periode->id)
+            ->select('karyawan_id', DB::raw('count(*) as jumlah'))
+            ->groupBy('karyawan_id')
+            ->having('jumlah', '>=', $jumlahKriteria)
+            ->pluck('jumlah', 'karyawan_id')
+            ->keys();
+
+        // Nilai yang sudah diinput per karyawan per kriteria
+        $nilaiKaryawan = [];
+        $penilaianAll = Penilaian::where('periode_id', $periode->id)
             ->with('periodeSubKriteria')
             ->get();
-
-        // [karyawan_id][periode_kriteria_id] => Penilaian
-        $nilaiKaryawan = [];
-        foreach ($semuaPenilaian as $p) {
+        foreach ($penilaianAll as $p) {
             $nilaiKaryawan[$p->karyawan_id][$p->periode_kriteria_id] = $p;
         }
 
-        // Collection of karyawan IDs where every criterion has been assessed
-        $penilaianSelesai = $semuaPenilaian
-            ->groupBy('karyawan_id')
-            ->filter(fn($group) => $group->count() >= $jumlahKriteria)
-            ->keys();
-
         return view('penilaian.index', compact(
-            'periode', 'karyawan', 'nilaiKaryawan', 'penilaianSelesai'
+            'periode', 'karyawan', 'penilaianSelesai', 'jumlahKriteria', 'nilaiKaryawan'
         ));
     }
 
-    /** Form input penilaian satu karyawan */
     public function form(Periode $periode, Karyawan $karyawan)
     {
-        if ($periode->isLocked()) {
+        // Cek karyawan aktif
+        if (!$karyawan->isAktif()) {
             return redirect()->route('penilaian.index', $periode)
-                ->with('error', 'Periode sudah selesai, penilaian tidak dapat diubah.');
+                ->with('error', "Karyawan {$karyawan->nama} tidak aktif dan tidak dapat dinilai.");
         }
 
         $periodeKriteria = $periode->periodeKriteria()
             ->with('periodeSubKriteria')
             ->get();
 
-        // Ambil pilihan yang sudah tersimpan (untuk mode edit)
+        // Nilai yang sudah tersimpan (untuk mode edit)
         $nilaiExisting = Penilaian::where('periode_id', $periode->id)
             ->where('karyawan_id', $karyawan->id)
-            ->pluck('periode_sub_kriteria_id', 'periode_kriteria_id');
+            ->get()
+            ->keyBy('periode_kriteria_id');
 
         return view('penilaian.form', compact(
             'periode', 'karyawan', 'periodeKriteria', 'nilaiExisting'
         ));
     }
 
-    /** Simpan / update penilaian satu karyawan */
     public function simpan(StorePenilaianRequest $request, Periode $periode, Karyawan $karyawan)
     {
-        if ($periode->isLocked()) {
-            return back()->with('error', 'Periode sudah selesai.');
+        if (!$karyawan->isAktif()) {
+            return back()->with('error', "Karyawan {$karyawan->nama} tidak aktif.");
         }
 
         DB::beginTransaction();
@@ -90,10 +90,8 @@ class PenilaianController extends Controller
                     [
                         'periode_sub_kriteria_id' => $psk->id,
                         'nilai'                   => $psk->skor,
-                        'nilai_normalisasi'        => null, // reset, dihitung ulang saat SAW
-                        'nilai_terbobot'           => null,
-                        'catatan'                  => $request->input("catatan.{$pkId}"),
-                        'dinilai_oleh'             => Auth::id(),
+                        'nilai_normalisasi'        => 0,
+                        'nilai_terbobot'           => 0,
                     ]
                 );
             }
@@ -106,27 +104,5 @@ class PenilaianController extends Controller
 
         return redirect()->route('penilaian.index', $periode)
             ->with('success', "Penilaian {$karyawan->nama} berhasil disimpan.");
-    }
-
-    /** Detail penilaian satu karyawan (bisa dilihat karyawan sendiri) */
-    public function detail(Periode $periode, Karyawan $karyawan)
-    {
-        // Karyawan hanya boleh lihat penilaian dirinya sendiri
-        /** @var \App\Models\User $authUser */
-        $authUser = Auth::user();
-        if ($authUser->isKaryawan() && $authUser->karyawan_id !== $karyawan->id) {
-            abort(403, 'Anda hanya dapat melihat penilaian Anda sendiri.');
-        }
-
-        $penilaian = Penilaian::where('periode_id', $periode->id)
-            ->where('karyawan_id', $karyawan->id)
-            ->with(['periodeKriteria', 'periodeSubKriteria'])
-            ->get();
-
-        $ranking = HasilRanking::where('periode_id', $periode->id)
-            ->where('karyawan_id', $karyawan->id)
-            ->first();
-
-        return view('penilaian.detail', compact('periode', 'karyawan', 'penilaian', 'ranking'));
     }
 }
