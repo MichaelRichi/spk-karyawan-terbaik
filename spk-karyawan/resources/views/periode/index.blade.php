@@ -24,7 +24,7 @@
             </div>
             <div style="padding:12px 14px">
                 @if($p->status === 'aktif')
-                    @php $dinilai = $p->penilaian->pluck('karyawan_id')->unique()->count(); $total = \App\Models\Karyawan::count(); @endphp
+                    @php $dinilai = $p->penilaian->pluck('karyawan_id')->unique()->count(); $total = \App\Models\Karyawan::aktif()->count(); @endphp
                     <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px">
                         <span style="color:#64748b">Karyawan dinilai</span>
                         <span style="font-weight:600;color:#854F0B">{{ $dinilai }} / {{ $total }}</span>

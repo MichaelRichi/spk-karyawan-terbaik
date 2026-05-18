@@ -121,49 +121,64 @@
 
 {{-- Modal Konfirmasi Hitung SAW --}}
 <div class="modal fade" id="modalHitungSAW" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered" style="max-width:420px">
-        <div class="modal-content" style="border:0.5px solid #e2e8f0;border-radius:12px;overflow:hidden">
-            <div style="background:#2563eb;padding:24px;text-align:center">
-                <div style="width:56px;height:56px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
-                    <i class="ti ti-calculator" style="font-size:28px;color:#fff"></i>
+    <div class="modal-dialog modal-dialog-centered" style="max-width:400px">
+        <div class="modal-content" style="border:none;border-radius:14px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,.15)">
+
+            {{-- Header --}}
+            <div style="background:linear-gradient(135deg,#1d4ed8,#2563eb);padding:28px 24px;text-align:center">
+                <div style="width:60px;height:60px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:2px solid rgba(255,255,255,.3)">
+                    <i class="ti ti-calculator" style="font-size:30px;color:#fff"></i>
                 </div>
-                <div style="color:#fff;font-weight:700;font-size:16px">Jalankan Perhitungan SAW?</div>
-                <div style="color:rgba(255,255,255,.8);font-size:12px;margin-top:4px">Simple Additive Weighting</div>
+                <div style="color:#fff;font-weight:700;font-size:17px;margin-bottom:4px">Jalankan Perhitungan SAW?</div>
+                <div style="color:rgba(255,255,255,.7);font-size:11px;letter-spacing:.5px;text-transform:uppercase">Simple Additive Weighting</div>
             </div>
-            <div style="padding:20px">
-                <div style="background:#f8fafc;border-radius:8px;padding:12px;margin-bottom:14px">
-                    <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">
+
+            {{-- Body --}}
+            <div style="padding:20px 24px">
+
+                {{-- Ringkasan --}}
+                <div style="background:#f8fafc;border-radius:10px;border:0.5px solid #e2e8f0;overflow:hidden;margin-bottom:14px">
+                    <div style="background:#f1f5f9;padding:8px 14px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.6px;border-bottom:0.5px solid #e2e8f0">
                         Ringkasan Penilaian
                     </div>
-                    <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:0.5px solid #e2e8f0">
-                        <span style="color:#374151">Total karyawan dinilai</span>
-                        <span style="font-weight:600;color:#27500A">{{ $karyawan->count() }} / {{ $karyawan->count() }}</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:0.5px solid #e2e8f0">
-                        <span style="color:#374151">Total kriteria</span>
-                        <span style="font-weight:600;color:#185FA5">{{ $periode->periodeKriteria->count() }} kriteria</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0">
-                        <span style="color:#374151">Periode</span>
-                        <span style="font-weight:600">{{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</span>
+                    <div style="padding:0 14px">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid #f1f5f9">
+                            <span style="font-size:12px;color:#64748b">Karyawan dinilai</span>
+                            <span style="font-size:13px;font-weight:700;color:#16a34a;background:#dcfce7;padding:2px 10px;border-radius:20px">{{ $karyawan->count() }} / {{ $karyawan->count() }}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid #f1f5f9">
+                            <span style="font-size:12px;color:#64748b">Total kriteria</span>
+                            <span style="font-size:13px;font-weight:700;color:#1d4ed8;background:#dbeafe;padding:2px 10px;border-radius:20px">{{ $periode->periodeKriteria->count() }} kriteria</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0">
+                            <span style="font-size:12px;color:#64748b">Periode</span>
+                            <span style="font-size:13px;font-weight:600;color:#1e293b">{{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="alert-spk al-warn" style="margin-bottom:14px;font-size:11px">
-                    <i class="ti ti-alert-triangle"></i>
-                    Setelah dihitung, periode akan dikunci dan nilai <strong>tidak dapat diubah</strong> lagi.
+
+                {{-- Peringatan --}}
+                <div style="background:#fffbeb;border:0.5px solid #fcd34d;border-radius:8px;padding:10px 12px;margin-bottom:18px;display:flex;gap:8px;align-items:flex-start">
+                    <i class="ti ti-alert-triangle" style="color:#d97706;font-size:15px;flex-shrink:0;margin-top:1px"></i>
+                    <span style="font-size:11px;color:#92400e;line-height:1.5">Setelah dihitung, periode akan <strong>dikunci</strong> dan nilai tidak dapat diubah lagi.</span>
                 </div>
+
+                {{-- Tombol --}}
                 <div style="display:flex;gap:8px">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="flex:1;justify-content:center">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                        style="flex:1;justify-content:center;padding:8px">
                         Batal
                     </button>
-                    <form method="POST" action="{{ route('ranking.hitung', $periode) }}" style="flex:1">
+                    <form method="POST" action="{{ route('ranking.hitung', $periode) }}" style="flex:1.5">
                         @csrf
-                        <button type="submit" class="btn btn-primary w-100" style="justify-content:center">
+                        <button type="submit" class="btn btn-primary w-100"
+                            style="justify-content:center;padding:8px;background:#2563eb;border-color:#2563eb">
                             <i class="ti ti-calculator"></i> Ya, Hitung Sekarang
                         </button>
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
