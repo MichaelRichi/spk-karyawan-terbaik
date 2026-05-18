@@ -1,6 +1,28 @@
 @extends('layouts.app')
 @section('title','Tambah Karyawan')
 @section('content')
+<style>
+.select-wrap { position:relative; }
+.select-wrap::after {
+    content:'';
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    width:0;
+    height:0;
+    border-left:5px solid transparent;
+    border-right:5px solid transparent;
+    border-top:6px solid #64748b;
+    pointer-events:none;
+}
+.select-wrap select {
+    appearance:none;
+    -webkit-appearance:none;
+    padding-right:32px;
+    cursor:pointer;
+}
+</style>
 <div class="ph">
     <div>
         <div class="ph-title">Tambah Karyawan</div>
@@ -31,11 +53,11 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Jenis Kelamin <span style="color:#ef4444">*</span></label>
-                    <select name="jenis_kelamin" class="form-select @error('jenis_kelamin') is-invalid @enderror" required>
+                    <div class="select-wrap"><select name="jenis_kelamin" class="form-select @error('jenis_kelamin') is-invalid @enderror" required>
                         <option value="">-- Pilih --</option>
                         <option value="laki-laki" {{ old('jenis_kelamin')=='laki-laki'?'selected':'' }}>Laki-laki</option>
                         <option value="perempuan" {{ old('jenis_kelamin')=='perempuan'?'selected':'' }}>Perempuan</option>
-                    </select>
+                    </select></div>
                     @error('jenis_kelamin')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-6">
@@ -46,10 +68,10 @@
                 </div>
                 <div class="col-md-12">
                     <label class="form-label">Status <span style="color:#ef4444">*</span></label>
-                    <select name="status" class="form-select @error('status') is-invalid @enderror" required>
+                    <div class="select-wrap"><select name="status" class="form-select @error('status') is-invalid @enderror" required>
                         <option value="aktif" {{ old('status','aktif')=='aktif'?'selected':'' }}>Aktif</option>
                         <option value="tidak_aktif" {{ old('status')=='tidak_aktif'?'selected':'' }}>Tidak Aktif</option>
-                    </select>
+                    </select></div>
                     @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
             </div>

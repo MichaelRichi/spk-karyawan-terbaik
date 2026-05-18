@@ -46,7 +46,7 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
 .al-danger{background:#FCEBEB;border-color:#ef4444;color:#791F1F}
 
 /* CARDS */
-.card{border:0.5px solid #e2e8f0;border-radius:10px;background:#fff;margin-bottom:10px}
+.card{border:0.5px solid #e2e8f0;border-radius:10px;background:#fff;margin-bottom:10px;width:100%}
 .card-header{background:#fff;border-bottom:0.5px solid #e2e8f0;padding:10px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:space-between;border-radius:10px 10px 0 0}
 .card-header i{font-size:14px;color:#64748b;margin-right:5px}
 
@@ -98,7 +98,7 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
 .step-arr{color:#cbd5e1;font-size:11px;flex-shrink:0}
 
 /* STAT CARDS */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:12px;width:100%}
 .stat-card{background:#f8fafc;border-radius:8px;padding:10px 12px;border:0.5px solid #e2e8f0}
 .stat-lbl{font-size:10px;color:#64748b;margin-bottom:2px}
 .stat-val{font-size:20px;font-weight:600;color:#0f172a}
@@ -170,7 +170,7 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
 
         <div class="sb-grp">Penilaian</div>
         <a href="{{ route('periode.index') }}" class="sbi {{ request()->routeIs('periode.*','penilaian.*','ranking.hitung') ? 'on' : '' }}">
-            <i class="ti ti-calendar-month"></i> Periode Bulanan
+            <i class="ti ti-clipboard-check"></i> Penilaian
         </a>
         @endif
 

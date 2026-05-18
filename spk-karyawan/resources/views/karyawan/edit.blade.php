@@ -1,6 +1,28 @@
 @extends('layouts.app')
 @section('title','Edit Karyawan')
 @section('content')
+<style>
+.select-wrap { position:relative; }
+.select-wrap::after {
+    content:'';
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    width:0;
+    height:0;
+    border-left:5px solid transparent;
+    border-right:5px solid transparent;
+    border-top:6px solid #64748b;
+    pointer-events:none;
+}
+.select-wrap select {
+    appearance:none;
+    -webkit-appearance:none;
+    padding-right:32px;
+    cursor:pointer;
+}
+</style>
 <div class="ph">
     <div>
         <div class="ph-title">Edit Karyawan — {{ $karyawan->nama }}</div>
@@ -31,10 +53,10 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Jenis Kelamin <span style="color:#ef4444">*</span></label>
-                    <select name="jenis_kelamin" class="form-select" required>
+                    <div class="select-wrap"><select name="jenis_kelamin" class="form-select" required>
                         <option value="laki-laki" {{ old('jenis_kelamin',$karyawan->jenis_kelamin)=='laki-laki'?'selected':'' }}>Laki-laki</option>
                         <option value="perempuan" {{ old('jenis_kelamin',$karyawan->jenis_kelamin)=='perempuan'?'selected':'' }}>Perempuan</option>
-                    </select>
+                    </select></div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Tanggal Masuk <span style="color:#ef4444">*</span></label>
@@ -43,10 +65,10 @@
                 </div>
                 <div class="col-md-12">
                     <label class="form-label">Status <span style="color:#ef4444">*</span></label>
-                    <select name="status" class="form-select" required>
-                        <option value="aktif" {{ old('status',$karyawan->status)=='tetap'?'selected':'' }}>Aktif</option>
-                        <option value="tidak_aktif" {{ old('status',$karyawan->status)=='tidak_tetap'?'selected':'' }}>Tidak Aktif</option>
-                    </select>
+                    <div class="select-wrap"><select name="status" class="form-select" required>
+                        <option value="aktif" {{ old('status',$karyawan->status)=='aktif'?'selected':'' }}>Aktif</option>
+                        <option value="tidak_aktif" {{ old('status',$karyawan->status)=='tidak_aktif'?'selected':'' }}>Tidak Aktif</option>
+                    </select></div>
                 </div>
             </div>
             <div style="display:flex;gap:8px">

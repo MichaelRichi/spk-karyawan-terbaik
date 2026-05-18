@@ -3,18 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePeriodeRequest;
-use App\Http\Requests\UpdateBobotRequest;
+use App\Models\Kriteria;
 use App\Models\Periode;
-use App\Models\PeriodeKriteria;
 use App\Services\PeriodeService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PeriodeController extends Controller
 {
     public function __construct(private PeriodeService $periodeService) {}
 
-    /** Daftar semua periode */
     public function index()
     {
         $periode = Periode::withCount('penilaian')
@@ -27,15 +24,30 @@ class PeriodeController extends Controller
 
     public function create()
     {
-        return view('periode.create');
+        // Cek kriteria sudah ada dan total bobot = 100
+        $kriteria    = Kriteria::with('subKriteria')->get();
+        $totalBobot  = $kriteria->sum('bobot_default');
+        $bisaBuat    = $kriteria->isNotEmpty() && $totalBobot == 100;
+
+        return view('periode.create', compact('kriteria', 'totalBobot', 'bisaBuat'));
     }
 
     /**
-     * Buat periode baru.
-     * Otomatis snapshot kriteria aktif ke periode_kriteria.
+     * Buat periode baru → snapshot kriteria → langsung status aktif
      */
     public function store(StorePeriodeRequest $request)
     {
+        // Validasi server: bobot harus 100% sebelum buat periode
+        $totalBobot = Kriteria::sum('bobot_default');
+        if ($totalBobot != 100) {
+            return back()->with('error', "Total bobot kriteria harus 100%. Saat ini {$totalBobot}%. Atur di menu Kriteria terlebih dahulu.");
+        }
+
+        $kriteria = Kriteria::with('subKriteria')->get();
+        if ($kriteria->isEmpty()) {
+            return back()->with('error', 'Belum ada kriteria. Tambahkan kriteria di menu Kriteria terlebih dahulu.');
+        }
+
         $namaBulan = [
             1=>'Januari', 2=>'Februari', 3=>'Maret', 4=>'April',
             5=>'Mei', 6=>'Juni', 7=>'Juli', 8=>'Agustus',
@@ -45,71 +57,20 @@ class PeriodeController extends Controller
         $data = array_merge($request->validated(), [
             'nama'        => $namaBulan[$request->bulan] . ' ' . $request->tahun,
             'dibuat_oleh' => Auth::user()->id,
+            'status'      => 'aktif', // langsung aktif
         ]);
 
         $periode = $this->periodeService->buat($data);
 
-        return redirect()->route('periode.bobot', $periode)
-            ->with('success', "Periode {$periode->nama} berhasil dibuat. Sesuaikan bobot kriteria di bawah ini.");
+        return redirect()->route('penilaian.index', $periode)
+            ->with('success', "Periode {$periode->nama} berhasil dibuat. Silakan input penilaian.");
     }
 
-    /** Halaman detail periode */
     public function show(Periode $periode)
     {
         $periodeKriteria = $periode->periodeKriteria()->with('kriteria')->get();
         $totalBobot      = $periodeKriteria->sum('bobot');
         return view('periode.show', compact('periode', 'periodeKriteria', 'totalBobot'));
-    }
-
-    /** Form atur bobot khusus periode ini */
-    public function bobot(Periode $periode)
-    {
-        if ($periode->isLocked()) {
-            return redirect()->route('periode.show', $periode)
-                ->with('error', 'Periode sudah selesai, bobot tidak dapat diubah.');
-        }
-
-        $periodeKriteria = $periode->periodeKriteria()->with('kriteria')->get();
-        $totalBobot      = $periodeKriteria->sum('bobot');
-
-        return view('periode.bobot', compact('periode', 'periodeKriteria', 'totalBobot'));
-    }
-
-    /**
-     * Simpan bobot kriteria untuk periode ini.
-     * PENTING: Hanya memengaruhi periode ini, bukan periode lain.
-     */
-    public function updateBobot(UpdateBobotRequest $request, Periode $periode)
-    {
-        if ($periode->isLocked()) {
-            return back()->with('error', 'Periode sudah selesai, bobot tidak dapat diubah.');
-        }
-
-        foreach ($request->input('bobot') as $pkId => $bobot) {
-            PeriodeKriteria::where('id', $pkId)
-                ->where('periode_id', $periode->id) // keamanan: hanya update milik periode ini
-                ->update(['bobot' => $bobot]);
-        }
-
-        return redirect()->route('periode.show', $periode)
-            ->with('success', 'Bobot kriteria berhasil disimpan untuk periode ini.');
-    }
-
-    /** Aktifkan periode (draft → aktif) */
-    public function aktifkan(Periode $periode)
-    {
-        if ($periode->status !== 'draft') {
-            return back()->with('error', 'Hanya periode berstatus draft yang dapat diaktifkan.');
-        }
-
-        if (!$periode->isBobotValid()) {
-            $total = $periode->periodeKriteria()->sum('bobot');
-            return back()->with('error', "Total bobot harus 100%. Saat ini: {$total}%.");
-        }
-
-        $periode->update(['status' => 'aktif']);
-
-        return back()->with('success', "Periode {$periode->nama} berhasil diaktifkan. Input penilaian dapat dimulai.");
     }
 
     /** Selesaikan & kunci periode (aktif → selesai) */

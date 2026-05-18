@@ -61,9 +61,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/periode/create',                [PeriodeController::class, 'create'])->name('periode.create');
         Route::post('/periode',                      [PeriodeController::class, 'store'])->name('periode.store');
         Route::get('/periode/{periode}',             [PeriodeController::class, 'show'])->name('periode.show');
-        Route::get('/periode/{periode}/bobot',       [PeriodeController::class, 'bobot'])->name('periode.bobot');
-        Route::put('/periode/{periode}/bobot',       [PeriodeController::class, 'updateBobot'])->name('periode.bobot.update');
-        Route::post('/periode/{periode}/aktifkan',   [PeriodeController::class, 'aktifkan'])->name('periode.aktifkan');
         Route::post('/periode/{periode}/selesaikan', [PeriodeController::class, 'selesaikan'])->name('periode.selesaikan');
 
         Route::get('/periode/{periode}/penilaian',                    [PenilaianController::class, 'index'])->name('penilaian.index');

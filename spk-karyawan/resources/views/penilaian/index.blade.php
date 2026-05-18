@@ -13,12 +13,9 @@
     </div>
     @php $selesaiSemua = $karyawan->every(fn($k) => $penilaianSelesai->contains($k->id)); @endphp
     @if($selesaiSemua)
-    <form method="POST" action="{{ route('ranking.hitung', $periode) }}">
-        @csrf
-        <button class="btn btn-primary" onclick="return confirm('Jalankan perhitungan SAW?')">
-            <i class="ti ti-calculator"></i> Hitung SAW
-        </button>
-    </form>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHitungSAW">
+        <i class="ti ti-calculator"></i> Hitung SAW
+    </button>
     @else
     <button class="btn btn-primary" style="opacity:.4;cursor:not-allowed" disabled>
         <i class="ti ti-calculator"></i> Hitung SAW
@@ -121,4 +118,54 @@
         </table>
     </div>
 </div>
+
+{{-- Modal Konfirmasi Hitung SAW --}}
+<div class="modal fade" id="modalHitungSAW" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px">
+        <div class="modal-content" style="border:0.5px solid #e2e8f0;border-radius:12px;overflow:hidden">
+            <div style="background:#2563eb;padding:24px;text-align:center">
+                <div style="width:56px;height:56px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+                    <i class="ti ti-calculator" style="font-size:28px;color:#fff"></i>
+                </div>
+                <div style="color:#fff;font-weight:700;font-size:16px">Jalankan Perhitungan SAW?</div>
+                <div style="color:rgba(255,255,255,.8);font-size:12px;margin-top:4px">Simple Additive Weighting</div>
+            </div>
+            <div style="padding:20px">
+                <div style="background:#f8fafc;border-radius:8px;padding:12px;margin-bottom:14px">
+                    <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">
+                        Ringkasan Penilaian
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:0.5px solid #e2e8f0">
+                        <span style="color:#374151">Total karyawan dinilai</span>
+                        <span style="font-weight:600;color:#27500A">{{ $karyawan->count() }} / {{ $karyawan->count() }}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:0.5px solid #e2e8f0">
+                        <span style="color:#374151">Total kriteria</span>
+                        <span style="font-weight:600;color:#185FA5">{{ $periode->periodeKriteria->count() }} kriteria</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0">
+                        <span style="color:#374151">Periode</span>
+                        <span style="font-weight:600">{{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</span>
+                    </div>
+                </div>
+                <div class="alert-spk al-warn" style="margin-bottom:14px;font-size:11px">
+                    <i class="ti ti-alert-triangle"></i>
+                    Setelah dihitung, periode akan dikunci dan nilai <strong>tidak dapat diubah</strong> lagi.
+                </div>
+                <div style="display:flex;gap:8px">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="flex:1;justify-content:center">
+                        Batal
+                    </button>
+                    <form method="POST" action="{{ route('ranking.hitung', $periode) }}" style="flex:1">
+                        @csrf
+                        <button type="submit" class="btn btn-primary w-100" style="justify-content:center">
+                            <i class="ti ti-calculator"></i> Ya, Hitung Sekarang
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
