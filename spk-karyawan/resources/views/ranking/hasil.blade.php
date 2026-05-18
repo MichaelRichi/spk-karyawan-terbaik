@@ -39,11 +39,11 @@
         <div class="stat-val">{{ count($detail) }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-lbl">Vi Tertinggi</div>
+        <div class="stat-lbl">Nilai Akhir Tertinggi</div>
         <div class="stat-val" style="color:#185FA5">{{ number_format(collect($detail)->max('nilai_preferensi'), 4) }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-lbl">Vi Terendah</div>
+        <div class="stat-lbl">Nilai Akhir Terendah</div>
         <div class="stat-val" style="color:#64748b;font-size:16px">{{ number_format(collect($detail)->min('nilai_preferensi'), 4) }}</div>
     </div>
     <div class="stat-card">
@@ -84,14 +84,16 @@
 <!-- Tabel SAW -->
 <div class="card">
     <div class="card-header">
-        <span><i class="ti ti-table"></i> Tabel Nilai Mentah · Normalisasi · Terbobot · Vi</span>
+        <span><i class="ti ti-table"></i> Tabel Rincian Penilaian Karyawan</span>
         <div style="display:flex;gap:10px;font-size:10px;color:#64748b">
-            <span style="color:#185FA5">■</span> r=normalisasi
-            <span style="color:#27500A">■</span> W×r=terbobot
+            <span style="color:#374151">■</span> Skor
+            <span style="color:#27500A">■</span> Kontribusi
         </div>
     </div>
-    <div style="background:#f8fafc;padding:6px 14px;border-bottom:0.5px solid #e2e8f0;font-size:10px;color:#64748b;font-family:monospace">
-        Benefit: r = x / Max(x) &nbsp;|&nbsp; Cost: r = Min(x) / x &nbsp;|&nbsp; Vi = Σ(W × r)
+    <div style="background:#f8fafc;padding:6px 14px;border-bottom:0.5px solid #e2e8f0;font-size:10px;color:#64748b">
+        Setiap skor dikalikan dengan bobot kriterianya, lalu dijumlahkan menjadi Nilai Akhir.
+        Kriteria <strong>Benefit</strong> = skor lebih tinggi lebih baik &nbsp;|&nbsp;
+        Kriteria <strong>Cost</strong> = skor lebih rendah lebih baik
     </div>
     <div style="overflow-x:auto">
         <table class="table mb-0" style="min-width:700px">
@@ -100,17 +102,17 @@
                     <th rowspan="2" style="vertical-align:middle;width:5%">Rank</th>
                     <th rowspan="2" style="vertical-align:middle;width:10%">Karyawan</th>
                     @foreach($periode->periodeKriteria as $pk)
-                    <th colspan="3" class="text-center" style="border-left:0.5px solid #e2e8f0">
-                        {{ $pk->nama_kriteria }} ({{ $pk->bobot }}%)
+                    <th colspan="2" class="text-center" style="border-left:0.5px solid #e2e8f0">
+                        {{ $pk->nama_kriteria }}<br>
+                        <span style="font-weight:normal;font-size:9px">(Bobot {{ $pk->bobot }}%)</span>
                     </th>
                     @endforeach
-                    <th rowspan="2" class="text-center vi-c" style="vertical-align:middle;width:8%">Vi</th>
+                    <th rowspan="2" class="text-center vi-c" style="vertical-align:middle;width:8%">Nilai Akhir</th>
                 </tr>
                 <tr>
                     @foreach($periode->periodeKriteria as $pk)
-                    <th class="text-center" style="border-left:0.5px solid #e2e8f0">x</th>
-                    <th class="text-center">r</th>
-                    <th class="text-center">W×r</th>
+                    <th class="text-center" style="border-left:0.5px solid #e2e8f0;font-size:9px">Skor</th>
+                    <th class="text-center" style="font-size:9px">Kontribusi</th>
                     @endforeach
                 </tr>
             </thead>
@@ -126,13 +128,12 @@
                     </td>
                     <td>
                         <div style="font-weight:600;color:{{ $d['ranking']==1?'#633806':'' }}">{{ $d['karyawan']->nama }}</div>
-                        <div style="font-size:9px;color:#64748b">A{{ $d['ranking'] }}</div>
+
                     </td>
                     @foreach($d['detail_kriteria'] as $dk)
                     <td class="text-center" style="border-left:0.5px solid #f1f5f9">
                         <span style="font-weight:600">{{ $dk['nilai'] }}</span>
                     </td>
-                    <td class="text-center"><span class="vr">{{ number_format($dk['nilai_normalisasi'],3) }}</span></td>
                     <td class="text-center"><span class="vw">{{ number_format($dk['nilai_terbobot'],3) }}</span></td>
                     @endforeach
                     <td class="text-center vi-c">{{ number_format($d['nilai_preferensi'],4) }}</td>
@@ -143,16 +144,13 @@
     </div>
     <div style="display:flex;gap:14px;padding:8px 14px;border-top:0.5px solid #e2e8f0;flex-wrap:wrap">
         <span style="font-size:10px;color:#64748b;display:flex;align-items:center;gap:4px">
-            <span style="width:8px;height:8px;background:#374151;display:inline-block;border-radius:2px"></span>x = nilai mentah
+            <span style="width:8px;height:8px;background:#374151;display:inline-block;border-radius:2px"></span>Skor = nilai yang diberikan (1–5)
         </span>
         <span style="font-size:10px;color:#64748b;display:flex;align-items:center;gap:4px">
-            <span style="width:8px;height:8px;background:#185FA5;display:inline-block;border-radius:2px"></span>r = nilai normalisasi
+            <span style="width:8px;height:8px;background:#27500A;display:inline-block;border-radius:2px"></span>Kontribusi = skor × bobot kriteria
         </span>
         <span style="font-size:10px;color:#64748b;display:flex;align-items:center;gap:4px">
-            <span style="width:8px;height:8px;background:#27500A;display:inline-block;border-radius:2px"></span>W×r = nilai terbobot
-        </span>
-        <span style="font-size:10px;color:#64748b;display:flex;align-items:center;gap:4px">
-            <span style="width:8px;height:8px;background:#0C447C;display:inline-block;border-radius:2px"></span>Vi = Σ(W×r)
+            <span style="width:8px;height:8px;background:#0C447C;display:inline-block;border-radius:2px"></span>Nilai Akhir = total kontribusi semua kriteria
         </span>
     </div>
 </div>
