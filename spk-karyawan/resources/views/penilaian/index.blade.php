@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Input Penilaian — '.$periode->bulan.'/'.$periode->tahun)
+@section('title','Input Penilaian — '.(['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun)
 @section('content')
 @php
     /** @var \Illuminate\Database\Eloquent\Collection $karyawan */
@@ -8,7 +8,7 @@
 @endphp
 <div class="ph">
     <div>
-        <div class="ph-title">Input Penilaian — {{ $periode->bulan }}/{{ $periode->tahun }}</div>
+        <div class="ph-title">Input Penilaian — {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</div>
         <div class="ph-sub">Pilih karyawan untuk mengisi atau mengedit nilai penilaian</div>
     </div>
     @php $selesaiSemua = $karyawan->every(fn($k) => $penilaianSelesai->contains($k->id)); @endphp

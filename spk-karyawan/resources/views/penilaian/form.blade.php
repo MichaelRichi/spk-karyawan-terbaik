@@ -10,7 +10,7 @@
         <div style="width:40px;height:40px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#1e40af;flex-shrink:0">{{ $initials }}</div>
         <div>
             <div class="ph-title">{{ $karyawan->nama }}</div>
-            <div class="ph-sub">{{ $periode->bulan }}/{{ $periode->tahun }} · Pilih skor untuk setiap kriteria</div>
+            <div class="ph-sub">{{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }} · Pilih skor untuk setiap kriteria</div>
         </div>
     </div>
     <button type="submit" form="form-penilaian" class="btn btn-primary">

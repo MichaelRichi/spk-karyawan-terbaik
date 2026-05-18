@@ -16,7 +16,8 @@
     <div class="col-md-4">
         <div class="card h-100" style="border-color:{{ $p->status=='aktif'?'#85B7EB':'#e2e8f0' }}">
             <div class="card-header">
-                <span style="font-weight:600">{{ $p->bulan }}/{{ $p->tahun }}</span>
+                @php $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']; $labelBulan = ($namaBulan[$p->bulan] ?? $p->bulan).' '.$p->tahun; @endphp
+                <span style="font-weight:600">{{ $labelBulan }}</span>
                 <span class="badge {{ $p->status=='selesai'?'bg-success-soft':($p->status=='aktif'?'bg-info-soft':'bg-gray-soft') }}">
                     {{ $p->status }}
                 </span>
@@ -53,11 +54,6 @@
 
                 <div style="display:flex;gap:6px;flex-wrap:wrap">
                     <a href="{{ route('periode.show', $p) }}" class="btn btn-outline-secondary btn-sm">Detail</a>
-                    @if($p->status === 'draft')
-                    <a href="{{ route('periode.bobot', $p) }}" class="btn btn-outline-primary btn-sm">
-                        <i class="ti ti-sliders"></i> Atur Bobot
-                    </a>
-                    @endif
                     @if($p->status === 'aktif')
                     <a href="{{ route('penilaian.index', $p) }}" class="btn btn-primary btn-sm">
                         <i class="ti ti-pencil-check"></i> Input Nilai

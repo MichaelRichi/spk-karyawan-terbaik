@@ -14,7 +14,7 @@
     <div class="col-md-4">
         <div class="card h-100">
             <div class="card-header">
-                <span style="font-weight:600">{{ $p->bulan }}/{{ $p->tahun }}</span>
+                <span style="font-weight:600">{{ ((['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$p->bulan]) ?? $p->bulan).' '.$p->tahun }}</span>
                 <span class="badge bg-success-soft">Selesai</span>
             </div>
             <div style="padding:12px 14px">

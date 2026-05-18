@@ -26,7 +26,7 @@
     <div class="stat-card">
         <div class="stat-lbl">Periode Aktif</div>
         <div class="stat-val" style="font-size:14px;margin-top:3px">
-            {{ $periodeAktif ? $periodeAktif->bulan.'/'.$periodeAktif->tahun : '—' }}
+            {{ $periodeAktif ? (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periodeAktif->bulan] ?? $periodeAktif->bulan).' '.$periodeAktif->tahun : '—' }}
         </div>
     </div>
     <div class="stat-card">
@@ -49,7 +49,7 @@
             </div>
             <div style="padding:12px 14px">
                 <div style="font-size:14px;font-weight:600;margin-bottom:8px">
-                    {{ $periodeAktif->bulan }}/{{ $periodeAktif->tahun }}
+                    {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periodeAktif->bulan] ?? $periodeAktif->bulan).' '.$periodeAktif->tahun }}
                 </div>
                 @php $dinilai = $periodeAktif->penilaian->pluck('karyawan_id')->unique()->count(); @endphp
                 <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px">
@@ -71,7 +71,7 @@
                     <div style="font-size:14px;font-weight:600">{{ $karyawanTerbaik?->karyawan?->nama ?? '—' }}</div>
                     @if($karyawanTerbaik)
                     <div style="font-size:10px;color:#64748b">
-                        {{ $karyawanTerbaik->periode->bulan }}/{{ $karyawanTerbaik->periode->tahun }}
+                        {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$karyawanTerbaik->periode->bulan] ?? $karyawanTerbaik->periode->bulan).' '.$karyawanTerbaik->periode->tahun }}
                         · Vi = {{ number_format($karyawanTerbaik->nilai_preferensi, 4) }}
                     </div>
                     <span class="badge bg-success-soft mt-1">Karyawan Terbaik</span>
@@ -98,7 +98,7 @@
             @forelse($riwayat as $p)
             @php $terbaik = $p->hasilRanking->where('ranking',1)->first(); @endphp
             <tr>
-                <td style="font-weight:600">{{ $p->bulan }}/{{ $p->tahun }}</td>
+                <td style="font-weight:600">{{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$p->bulan] ?? $p->bulan).' '.$p->tahun }}</td>
                 <td>
                     <span class="badge {{ $p->status=='selesai'?'bg-success-soft':($p->status=='aktif'?'bg-info-soft':'bg-gray-soft') }}">
                         {{ $p->status }}

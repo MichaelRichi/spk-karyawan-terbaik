@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title','Hasil Ranking — '.$periode->bulan.'/'.$periode->tahun)
+@section('title','Hasil Ranking — '.(['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun)
 @section('content')
 <div class="ph">
     <div>
-        <div class="ph-title">Hasil Ranking — {{ $periode->bulan }}/{{ $periode->tahun }}</div>
+        <div class="ph-title">Hasil Ranking — {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</div>
         <div class="ph-sub">Perhitungan SAW selesai · Periode dikunci</div>
     </div>
     <div style="display:flex;gap:8px">

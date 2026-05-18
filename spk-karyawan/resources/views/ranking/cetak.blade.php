@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Hasil Ranking — {{ $periode->bulan }}/{{ $periode->tahun }}</title>
+<title>Hasil Ranking — {{ ((['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan]) ?? $periode->bulan).' '.$periode->tahun }}</title>
 <style>
 body{font-family:Arial,sans-serif;font-size:11px;margin:24px;color:#000}
 h2,h3{text-align:center;margin:3px 0}
@@ -20,7 +20,7 @@ td.left{text-align:left}
     <h2>PT CEMPAKA INDAH ABADI</h2>
     <h3>HASIL RANKING KARYAWAN TERBAIK</h3>
     <div>Metode Simple Additive Weighting (SAW)</div>
-    <div>Periode: {{ $periode->bulan }}/{{ $periode->tahun }}</div>
+    <div>Periode: {{ ((['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan]) ?? $periode->bulan).' '.$periode->tahun }}</div>
 </div>
 
 <table>

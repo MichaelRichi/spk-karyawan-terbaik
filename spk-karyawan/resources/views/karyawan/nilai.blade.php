@@ -18,7 +18,7 @@
             @forelse($riwayat as $r)
             <tr>
                 <td style="color:#64748b">{{ $loop->iteration }}</td>
-                <td style="font-weight:600">{{ $r->periode->bulan }}/{{ $r->periode->tahun }}</td>
+                <td style="font-weight:600">{{ ((['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$r->periode->bulan]) ?? $r->periode->bulan).' '.$r->periode->tahun }}</td>
                 <td class="text-center" style="font-weight:600;color:#185FA5">{{ number_format($r->nilai_preferensi,4) }}</td>
                 <td class="text-center">
                     @if($r->ranking == 1)
