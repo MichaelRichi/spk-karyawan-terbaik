@@ -59,7 +59,7 @@
     <div class="pod g2">
         <div class="pod-ico">🥈</div>
         <div class="pod-nm">{{ $top3[1]['karyawan']->nama }}</div>
-        <div class="pod-vi">Vi = {{ number_format($top3[1]['nilai_preferensi'],4) }}</div>
+        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[1]['nilai_preferensi'],4) }}</div>
     </div>
     @else <div></div>
     @endif
@@ -67,7 +67,7 @@
     <div class="pod g1">
         <div class="pod-ico">🥇</div>
         <div class="pod-nm">{{ $top3[0]['karyawan']->nama }}</div>
-        <div class="pod-vi">Vi = {{ number_format($top3[0]['nilai_preferensi'],4) }}</div>
+        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[0]['nilai_preferensi'],4) }}</div>
     </div>
     @else <div></div>
     @endif
@@ -75,7 +75,7 @@
     <div class="pod g3">
         <div class="pod-ico">🥉</div>
         <div class="pod-nm">{{ $top3[2]['karyawan']->nama }}</div>
-        <div class="pod-vi">Vi = {{ number_format($top3[2]['nilai_preferensi'],4) }}</div>
+        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[2]['nilai_preferensi'],4) }}</div>
     </div>
     @else <div></div>
     @endif

@@ -20,6 +20,11 @@ class PenilaianController extends Controller
                 ->with('error', 'Aktifkan periode terlebih dahulu sebelum input penilaian.');
         }
 
+        if ($periode->status === 'selesai') {
+            return redirect()->route('ranking.hasil', $periode)
+                ->with('info', 'Periode ini sudah selesai dan terkunci. Berikut adalah hasil rankingnya.');
+        }
+
         // Hanya karyawan AKTIF yang bisa dinilai
         $karyawan = Karyawan::aktif()->orderBy('nama')->get();
 
@@ -49,6 +54,11 @@ class PenilaianController extends Controller
 
     public function form(Periode $periode, Karyawan $karyawan)
     {
+        if ($periode->status === 'selesai') {
+            return redirect()->route('ranking.hasil', $periode)
+                ->with('info', 'Periode ini sudah selesai dan terkunci.');
+        }
+
         // Cek karyawan aktif
         if (!$karyawan->isAktif()) {
             return redirect()->route('penilaian.index', $periode)
@@ -72,6 +82,10 @@ class PenilaianController extends Controller
 
     public function simpan(StorePenilaianRequest $request, Periode $periode, Karyawan $karyawan)
     {
+        if ($periode->status === 'selesai') {
+            return back()->with('error', 'Periode ini sudah selesai dan terkunci. Nilai tidak dapat diubah.');
+        }
+
         if (!$karyawan->isAktif()) {
             return back()->with('error', "Karyawan {$karyawan->nama} tidak aktif.");
         }

@@ -72,7 +72,7 @@
                     @if($karyawanTerbaik)
                     <div style="font-size:10px;color:#64748b">
                         {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$karyawanTerbaik->periode->bulan] ?? $karyawanTerbaik->periode->bulan).' '.$karyawanTerbaik->periode->tahun }}
-                        · Vi = {{ number_format($karyawanTerbaik->nilai_preferensi, 4) }}
+                        · Nilai Akhir: {{ number_format($karyawanTerbaik->nilai_preferensi, 4) }}
                     </div>
                     <span class="badge bg-success-soft mt-1">Karyawan Terbaik</span>
                     @endif

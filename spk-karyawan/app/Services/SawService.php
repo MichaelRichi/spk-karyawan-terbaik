@@ -101,6 +101,9 @@ class SawService
                 ]);
             }
 
+            // STEP 6: Kunci periode → status selesai
+            $periode->update(['status' => 'selesai']);
+
             DB::commit();
             return $rankingData;
 

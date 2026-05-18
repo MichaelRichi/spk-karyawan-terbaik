@@ -23,7 +23,7 @@
                     <div>
                         <div style="font-weight:600;font-size:13px">{{ $terbaik?->karyawan?->nama ?? '—' }}</div>
                         <div style="font-size:11px;color:#185FA5;font-weight:600">
-                            Vi = {{ $terbaik ? number_format($terbaik->nilai_preferensi, 4) : '—' }}
+                            Nilai Akhir: {{ $terbaik ? number_format($terbaik->nilai_preferensi, 4) : '—' }}
                         </div>
                     </div>
                 </div>

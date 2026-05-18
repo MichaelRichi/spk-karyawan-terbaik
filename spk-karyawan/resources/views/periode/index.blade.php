@@ -37,7 +37,7 @@
                         <span style="font-weight:600">{{ $terbaik?->karyawan?->nama ?? '—' }}</span>
                     </div>
                     <div style="font-size:11px;font-weight:600;color:#185FA5;margin-bottom:10px">
-                        Vi = {{ $terbaik ? number_format($terbaik->nilai_preferensi, 4) : '—' }}
+                        Nilai Akhir: {{ $terbaik ? number_format($terbaik->nilai_preferensi, 4) : '—' }}
                     </div>
                 @else
                     @php $total = $p->periodeKriteria->sum('bobot'); @endphp

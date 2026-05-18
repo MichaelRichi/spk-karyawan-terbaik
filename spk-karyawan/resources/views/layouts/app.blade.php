@@ -147,7 +147,7 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
     <div class="sb-nav">
         <div class="sb-grp">Utama</div>
         <a href="{{ route('dashboard') }}" class="sbi {{ request()->routeIs('dashboard') ? 'on' : '' }}">
-            <i class="ti ti-speedometer-2"></i> Dashboard
+            <i class="ti ti-layout-dashboard"></i> Dashboard
         </a>
 
         @if(in_array(auth()->user()->role, ['admin','direktur']))
