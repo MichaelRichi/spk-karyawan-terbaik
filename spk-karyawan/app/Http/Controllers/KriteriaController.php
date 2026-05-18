@@ -22,15 +22,17 @@ class KriteriaController extends Controller
             ->with('success', "Kriteria {$kriteria->nama} ditambahkan. Silakan tambah skala penilaian.");
     }
 
-    public function update(StoreKriteriaRequest $request, Kriteria $kriteria)
+    public function update(StoreKriteriaRequest $request, $id)
     {
+        $kriteria = Kriteria::findOrFail($id);
         $kriteria->update($request->validated());
         return redirect()->route('kriteria.index')
             ->with('success', "Kriteria {$kriteria->nama} berhasil diperbarui.");
     }
 
-    public function destroy(Kriteria $kriteria)
+    public function destroy($id)
     {
+        $kriteria = Kriteria::findOrFail($id);
         if ($kriteria->periodeKriteria()->exists()) {
             return back()->with('error',
                 "Kriteria {$kriteria->nama} tidak dapat dihapus karena sudah digunakan di periode penilaian."
@@ -56,14 +58,16 @@ class KriteriaController extends Controller
 
     // ── Sub-Kriteria via halaman Kriteria ─────────────────────
 
-    public function subKriteriaIndex(Kriteria $kriteria)
+    public function subKriteriaIndex($id)
     {
+        $kriteria = Kriteria::findOrFail($id);
         $kriteria->load('subKriteria');
         return view('sub_kriteria.index', compact('kriteria'));
     }
 
-    public function subKriteriaStore(Request $request, Kriteria $kriteria)
+    public function subKriteriaStore(Request $request, $id)
     {
+        $kriteria = Kriteria::findOrFail($id);
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
             'skor' => ['required', 'integer', 'min:1', 'max:10',
@@ -75,8 +79,9 @@ class KriteriaController extends Controller
         return back()->with('success', 'Skala penilaian berhasil ditambahkan.');
     }
 
-    public function subKriteriaUpdate(Request $request, Kriteria $kriteria, SubKriteria $subKriteria)
+    public function subKriteriaUpdate(Request $request, $kriteriaId, SubKriteria $subKriteria)
     {
+        $kriteria = Kriteria::findOrFail($kriteriaId);
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
             'skor' => ['required', 'integer', 'min:1', 'max:10',
@@ -88,8 +93,9 @@ class KriteriaController extends Controller
         return back()->with('success', 'Skala penilaian berhasil diperbarui.');
     }
 
-    public function subKriteriaDestroy(Kriteria $kriteria, SubKriteria $subKriteria)
+    public function subKriteriaDestroy($kriteriaId, SubKriteria $subKriteria)
     {
+        $kriteria = Kriteria::findOrFail($kriteriaId);
         if ($subKriteria->periodeSubKriteria()->exists()) {
             return back()->with('error',
                 'Skala tidak dapat dihapus karena sudah digunakan di periode penilaian.'

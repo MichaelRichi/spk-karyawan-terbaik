@@ -1,6 +1,19 @@
 @extends('layouts.app')
 @section('title','Kriteria & Bobot')
 @section('content')
+@if($errors->any())
+<div class="alert-spk al-warn" style="margin-bottom:12px">
+    <i class="ti ti-alert-circle"></i>
+    <div>
+        <strong>Gagal menyimpan:</strong>
+        <ul style="margin:4px 0 0 16px;padding:0">
+            @foreach($errors->all() as $e)
+            <li style="font-size:12px">{{ $e }}</li>
+            @endforeach
+        </ul>
+    </div>
+</div>
+@endif
 <style>
 .select-wrap { position:relative; }
 .select-wrap::after {
@@ -36,7 +49,7 @@
 @php $totalBobot = $kriteria->sum('bobot_default'); $kurang = 100 - $totalBobot; @endphp
 
 {{-- Status bobot total --}}
-<div class="stat-grid" style="grid-template-columns:repeat(3,1fr);max-width:560px;margin-bottom:12px">
+<div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
     <div class="stat-card">
         <div class="stat-lbl"><i class="ti ti-adjustments-horizontal"></i> Jumlah Kriteria</div>
         <div class="stat-val" style="font-size:22px">{{ $kriteria->count() }}</div>
@@ -52,18 +65,18 @@
 </div>
 
 @if($totalBobot != 100)
-<div class="alert-spk al-warn" style="max-width:760px;margin-bottom:12px">
+<div class="alert-spk al-warn" style="margin-bottom:12px">
     <i class="ti ti-alert-triangle"></i>
     <span>Total bobot harus <strong>100%</strong> sebelum bisa membuat periode penilaian. Saat ini <strong>{{ $totalBobot }}%</strong> — {{ $kurang > 0 ? 'kurang '.$kurang.'%' : 'kelebihan '.abs($kurang).'%' }}. Sesuaikan bobot di bawah.</span>
 </div>
 @else
-<div class="alert-spk al-ok" style="max-width:760px;margin-bottom:12px">
+<div class="alert-spk al-ok" style="margin-bottom:12px">
     <i class="ti ti-check-circle"></i>
     <span>Total bobot sudah <strong>100%</strong>. Periode penilaian dapat dibuat.</span>
 </div>
 @endif
 
-<div class="card" style="max-width:760px">
+<div class="card">
     <div class="card-header">
         <span><i class="ti ti-adjustments-horizontal"></i> Daftar Kriteria</span>
         <span style="font-size:11px;color:#64748b">Perubahan hanya berlaku untuk periode yang dibuat setelah ini</span>
@@ -95,8 +108,7 @@
                 </td>
                 <td class="text-center">
                     <div style="display:flex;gap:5px;justify-content:center">
-                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#modalKriteria"
+                        <button class="btn btn-outline-primary btn-sm"
                             onclick="isiModal({{ $k->id }},'{{ addslashes($k->nama) }}','{{ $k->jenis }}',{{ $k->bobot_default }})">
                             <i class="ti ti-pencil"></i>
                         </button>
@@ -184,13 +196,14 @@ function resetModal() {
 
 function isiModal(id, nama, jenis, bobot) {
     document.getElementById('modal-title').textContent = 'Edit Kriteria';
-    document.getElementById('form-kriteria').action    = '/kriteria/' + id;
+    document.getElementById('form-kriteria').action    = '{{ url('kriteria') }}/' + id;
     document.getElementById('form-method').value  = 'PUT';
     document.getElementById('inp-nama').value     = nama;
     document.getElementById('inp-jenis').value    = jenis;
     document.getElementById('inp-bobot').value    = bobot;
-    // Sisa = 100 - total + bobot kriteria ini (karena bobotnya sendiri akan diganti)
     document.getElementById('sisa-bobot').textContent = (100 - totalBobot + bobot) + '%';
+    // Buka modal setelah semua data terisi
+    new bootstrap.Modal(document.getElementById('modalKriteria')).show();
 }
 </script>
 @endpush
