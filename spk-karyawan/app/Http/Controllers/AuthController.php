@@ -24,6 +24,16 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::user();
+
+            // Jika terhubung ke karyawan, cek status karyawan
+            if ($user->karyawan && $user->karyawan->status !== 'aktif') {
+                Auth::logout();
+                return back()
+                    ->withErrors(['username' => 'Akun Anda dinonaktifkan karena status karyawan tidak aktif.'])
+                    ->withInput($request->only('username', 'remember'));
+            }
+
             $request->session()->regenerate();
             return redirect()->intended(route('dashboard'));
         }

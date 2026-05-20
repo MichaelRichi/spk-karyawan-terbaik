@@ -13,7 +13,10 @@ class PenggunaController extends Controller
 {
     public function index()
     {
-        $pengguna = User::with('karyawan')->orderBy('username')->paginate(15);
+        $pengguna = User::with('karyawan')
+            ->orderByRaw("CASE role WHEN 'direktur' THEN 1 WHEN 'admin' THEN 2 WHEN 'karyawan' THEN 3 ELSE 4 END")
+            ->orderBy('username')
+            ->paginate(15);
         return view('pengguna.index', compact('pengguna'));
     }
 
@@ -57,6 +60,12 @@ class PenggunaController extends Controller
 
     public function edit(User $pengguna)
     {
+        // Admin tidak bisa edit direktur
+        if (Auth::user()->role === 'admin' && $pengguna->role === 'direktur') {
+            return redirect()->route('pengguna.index')
+                ->with('error', 'Admin tidak dapat mengedit akun Direktur.');
+        }
+
         $karyawan = Karyawan::where(function ($q) use ($pengguna) {
             $q->whereDoesntHave('user')
               ->orWhere('id', $pengguna->karyawan_id);
@@ -75,7 +84,15 @@ class PenggunaController extends Controller
             'role'        => ['required', 'in:'.$allowedRoles],
             'karyawan_id' => ['nullable', 'exists:karyawan,id'],
             'password'    => ['nullable', Password::min(6)],
+            'is_active'   => ['nullable', 'boolean'],
         ], ['role.in' => 'Role tidak valid.']);
+
+        // Jangan izinkan menonaktifkan diri sendiri
+        if ($pengguna->id === Auth::id()) {
+            $data['is_active'] = true;
+        } else {
+            $data['is_active'] = $request->input('is_active', 1);
+        }
 
         if (!empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
