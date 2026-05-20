@@ -29,7 +29,7 @@ body { font-family: "Times New Roman", Times, serif; font-size: 10pt; color: #00
     color: #1a4fa0;
     font-family: "Times New Roman", Times, serif;
     letter-spacing: 1px;
-    line-height: 1.8;
+    line-height: 1.1;
     margin-bottom: auto;
     text-align: center;
 }
@@ -38,7 +38,7 @@ body { font-family: "Times New Roman", Times, serif; font-size: 10pt; color: #00
     font-weight: bold;
     color: #1a4fa0;
     font-family: "Times New Roman", Times, serif;
-    line-height: 1;
+    line-height: 1.4;
     text-align: center;
 }
 .garis-bawah {
@@ -53,7 +53,8 @@ body { font-family: "Times New Roman", Times, serif; font-size: 10pt; color: #00
     font-size: 14pt;
     font-weight: bold;
     font-family: "Times New Roman", Times, serif;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
+    line-height: 1.5;
     padding: 6px 0;
     margin-bottom: 16px;
     border-top: 2px solid #1a4fa0;
@@ -126,8 +127,8 @@ table.ranking tbody tr.genap  { background: #ffffff; }
 /* ── TTD ── */
 .ttd { display: flex; justify-content: flex-start; }
 .ttd-box { text-align: left; font-size: 10.5pt; font-family: "Times New Roman", Times, serif; }
-.ttd-kota { margin-bottom: 48px; }
-.ttd-nama { font-weight: bold; text-decoration: underline; }
+.ttd-kota { margin-bottom: 60px; }
+.ttd-nama { font-weight: normal; text-decoration: underline; }
 .ttd-jabatan { font-size: 9.5pt; margin-top: 2px; }
 
 /* ── FOOTER ── */
@@ -189,9 +190,6 @@ table.ranking tbody tr.genap  { background: #ffffff; }
             <td><span class="rank-num">{{ $d['ranking'] }}</span></td>
             <td class="left">
                 {{ $d['karyawan']->nama }}
-                @if($d['ranking']==1)
-                    <span class="terbaik-badge">&#9733; Terbaik</span>
-                @endif
             </td>
             @foreach($d['detail_kriteria'] as $dk)
             <td style="font-weight:600">{{ $dk['nilai'] }}</td>
@@ -214,7 +212,7 @@ $tglCetak = date('d').' '.$bulanInd[(int)date('n')].' '.date('Y');
     <div class="ttd-box">
         <div class="ttd-kota">Palembang, {{ $tglCetak }}</div>
         <div class="ttd-nama">Herman Daniel, BE</div>
-        <div class="ttd-jabatan">Direktur PT Cempaka Indah Abadi</div>
+        <div class="ttd-jabatan">Direktur</div>
     </div>
 </div>
 
