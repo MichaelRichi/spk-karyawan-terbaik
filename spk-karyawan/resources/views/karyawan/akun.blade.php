@@ -1,56 +1,69 @@
 @extends('layouts.app')
-@section('title','Edit Pengguna — '.$pengguna->username)
+@section('title', ($user ? 'Edit' : 'Buat').' Akun — '.$karyawan->nama)
 @section('content')
 
 <div class="ph">
     <div>
-        <div class="ph-title">Edit Pengguna — {{ $pengguna->username }}</div>
-        <div class="ph-sub">Perbarui data akun pengguna</div>
+        <div class="ph-title">{{ $user ? 'Edit' : 'Buat' }} Akun — {{ $karyawan->nama }}</div>
+        <div class="ph-sub">{{ $user ? 'Perbarui informasi akun pengguna' : 'Buat akun login untuk karyawan ini' }}</div>
     </div>
-    <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">
+    <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary">
         <i class="ti ti-arrow-left"></i> Kembali
     </a>
 </div>
 
-{{-- Info Pengguna --}}
+{{-- Info Karyawan --}}
 <div class="card" style="margin-bottom:12px">
-    <div class="card-header"><i class="ti ti-user-circle"></i> Informasi Akun</div>
+    <div class="card-header"><i class="ti ti-id-badge-2"></i> Informasi Karyawan</div>
     <div style="padding:14px 16px;display:flex;gap:20px;flex-wrap:wrap">
         <div style="display:flex;align-items:center;gap:10px">
             <div style="width:40px;height:40px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
                 <i class="ti ti-user" style="color:#1d4ed8;font-size:18px"></i>
             </div>
             <div>
-                <div style="font-size:10px;color:#64748b">Username</div>
-                <div style="font-weight:600;color:#1e293b">{{ $pengguna->username }}</div>
+                <div style="font-size:10px;color:#64748b">Nama</div>
+                <div style="font-weight:600;color:#1e293b">{{ $karyawan->nama }}</div>
             </div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:40px;height:40px;background:#ede9fe;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                <i class="ti ti-shield" style="color:#7c3aed;font-size:18px"></i>
-            </div>
-            <div>
-                <div style="font-size:10px;color:#64748b">Role saat ini</div>
-                <div style="font-weight:600;color:#7c3aed">{{ ucfirst($pengguna->role) }}</div>
-            </div>
-        </div>
-        @if($pengguna->karyawan)
         <div style="display:flex;align-items:center;gap:10px">
             <div style="width:40px;height:40px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                <i class="ti ti-id-badge-2" style="color:#16a34a;font-size:18px"></i>
+                <i class="ti ti-briefcase" style="color:#16a34a;font-size:18px"></i>
             </div>
             <div>
-                <div style="font-size:10px;color:#64748b">Terhubung ke</div>
-                <div style="font-weight:600;color:#16a34a">{{ $pengguna->karyawan->nama }} — {{ $pengguna->karyawan->jabatan }}</div>
+                <div style="font-size:10px;color:#64748b">Divisi</div>
+                <div style="font-weight:600;color:#1e293b">{{ $karyawan->jabatan }}</div>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:40px;height:40px;background:{{ $karyawan->isAktif()?'#dcfce7':'#fee2e2' }};border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <i class="ti ti-circle-check" style="color:{{ $karyawan->isAktif()?'#16a34a':'#dc2626' }};font-size:18px"></i>
+            </div>
+            <div>
+                <div style="font-size:10px;color:#64748b">Status</div>
+                <div style="font-weight:600;color:{{ $karyawan->isAktif()?'#16a34a':'#dc2626' }}">
+                    {{ $karyawan->isAktif() ? 'Aktif' : 'Tidak Aktif' }}
+                </div>
+            </div>
+        </div>
+        @if($user)
+        <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:40px;height:40px;background:#ede9fe;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <i class="ti ti-user-circle" style="color:#7c3aed;font-size:18px"></i>
+            </div>
+            <div>
+                <div style="font-size:10px;color:#64748b">Username saat ini</div>
+                <div style="font-weight:600;color:#7c3aed">{{ $user->username }}</div>
             </div>
         </div>
         @endif
     </div>
 </div>
 
-{{-- Form Edit --}}
+{{-- Form Akun --}}
 <div class="card">
-    <div class="card-header"><i class="ti ti-pencil"></i> Form Edit Pengguna</div>
+    <div class="card-header">
+        <i class="ti ti-user-cog"></i> {{ $user ? 'Edit Akun' : 'Buat Akun Baru' }}
+    </div>
     <div style="padding:16px">
         @if($errors->any())
         <div class="alert-spk al-warn" style="margin-bottom:14px">
@@ -63,8 +76,10 @@
         </div>
         @endif
 
-        <form method="POST" action="{{ route('pengguna.update', $pengguna) }}">
-            @csrf @method('PUT')
+        <form method="POST"
+            action="{{ $user ? route('karyawan.akun.update', $karyawan) : route('karyawan.akun.store', $karyawan) }}">
+            @csrf
+            @if($user) @method('PUT') @endif
 
             <div class="row g-3 mb-3">
                 {{-- Username --}}
@@ -72,8 +87,8 @@
                     <label class="form-label">Username <span style="color:#ef4444">*</span></label>
                     <input type="text" name="username"
                         class="form-control @error('username') is-invalid @enderror"
-                        value="{{ old('username', $pengguna->username) }}"
-                        required autocomplete="off">
+                        value="{{ old('username', $user?->username) }}"
+                        placeholder="Username untuk login" required autocomplete="off">
                     @error('username')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
@@ -81,13 +96,9 @@
                 <div class="col-md-6">
                     <label class="form-label">Role <span style="color:#ef4444">*</span></label>
                     <div class="select-wrap">
-                        <select name="role" class="form-select @error('role') is-invalid @enderror"
-                            required onchange="toggleKaryawan(this.value)">
-                            @if(auth()->user() && auth()->user()->role === 'direktur')
-                            <option value="direktur" {{ old('role',$pengguna->role)=='direktur'?'selected':'' }}>Direktur</option>
-                            @endif
-                            <option value="admin"    {{ old('role',$pengguna->role)=='admin'   ?'selected':'' }}>Admin</option>
-                            <option value="karyawan" {{ old('role',$pengguna->role)=='karyawan'?'selected':'' }}>Karyawan</option>
+                        <select name="role" class="form-select @error('role') is-invalid @enderror" required>
+                            <option value="karyawan" {{ old('role', $user?->role ?? 'karyawan')=='karyawan'?'selected':'' }}>Karyawan</option>
+                            <option value="admin"    {{ old('role', $user?->role)=='admin'   ?'selected':'' }}>Admin</option>
                         </select>
                     </div>
                     @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -96,13 +107,16 @@
                 {{-- Password --}}
                 <div class="col-md-6">
                     <label class="form-label">
-                        Password Baru
+                        Password <span style="color:#ef4444">{{ $user ? '' : '*' }}</span>
+                        @if($user)
                         <span style="color:#94a3b8;font-size:10px">(kosongkan jika tidak ingin mengganti)</span>
+                        @endif
                     </label>
                     <div style="position:relative">
                         <input type="password" name="password" id="inp-password"
                             class="form-control @error('password') is-invalid @enderror"
-                            placeholder="Password baru" autocomplete="new-password">
+                            placeholder="{{ $user ? 'Password baru (opsional)' : 'Minimal 6 karakter' }}"
+                            {{ $user ? '' : 'required' }} autocomplete="new-password">
                         <button type="button" onclick="togglePwd('inp-password','eye-pwd')"
                             style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b">
                             <i class="ti ti-eye" id="eye-pwd"></i>
@@ -117,35 +131,21 @@
                     <div style="position:relative">
                         <input type="password" name="password_confirmation" id="inp-confirm"
                             class="form-control"
-                            placeholder="Ulangi password baru" autocomplete="new-password">
+                            placeholder="Ulangi password" autocomplete="new-password">
                         <button type="button" onclick="togglePwd('inp-confirm','eye-confirm')"
                             style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b">
                             <i class="ti ti-eye" id="eye-confirm"></i>
                         </button>
                     </div>
                 </div>
-
-                {{-- Data Karyawan --}}
-                <div class="col-md-12" id="field-karyawan">
-                    <label class="form-label">Data Karyawan</label>
-                    <div class="select-wrap">
-                        <select name="karyawan_id" class="form-select">
-                            <option value="">-- Tidak terhubung --</option>
-                            @foreach($karyawan as $k)
-                            <option value="{{ $k->id }}" {{ old('karyawan_id',$pengguna->karyawan_id)==$k->id?'selected':'' }}>
-                                {{ $k->nama }} — {{ $k->jabatan }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
             </div>
 
             <div style="display:flex;gap:8px">
                 <button type="submit" class="btn btn-primary">
-                    <i class="ti ti-device-floppy"></i> Perbarui
+                    <i class="ti ti-{{ $user ? 'device-floppy' : 'user-plus' }}"></i>
+                    {{ $user ? 'Perbarui Akun' : 'Buat Akun' }}
                 </button>
-                <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">Batal</a>
+                <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary">Batal</a>
             </div>
         </form>
     </div>
@@ -169,10 +169,6 @@ function togglePwd(inputId, eyeId) {
         eye.className = 'ti ti-eye';
     }
 }
-function toggleKaryawan(role) {
-    document.getElementById('field-karyawan').style.display = role === 'karyawan' ? 'block' : 'none';
-}
-toggleKaryawan('{{ old('role', $pengguna->role) }}');
 </script>
 @endpush
 @endsection

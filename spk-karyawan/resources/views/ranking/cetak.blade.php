@@ -29,7 +29,7 @@ body { font-family: "Times New Roman", Times, serif; font-size: 10pt; color: #00
     color: #1a4fa0;
     font-family: "Times New Roman", Times, serif;
     letter-spacing: 1px;
-    line-height: 1.1;
+    line-height: 1.8;
     margin-bottom: auto;
     text-align: center;
 }
@@ -38,7 +38,7 @@ body { font-family: "Times New Roman", Times, serif; font-size: 10pt; color: #00
     font-weight: bold;
     color: #1a4fa0;
     font-family: "Times New Roman", Times, serif;
-    line-height: 1.4;
+    line-height: 1;
     text-align: center;
 }
 .garis-bawah {
@@ -53,8 +53,7 @@ body { font-family: "Times New Roman", Times, serif; font-size: 10pt; color: #00
     font-size: 14pt;
     font-weight: bold;
     font-family: "Times New Roman", Times, serif;
-    letter-spacing: 2px;
-    line-height: 1.5;
+    letter-spacing: 1.5px;
     padding: 6px 0;
     margin-bottom: 16px;
     border-top: 2px solid #1a4fa0;
@@ -212,7 +211,7 @@ $tglCetak = date('d').' '.$bulanInd[(int)date('n')].' '.date('Y');
     <div class="ttd-box">
         <div class="ttd-kota">Palembang, {{ $tglCetak }}</div>
         <div class="ttd-nama">Herman Daniel, BE</div>
-        <div class="ttd-jabatan">Direktur</div>
+        <div class="ttd-jabatan">Direktur PT Cempaka Indah Abadi</div>
     </div>
 </div>
 

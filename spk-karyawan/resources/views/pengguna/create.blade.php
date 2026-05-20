@@ -33,7 +33,9 @@
                 <select name="role" class="form-select @error('role') is-invalid @enderror" required
                     onchange="toggleKaryawan(this.value)">
                     <option value="">-- Pilih role --</option>
+                    @if(auth()->user() && auth()->user()->role === 'direktur')
                     <option value="direktur" {{ old('role')=='direktur'?'selected':'' }}>Direktur</option>
+                    @endif
                     <option value="admin" {{ old('role')=='admin'?'selected':'' }}>Admin</option>
                     <option value="karyawan" {{ old('role')=='karyawan'?'selected':'' }}>Karyawan</option>
                 </select>

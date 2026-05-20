@@ -17,22 +17,27 @@ class PenggunaController extends Controller
         return view('pengguna.index', compact('pengguna'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $karyawan = Karyawan::whereDoesntHave('user')->orderBy('nama')->get();
-        return view('pengguna.create', compact('karyawan'));
+        $selectedKaryawanId = $request->query('karyawan_id');
+        return view('pengguna.create', compact('karyawan', 'selectedKaryawanId'));
     }
 
     public function store(Request $request)
     {
+        $authUser = Auth::user();
+        $allowedRoles = ($authUser && $authUser->role === 'direktur') ? 'admin,direktur,karyawan' : 'admin,karyawan';
+
         $data = $request->validate([
             'username'    => ['required', 'string', 'max:100', 'unique:users,username'],
             'password'    => ['required', Password::min(6)],
-            'role'        => ['required', 'in:admin,direktur,karyawan'],
+            'role'        => ['required', 'in:'.$allowedRoles],
             'karyawan_id' => ['nullable', 'exists:karyawan,id'],
         ], [
             'username.unique' => 'Username sudah digunakan.',
             'password.min'    => 'Password minimal 6 karakter.',
+            'role.in'         => 'Role tidak valid.',
         ]);
 
         if ($data['role'] === 'karyawan' && empty($data['karyawan_id'])) {
@@ -45,8 +50,9 @@ class PenggunaController extends Controller
             'password' => Hash::make($data['password']),
         ]));
 
-        return redirect()->route('pengguna.index')
-            ->with('success', 'Pengguna berhasil ditambahkan.');
+        $redirect = $request->input('redirect', 'pengguna');
+        return redirect()->route($redirect === 'karyawan' ? 'karyawan.index' : 'pengguna.index')
+            ->with('success', 'Akun pengguna berhasil ditambahkan.');
     }
 
     public function edit(User $pengguna)
@@ -61,12 +67,15 @@ class PenggunaController extends Controller
 
     public function update(Request $request, User $pengguna)
     {
+        $authUser = Auth::user();
+        $allowedRoles = ($authUser && $authUser->role === 'direktur') ? 'admin,direktur,karyawan' : 'admin,karyawan';
+
         $data = $request->validate([
             'username'    => ['required', 'string', 'max:100', 'unique:users,username,' . $pengguna->id],
-            'role'        => ['required', 'in:admin,direktur,karyawan'],
+            'role'        => ['required', 'in:'.$allowedRoles],
             'karyawan_id' => ['nullable', 'exists:karyawan,id'],
             'password'    => ['nullable', Password::min(6)],
-        ]);
+        ], ['role.in' => 'Role tidak valid.']);
 
         if (!empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);

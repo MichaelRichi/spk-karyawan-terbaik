@@ -21,7 +21,7 @@
     </div>
     <table class="table mb-0">
         <thead>
-            <tr><th>#</th><th>Nama</th><th>Jabatan</th><th>Jenis Kelamin</th><th>Tgl Masuk</th><th>Status</th><th class="text-center">Aksi</th></tr>
+            <tr><th>#</th><th>Nama</th><th>Divisi</th><th>Jenis Kelamin</th><th>Tgl Masuk</th><th>Status</th><th class="text-center">Aksi</th></tr>
         </thead>
         <tbody>
             @forelse($karyawan as $k)
@@ -42,15 +42,21 @@
                     </span>
                 </td>
                 <td class="text-center">
-                    <div style="display:flex;gap:5px;justify-content:center">
-                        <a href="{{ route('karyawan.edit', $k) }}" class="btn btn-outline-primary btn-sm">
-                            <i class="ti ti-pencil"></i>
+                    <div style="display:flex;gap:5px;justify-content:center;align-items:center;flex-wrap:wrap">
+                        {{-- Edit Karyawan --}}
+                        <a href="{{ route('karyawan.edit', $k) }}" class="btn btn-sm" style="background:#2563eb;border-color:#2563eb;color:#fff">
+                            <i class="ti ti-pencil"></i> Edit Karyawan
                         </a>
-                        <form action="{{ route('karyawan.destroy', $k) }}" method="POST" class="d-inline"
-                            onsubmit="return confirm('Hapus karyawan {{ $k->nama }}?')">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-outline-danger btn-sm"><i class="ti ti-trash"></i></button>
-                        </form>
+                        {{-- Akun --}}
+                        @if($k->user)
+                        <a href="{{ route('karyawan.akun.form', $k) }}" class="btn btn-sm" style="background:#16a34a;border-color:#16a34a;color:#fff">
+                            <i class="ti ti-user-check"></i> Edit Akun
+                        </a>
+                        @else
+                        <a href="{{ route('karyawan.akun.form', $k) }}" class="btn btn-sm" style="background:#f59e0b;border-color:#f59e0b;color:#fff">
+                            <i class="ti ti-user-plus"></i> Buat Akun
+                        </a>
+                        @endif
                     </div>
                 </td>
             </tr>

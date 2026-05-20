@@ -46,7 +46,7 @@
                     @error('nama')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-12">
-                    <label class="form-label">Jabatan <span style="color:#ef4444">*</span></label>
+                    <label class="form-label">Divisi <span style="color:#ef4444">*</span></label>
                     <input type="text" name="jabatan" class="form-control @error('jabatan') is-invalid @enderror"
                         value="{{ old('jabatan', $karyawan->jabatan) }}" required>
                     @error('jabatan')<div class="invalid-feedback">{{ $message }}</div>@enderror

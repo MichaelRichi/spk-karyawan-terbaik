@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreKaryawanRequest;
 use App\Models\Karyawan;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
 
 class KaryawanController extends Controller
@@ -23,7 +26,7 @@ class KaryawanController extends Controller
             $query->where('status', $status);
         }
 
-        $karyawan = $query->orderBy('nama')->paginate(15)->withQueryString();
+        $karyawan = $query->with('user')->orderBy('nama')->paginate(15)->withQueryString();
         return view('karyawan.index', compact('karyawan'));
     }
 
@@ -71,5 +74,50 @@ class KaryawanController extends Controller
 
         return redirect()->route('karyawan.index')
             ->with('success', "Karyawan {$nama} berhasil dihapus.");
+    }
+
+    public function akunForm(Karyawan $karyawan)
+    {
+        $user = $karyawan->user;
+        return view('karyawan.akun', compact('karyawan', 'user'));
+    }
+
+    public function akunStore(Request $request, Karyawan $karyawan)
+    {
+        $data = $request->validate([
+            'username' => ['required', 'string', 'max:100', 'unique:users,username'],
+            'password' => ['required', Password::min(6), 'confirmed'],
+            'role'     => ['required', 'in:admin,karyawan'],
+        ], ['username.unique' => 'Username sudah digunakan.']);
+
+        User::create([
+            'username'    => $data['username'],
+            'password'    => Hash::make($data['password']),
+            'role'        => $data['role'],
+            'karyawan_id' => $karyawan->id,
+        ]);
+
+        return redirect()->route('karyawan.index')
+            ->with('success', "Akun untuk {$karyawan->nama} berhasil dibuat.");
+    }
+
+    public function akunUpdate(Request $request, Karyawan $karyawan)
+    {
+        $user = $karyawan->user;
+        $data = $request->validate([
+            'username' => ['required', 'string', 'max:100', 'unique:users,username,'.$user->id],
+            'password' => ['nullable', Password::min(6), 'confirmed'],
+            'role'     => ['required', 'in:admin,karyawan'],
+        ], ['username.unique' => 'Username sudah digunakan.']);
+
+        $update = ['username' => $data['username'], 'role' => $data['role']];
+        if (!empty($data['password'])) {
+            $update['password'] = Hash::make($data['password']);
+        }
+
+        $user->update($update);
+
+        return redirect()->route('karyawan.index')
+            ->with('success', "Akun {$karyawan->nama} berhasil diperbarui.");
     }
 }

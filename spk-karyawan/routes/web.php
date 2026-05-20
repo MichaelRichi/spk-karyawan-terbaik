@@ -34,6 +34,9 @@ Route::middleware(['auth'])->group(function () {
     // ── KARYAWAN — admin & direktur ────────────────────
     Route::middleware('role:admin,direktur')->group(function () {
         Route::resource('karyawan', KaryawanController::class)->except(['show']);
+        Route::get('/karyawan/{karyawan}/akun',        [KaryawanController::class, 'akunForm'])->name('karyawan.akun.form');
+        Route::post('/karyawan/{karyawan}/akun',       [KaryawanController::class, 'akunStore'])->name('karyawan.akun.store');
+        Route::put('/karyawan/{karyawan}/akun',        [KaryawanController::class, 'akunUpdate'])->name('karyawan.akun.update');
     });
 
     // ── KRITERIA & SUB-KRITERIA — hanya direktur ───────
