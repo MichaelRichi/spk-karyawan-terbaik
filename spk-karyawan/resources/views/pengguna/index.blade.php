@@ -12,25 +12,29 @@
     </a>
 </div>
 
-{{-- Stat Cards --}}
-<div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px">
-    <div class="stat-card">
-        <div class="stat-lbl"><i class="ti ti-users"></i> Total Pengguna</div>
-        <div class="stat-val" style="font-size:22px">{{ $pengguna->total() }}</div>
+{{-- Search Bar --}}
+<form method="GET" action="{{ route('pengguna.index') }}" style="margin-bottom:12px">
+    <div style="display:flex;gap:8px">
+        <div style="position:relative;flex:1;max-width:400px">
+            <i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:15px"></i>
+            <input type="text" name="search" value="{{ request('search') }}"
+                class="form-control" placeholder="Cari Pengguna"
+                style="padding-left:34px">
+        </div>
+        <select name="role" class="form-select" style="width:140px">
+            <option value="">Semua Role</option>
+            <option value="direktur" {{ request('role')=='direktur'?'selected':'' }}>Direktur</option>
+            <option value="admin"    {{ request('role')=='admin'   ?'selected':'' }}>Admin</option>
+            <option value="karyawan" {{ request('role')=='karyawan'?'selected':'' }}>Karyawan</option>
+        </select>
+        <button type="submit" class="btn btn-primary"><i class="ti ti-search"></i> Cari</button>
+        @if(request('search') || request('role'))
+        <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">
+            <i class="ti ti-x"></i> Reset
+        </a>
+        @endif
     </div>
-    <div class="stat-card" style="border-color:#93c5fd;background:#eff6ff">
-        <div class="stat-lbl" style="color:#1d4ed8">Direktur</div>
-        <div class="stat-val" style="font-size:22px;color:#1d4ed8">{{ $pengguna->getCollection()->where('role','direktur')->count() }}</div>
-    </div>
-    <div class="stat-card" style="border-color:#d1d5db;background:#f9fafb">
-        <div class="stat-lbl" style="color:#374151">Admin</div>
-        <div class="stat-val" style="font-size:22px;color:#374151">{{ $pengguna->getCollection()->where('role','admin')->count() }}</div>
-    </div>
-    <div class="stat-card" style="border-color:#86efac;background:#f0fdf4">
-        <div class="stat-lbl" style="color:#16a34a">Karyawan</div>
-        <div class="stat-val" style="font-size:22px;color:#16a34a">{{ $pengguna->getCollection()->where('role','karyawan')->count() }}</div>
-    </div>
-</div>
+</form>
 
 <div class="card">
     <div class="card-header">

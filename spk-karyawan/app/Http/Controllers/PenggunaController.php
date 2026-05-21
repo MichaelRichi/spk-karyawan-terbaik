@@ -13,10 +13,22 @@ class PenggunaController extends Controller
 {
     public function index()
     {
-        $pengguna = User::with('karyawan')
+        $query = User::with('karyawan')
             ->orderByRaw("CASE role WHEN 'direktur' THEN 1 WHEN 'admin' THEN 2 WHEN 'karyawan' THEN 3 ELSE 4 END")
-            ->orderBy('username')
-            ->paginate(15);
+            ->orderBy('username');
+
+        if ($search = request('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('username', 'like', "%{$search}%")
+                  ->orWhereHas('karyawan', fn($k) => $k->where('nama', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($role = request('role')) {
+            $query->where('role', $role);
+        }
+
+        $pengguna = $query->paginate(15)->withQueryString();
         return view('pengguna.index', compact('pengguna'));
     }
 
