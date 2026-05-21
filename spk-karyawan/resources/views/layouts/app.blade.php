@@ -175,10 +175,11 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
         @endif
 
         <div class="sb-grp">Laporan</div>
+        @if(auth()->user()->role === 'direktur')
         <a href="{{ route('ranking.index') }}" class="sbi {{ request()->routeIs('ranking.index','ranking.hasil','ranking.cetak') ? 'on' : '' }}">
             <i class="ti ti-trophy"></i> Hasil Ranking
         </a>
-
+        @endif
         @if(in_array(auth()->user()->role, ['admin','karyawan']))
         <a href="{{ route('karyawan.nilai') }}" class="sbi {{ request()->routeIs('karyawan.nilai') ? 'on' : '' }}">
             <i class="ti ti-chart-bar"></i> Nilai Saya

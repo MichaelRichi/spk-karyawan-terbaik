@@ -10,18 +10,36 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Total karyawan AKTIF saja
-        $totalKaryawan  = Karyawan::aktif()->count();
-        $totalPeriode   = Periode::where('status', 'selesai')->count();
-        $periodeAktif   = Periode::where('status', 'aktif')->with('penilaian', 'periodeKriteria')->first();
-        $riwayat        = Periode::with('hasilRanking.karyawan')->orderByDesc('id')->take(5)->get();
-        $karyawanTerbaik = HasilRanking::where('ranking', 1)
-            ->with('karyawan', 'periode')
-            ->orderByDesc('id')
-            ->first();
+        $user = auth()->user();
+        $role = $user->role;
 
-        return view('dashboard.index', compact(
-            'totalKaryawan', 'totalPeriode', 'periodeAktif', 'riwayat', 'karyawanTerbaik'
-        ));
+        // ── DIREKTUR ──────────────────────────────────
+        if ($role === 'direktur') {
+            $totalKaryawan   = Karyawan::aktif()->count();
+            $totalPeriode    = Periode::where('status', 'selesai')->count();
+            $periodeAktif    = Periode::where('status', 'aktif')->with('penilaian')->first();
+            $riwayat         = Periode::with('hasilRanking.karyawan')->orderByDesc('id')->take(5)->get();
+            $karyawanTerbaik = HasilRanking::where('ranking', 1)->with('karyawan','periode')->orderByDesc('id')->first();
+            return view('dashboard.direktur', compact('totalKaryawan','totalPeriode','periodeAktif','riwayat','karyawanTerbaik'));
+        }
+
+        // ── ADMIN ─────────────────────────────────────
+        if ($role === 'admin') {
+            $totalKaryawan  = Karyawan::aktif()->count();
+            $totalTidakAktif = Karyawan::where('status','tidak_aktif')->count();
+            $periodeAktif   = Periode::where('status','aktif')->with('penilaian')->first();
+            $totalDinilai   = $periodeAktif ? $periodeAktif->penilaian->pluck('karyawan_id')->unique()->count() : 0;
+            return view('dashboard.admin', compact('totalKaryawan','totalTidakAktif','periodeAktif','totalDinilai'));
+        }
+
+        // ── KARYAWAN ──────────────────────────────────
+        $karyawan    = $user->karyawan;
+        $nilaiTerakhir = $karyawan
+            ? HasilRanking::where('karyawan_id', $karyawan->id)->with('periode')->orderByDesc('id')->first()
+            : null;
+        $totalDinilai = $karyawan
+            ? HasilRanking::where('karyawan_id', $karyawan->id)->count()
+            : 0;
+        return view('dashboard.karyawan', compact('karyawan','nilaiTerakhir','totalDinilai'));
     }
 }

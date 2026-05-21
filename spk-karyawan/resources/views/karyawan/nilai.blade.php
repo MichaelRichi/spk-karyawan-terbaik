@@ -45,6 +45,56 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
 @foreach($riwayat as $r)
 <div id="periode-{{ $r->id }}" class="periode-panel" style="{{ $loop->first ? '' : 'display:none' }}">
 
+    {{-- Top 3 periode yang dipilih --}}
+    @php $top3Periode = $periodeSelesai->where('id', $r->periode_id)->first(); @endphp
+    @if($top3Periode)
+    @php $top3 = $top3Periode->hasilRanking->where('ranking', '<=', 3)->sortBy('ranking'); @endphp
+    <div class="card" style="margin-bottom:12px">
+        <div class="card-header">
+            <span><i class="ti ti-medal"></i> Top 3 Periode Ini</span>
+        </div>
+        <div style="padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
+            @foreach($top3 as $t)
+            @php
+                $isMe = $karyawan->id === $t->karyawan_id;
+                $medal = $t->ranking == 1
+                    ? ['bg'=>'#fef9e7','border'=>'#f59e0b','icon'=>'ti-medal','ic'=>'#d97706','rc'=>'#d97706']
+                    : ($t->ranking == 2
+                    ? ['bg'=>'#f8fafc','border'=>'#94a3b8','icon'=>'ti-medal-2','ic'=>'#64748b','rc'=>'#64748b']
+                    : ['bg'=>'#fdf8f0','border'=>'#c2855a','icon'=>'ti-medal-3','ic'=>'#b45309','rc'=>'#b45309']);
+            @endphp
+            <div style="background:{{ $medal['bg'] }};border:{{ $isMe?'2.5px':'1.5px' }} solid {{ $isMe?'#2563eb':$medal['border'] }};border-radius:10px;padding:14px;text-align:center;position:relative">
+                @if($isMe)
+                <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#2563eb;color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap">Anda</div>
+                @endif
+                <i class="ti {{ $medal['icon'] }}" style="font-size:26px;color:{{ $medal['ic'] }}"></i>
+                <div style="font-size:10px;font-weight:600;color:{{ $medal['rc'] }};margin:4px 0 2px">Ranking #{{ $t->ranking }}</div>
+                <div style="font-size:13px;font-weight:700;color:#1e293b">{{ $t->karyawan?->nama ?? '—' }}</div>
+                <div style="font-size:12px;color:#64748b;margin-top:2px;font-weight:600">{{ number_format($t->nilai_preferensi,4) }}</div>
+            </div>
+            @endforeach
+        </div>
+        {{-- Jika tidak masuk top 3 --}}
+        @php $nilaiku = $top3Periode->hasilRanking->where('karyawan_id', $karyawan->id)->first(); @endphp
+        @if($nilaiku && $nilaiku->ranking > 3)
+        <div style="padding:10px 14px;border-top:0.5px solid #e2e8f0;display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#1d4ed8;flex-shrink:0">#{{ $nilaiku->ranking }}</div>
+            <div style="font-size:12px;color:#64748b">
+                Posisi Anda dari <strong>{{ $top3Periode->hasilRanking->count() }}</strong> karyawan
+                &nbsp;·&nbsp; Nilai Akhir: <strong style="color:#7c3aed">{{ number_format($nilaiku->nilai_preferensi,4) }}</strong>
+            </div>
+        </div>
+        @elseif($nilaiku && $nilaiku->ranking <= 3)
+        <div style="padding:10px 14px;border-top:0.5px solid #e2e8f0">
+            <div class="alert-spk al-ok" style="margin:0">
+                <i class="ti ti-trophy"></i>
+                <span>Selamat! Anda masuk <strong>Top 3</strong> periode ini!</span>
+            </div>
+        </div>
+        @endif
+    </div>
+    @endif
+
     {{-- Stat cards --}}
     <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
         <div class="stat-card" style="border-color:#93c5fd;background:#eff6ff">

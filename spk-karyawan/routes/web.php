@@ -80,14 +80,27 @@ Route::middleware(['auth'])->group(function () {
 
     // ── NILAI SAYA — admin & karyawan ──────────────────
     Route::middleware('role:admin,karyawan')->group(function () {
+        Route::get('/hasil-penilaian', function () {
+            $periodeSelesai = \App\Models\Periode::where('status', 'selesai')
+                ->with(['hasilRanking.karyawan'])
+                ->orderByDesc('tahun')
+                ->orderByDesc('bulan')
+                ->get();
+            return view('ranking.publik', compact('periodeSelesai'));
+        })->name('ranking.publik');
+
         Route::get('/nilai-saya', function () {
             $karyawan = Auth::user()->karyawan;
-            if (!$karyawan) abort(404, 'Data karyawan tidak ditemukan.');
+            if (!$karyawan) abort(403, 'Akun Anda tidak terhubung ke data karyawan.');
             $riwayat = \App\Models\HasilRanking::where('karyawan_id', $karyawan->id)
                 ->with('periode')
                 ->orderByDesc('id')
                 ->get();
-            return view('karyawan.nilai', compact('karyawan', 'riwayat'));
+            $periodeSelesai = \App\Models\Periode::where('status', 'selesai')
+                ->with(['hasilRanking.karyawan'])
+                ->orderByDesc('tahun')->orderByDesc('bulan')
+                ->get();
+            return view('karyawan.nilai', compact('karyawan', 'riwayat', 'periodeSelesai'));
         })->name('karyawan.nilai');
     });
 });
