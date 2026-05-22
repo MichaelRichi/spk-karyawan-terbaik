@@ -9,7 +9,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
 <div class="ph">
     <div>
         <div class="ph-title">Nilai Saya</div>
-        <div class="ph-sub">Riwayat penilaian — {{ $karyawan->nama }}</div>
+        <div class="ph-sub">Riwayat penilaian</div>
     </div>
 </div>
 
@@ -32,7 +32,6 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
                 @foreach($riwayat as $r)
                 <option value="{{ $r->id }}" {{ $loop->first ? 'selected' : '' }}>
                     {{ ($namaBulan[$r->periode->bulan] ?? $r->periode->bulan).' '.$r->periode->tahun }}
-                    — Ranking #{{ $r->ranking }}
                 </option>
                 @endforeach
             </select>

@@ -205,12 +205,13 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
             <div style="font-size:15px;font-weight:700;color:#1e293b;line-height:1.2">@yield('title')</div>
         </div>
         <div class="topbar-right">
+            @php $namaTopbar = auth()->user()->karyawan?->nama ?? auth()->user()->username; @endphp
             <div style="display:flex;align-items:center;gap:8px">
                 <div style="width:32px;height:32px;border-radius:50%;background:#1e40af;display:flex;align-items:center;justify-content:center;color:#bfdbfe;font-size:11px;font-weight:700">
-                    {{ strtoupper(substr(auth()->user()->username,0,2)) }}
+                    {{ strtoupper(substr($namaTopbar,0,2)) }}
                 </div>
                 <div>
-                    <div style="font-size:12px;font-weight:600;color:#1e293b">{{ auth()->user()->username }}</div>
+                    <div style="font-size:12px;font-weight:600;color:#1e293b">{{ $namaTopbar }}</div>
                     <div style="font-size:10px;color:#64748b">{{ ucfirst(auth()->user()->role) }}</div>
                 </div>
             </div>
