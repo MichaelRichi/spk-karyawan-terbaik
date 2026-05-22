@@ -193,7 +193,7 @@ table.ranking tbody tr.genap  { background: #ffffff; }
             @foreach($d['detail_kriteria'] as $dk)
             <td style="font-weight:600">{{ $dk['nilai'] }}</td>
             @endforeach
-            <td class="nilai-akhir">{{ number_format($d['nilai_preferensi'],4) }}</td>
+            <td class="nilai-akhir">{{ number_format($d['nilai_preferensi'], 3) }}</td>
         </tr>
         @endforeach
     </tbody>
@@ -211,7 +211,7 @@ $tglCetak = date('d').' '.$bulanInd[(int)date('n')].' '.date('Y');
     <div class="ttd-box">
         <div class="ttd-kota">Palembang, {{ $tglCetak }}</div>
         <div class="ttd-nama">Herman Daniel, BE</div>
-        <div class="ttd-jabatan">Direktur PT Cempaka Indah Abadi</div>
+        <div class="ttd-jabatan">Direktur</div>
     </div>
 </div>
 

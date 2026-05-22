@@ -2,41 +2,50 @@
 @section('title','Kelola Pengguna')
 @section('content')
 
-<div class="ph">
-    <div>
-        <div class="ph-title">Kelola Pengguna</div>
-        <div class="ph-sub">Manajemen akun Admin, Direktur, dan Karyawan</div>
+{{-- Card Judul --}}
+<div class="card" style="margin-bottom:16px;max-width:800px;margin-left:auto;margin-right:auto">
+    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Kelola Pengguna</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Manajemen akun Admin, Direktur, dan Karyawan</div>
+        </div>
+        <a href="{{ route('pengguna.create') }}" class="btn btn-primary">
+            <i class="ti ti-user-plus"></i> Tambah Pengguna
+        </a>
     </div>
-    <a href="{{ route('pengguna.create') }}" class="btn btn-primary">
-        <i class="ti ti-user-plus"></i> Tambah Pengguna
-    </a>
 </div>
 
-{{-- Search Bar --}}
-<form method="GET" action="{{ route('pengguna.index') }}" style="margin-bottom:12px">
-    <div style="display:flex;gap:8px">
-        <div style="position:relative;flex:1;max-width:400px">
-            <i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:15px"></i>
-            <input type="text" name="search" value="{{ request('search') }}"
-                class="form-control" placeholder="Cari Pengguna"
-                style="padding-left:34px">
+{{-- Search + Filter --}}
+<div style="max-width:800px;margin:0 auto 12px auto">
+    <form method="GET" action="{{ route('pengguna.index') }}">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div style="position:relative;flex:1;min-width:180px">
+                <i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px"></i>
+                <input type="text" name="search" value="{{ request('search') }}"
+                    class="form-control" placeholder="Cari pengguna..."
+                    style="padding-left:32px">
+            </div>
+            <div style="position:relative;width:150px">
+                <select name="role" class="form-select" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer">
+                    <option value="">Semua Role</option>
+                    <option value="direktur" {{ request('role')=='direktur'?'selected':'' }}>Direktur</option>
+                    <option value="admin"    {{ request('role')=='admin'   ?'selected':'' }}>Admin</option>
+                    <option value="karyawan" {{ request('role')=='karyawan'?'selected':'' }}>Karyawan</option>
+                </select>
+                <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="ti ti-search"></i> Cari</button>
+            @if(request('search') || request('role'))
+            <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">
+                <i class="ti ti-x"></i> Reset
+            </a>
+            @endif
         </div>
-        <select name="role" class="form-select" style="width:140px">
-            <option value="">Semua Role</option>
-            <option value="direktur" {{ request('role')=='direktur'?'selected':'' }}>Direktur</option>
-            <option value="admin"    {{ request('role')=='admin'   ?'selected':'' }}>Admin</option>
-            <option value="karyawan" {{ request('role')=='karyawan'?'selected':'' }}>Karyawan</option>
-        </select>
-        <button type="submit" class="btn btn-primary"><i class="ti ti-search"></i> Cari</button>
-        @if(request('search') || request('role'))
-        <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">
-            <i class="ti ti-x"></i> Reset
-        </a>
-        @endif
-    </div>
-</form>
+    </form>
+</div>
 
-<div class="card">
+{{-- Tabel --}}
+<div class="card" style="max-width:800px;margin:0 auto">
     <div class="card-header">
         <span><i class="ti ti-users"></i> Daftar Pengguna Sistem</span>
         <span style="font-size:11px;color:#64748b">{{ $pengguna->total() }} pengguna terdaftar</span>
@@ -62,8 +71,6 @@
             @endphp
             <tr>
                 <td style="color:#94a3b8;font-size:12px">{{ $loop->iteration }}</td>
-
-                {{-- Pengguna --}}
                 <td>
                     <div style="display:flex;align-items:center;gap:10px">
                         <div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;background:{{ $avatarBg }};color:{{ $avatarColor }}">
@@ -84,15 +91,11 @@
                         </div>
                     </div>
                 </td>
-
-                {{-- Role --}}
                 <td>
                     <span class="badge {{ $p->role=='direktur'?'bg-info-soft':($p->role=='admin'?'bg-gray-soft':'bg-success-soft') }}">
                         {{ ucfirst($p->role) }}
                     </span>
                 </td>
-
-                {{-- Status --}}
                 <td class="text-center">
                     @if($nonaktif)
                     <span class="badge bg-danger-soft">Nonaktif</span>
@@ -100,8 +103,6 @@
                     <span class="badge bg-success-soft">Aktif</span>
                     @endif
                 </td>
-
-                {{-- Aksi --}}
                 <td class="text-center">
                     @if(auth()->user()->role === 'admin' && $p->role === 'direktur')
                     <span style="font-size:11px;color:#94a3b8">—</span>

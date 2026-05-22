@@ -1,17 +1,19 @@
 @extends('layouts.app')
 @section('title','Kelola Karyawan')
 @section('content')
-<div class="ph">
-    <div>
-        <div class="ph-title">Kelola Karyawan</div>
-        <div class="ph-sub">Data seluruh karyawan PT Cempaka Indah Abadi · Hanya karyawan <strong>Aktif</strong> yang dapat dinilai</div>
+<div class="card" style="margin-bottom:16px;max-width:800px;margin-left:auto;margin-right:auto">
+    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Kelola Karyawan</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Data seluruh karyawan PT Cempaka Indah Abadi · Hanya karyawan <strong>Aktif</strong> yang dapat dinilai</div>
+        </div>
+        <a href="{{ route('karyawan.create') }}" class="btn btn-primary">
+            <i class="ti ti-user-plus"></i> Tambah Karyawan
+        </a>
     </div>
-    <a href="{{ route('karyawan.create') }}" class="btn btn-primary">
-        <i class="ti ti-user-plus"></i> Tambah Karyawan
-    </a>
 </div>
 
-<div class="card">
+<div class="card" style="max-width:800px;margin-left:auto;margin-right:auto">
     <div class="card-header">
         <span><i class="ti ti-id-badge-2"></i> Daftar Karyawan</span>
         <span style="font-size:11px;color:#64748b">
@@ -21,19 +23,19 @@
     </div>
     <table class="table mb-0">
         <thead>
-            <tr><th>#</th><th>Nama</th><th>Divisi</th><th>Jenis Kelamin</th><th>Tgl Masuk</th><th>Status</th><th class="text-center">Aksi</th></tr>
+            <tr><th>#</th><th>Nama</th><th>Jenis Kelamin</th><th>Tgl Masuk</th><th>Status</th><th class="text-center">Aksi</th></tr>
         </thead>
         <tbody>
             @forelse($karyawan as $k)
             <tr style="{{ $k->status=='tidak_aktif'?'opacity:.6':'' }}">
                 <td style="color:#64748b">{{ $loop->iteration }}</td>
-                <td style="font-weight:600">
-                    {{ $k->nama }}
+                <td>
+                    <div style="font-weight:600;color:#1e293b">{{ $k->nama }}</div>
+                    <div style="font-size:11px;color:#94a3b8">{{ $k->divisi }}</div>
                     @if($k->status=='tidak_aktif')
-                    <span style="font-size:9px;color:#A32D2D;font-weight:400"> (tidak aktif)</span>
+                    <span style="font-size:9px;color:#A32D2D;font-weight:400">(tidak aktif)</span>
                     @endif
                 </td>
-                <td style="color:#64748b">{{ $k->jabatan }}</td>
                 <td>{{ ucfirst($k->jenis_kelamin) }}</td>
                 <td style="color:#64748b">{{ $k->tanggal_masuk->format('d/m/Y') }}</td>
                 <td>

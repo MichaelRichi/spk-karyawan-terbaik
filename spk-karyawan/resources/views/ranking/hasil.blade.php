@@ -35,11 +35,11 @@
     </div>
     <div class="stat-card">
         <div class="stat-lbl">Nilai Akhir Tertinggi</div>
-        <div class="stat-val" style="color:#185FA5">{{ number_format(collect($detail)->max('nilai_preferensi'), 4) }}</div>
+        <div class="stat-val" style="color:#185FA5">{{ number_format(collect($detail)->max('nilai_preferensi'), 3) }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-lbl">Nilai Akhir Terendah</div>
-        <div class="stat-val" style="color:#64748b;font-size:16px">{{ number_format(collect($detail)->min('nilai_preferensi'), 4) }}</div>
+        <div class="stat-val" style="color:#64748b;font-size:16px">{{ number_format(collect($detail)->min('nilai_preferensi'), 3) }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-lbl">Karyawan Terbaik</div>
@@ -54,7 +54,7 @@
     <div class="pod g2">
         <div class="pod-ico">🥈</div>
         <div class="pod-nm">{{ $top3[1]['karyawan']->nama }}</div>
-        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[1]['nilai_preferensi'],4) }}</div>
+        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[1]['nilai_preferensi'], 3) }}</div>
     </div>
     @else <div></div>
     @endif
@@ -62,7 +62,7 @@
     <div class="pod g1">
         <div class="pod-ico">🥇</div>
         <div class="pod-nm">{{ $top3[0]['karyawan']->nama }}</div>
-        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[0]['nilai_preferensi'],4) }}</div>
+        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[0]['nilai_preferensi'], 3) }}</div>
     </div>
     @else <div></div>
     @endif
@@ -70,7 +70,7 @@
     <div class="pod g3">
         <div class="pod-ico">🥉</div>
         <div class="pod-nm">{{ $top3[2]['karyawan']->nama }}</div>
-        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[2]['nilai_preferensi'],4) }}</div>
+        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[2]['nilai_preferensi'], 3) }}</div>
     </div>
     @else <div></div>
     @endif
@@ -130,9 +130,9 @@
                     <td class="text-center" style="border-left:0.5px solid #f1f5f9">
                         <span style="font-weight:600">{{ $dk['nilai'] }}</span>
                     </td>
-                    <td class="text-center"><span class="vw">{{ number_format($dk['nilai_terbobot'],3) }}</span></td>
+                    <td class="text-center"><span class="vw">{{ number_format($dk['nilai_terbobot'], 3) }}</span></td>
                     @endforeach
-                    <td class="text-center vi-c">{{ number_format($d['nilai_preferensi'],4) }}</td>
+                    <td class="text-center vi-c">{{ number_format($d['nilai_preferensi'], 3) }}</td>
                     <td class="text-center">
                         <a href="{{ route('ranking.edit-nilai', [$periode, $d['karyawan']->id]) }}"
                             class="btn btn-sm" style="background:#f59e0b;border-color:#f59e0b;color:#fff;font-size:10px">

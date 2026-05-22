@@ -36,14 +36,16 @@
     cursor:pointer;
 }
 </style>
-<div class="ph">
-    <div>
-        <div class="ph-title">Kriteria & Bobot</div>
-        <div class="ph-sub">Atur kriteria, bobot, dan sub-kriteria di sini sebelum membuat periode penilaian</div>
+<div class="card" style="margin-bottom:16px">
+    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Kriteria & Bobot</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Atur kriteria, bobot, dan sub-kriteria di sini sebelum membuat periode penilaian</div>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalKriteria" onclick="resetModal()">
+            <i class="ti ti-plus"></i> Tambah Kriteria
+        </button>
     </div>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalKriteria" onclick="resetModal()">
-        <i class="ti ti-plus"></i> Tambah Kriteria
-    </button>
 </div>
 
 @php $totalBobot = $kriteria->sum('bobot_default'); $kurang = 100 - $totalBobot; @endphp
@@ -112,11 +114,10 @@
                             onclick="isiModal({{ $k->id }},'{{ addslashes($k->nama) }}','{{ $k->jenis }}',{{ $k->bobot_default }})">
                             <i class="ti ti-pencil"></i>
                         </button>
-                        <form action="{{ route('kriteria.destroy', $k) }}" method="POST" class="d-inline"
-                            onsubmit="return confirm('Hapus kriteria {{ $k->nama }}? Sub-kriterianya juga akan terhapus.')">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-outline-danger btn-sm"><i class="ti ti-trash"></i></button>
-                        </form>
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                            onclick="konfirmasiHapusKriteria('{{ route('kriteria.destroy', $k) }}', '{{ addslashes($k->nama) }}')">
+                            <i class="ti ti-trash"></i>
+                        </button>
                     </div>
                 </td>
             </tr>
@@ -134,6 +135,33 @@
             </tr>
         </tfoot>
     </table>
+</div>
+
+{{-- Modal Konfirmasi Hapus --}}
+<div id="modal-hapus-kriteria" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:12px;padding:24px;max-width:380px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <div style="width:40px;height:40px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <i class="ti ti-trash" style="color:#ef4444;font-size:20px"></i>
+            </div>
+            <div>
+                <div style="font-weight:700;color:#1e293b;font-size:15px">Hapus Kriteria</div>
+                <div style="font-size:12px;color:#64748b;margin-top:2px">Sub-kriteria terkait juga akan terhapus</div>
+            </div>
+        </div>
+        <div style="background:#fef2f2;border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:13px;color:#374151">
+            Yakin ingin menghapus kriteria: <strong id="modal-nama-kriteria" style="color:#ef4444"></strong>?
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button onclick="tutupModalKriteria()" class="btn btn-outline-secondary">Batal</button>
+            <form id="form-hapus-kriteria" method="POST" style="display:inline">
+                @csrf @method('DELETE')
+                <button type="submit" class="btn btn-sm" style="background:#ef4444;border-color:#ef4444;color:#fff;padding:7px 16px">
+                    <i class="ti ti-trash"></i> Ya, Hapus
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 
 {{-- Modal Tambah/Edit Kriteria --}}
@@ -205,5 +233,17 @@ function isiModal(id, nama, jenis, bobot) {
     // Buka modal setelah semua data terisi
     new bootstrap.Modal(document.getElementById('modalKriteria')).show();
 }
+
+function konfirmasiHapusKriteria(url, nama) {
+    document.getElementById('form-hapus-kriteria').action = url;
+    document.getElementById('modal-nama-kriteria').textContent = nama;
+    document.getElementById('modal-hapus-kriteria').style.display = 'flex';
+}
+function tutupModalKriteria() {
+    document.getElementById('modal-hapus-kriteria').style.display = 'none';
+}
+document.getElementById('modal-hapus-kriteria').addEventListener('click', function(e) {
+    if (e.target === this) tutupModalKriteria();
+});
 </script>
 @endpush

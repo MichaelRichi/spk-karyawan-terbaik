@@ -12,7 +12,7 @@ $namaUser = auth()->user()->karyawan?->nama ?? auth()->user()->username;
     <div style="font-size:22px;font-weight:800;color:#1e293b">
         Selamat Datang, <span style="color:#2563eb">{{ $namaUser }}</span>!
     </div>
-    <div style="font-size:13px;color:#64748b;margin-top:2px">{{ auth()->user()->username }} &nbsp;·&nbsp; Admin</div>
+
 </div>
 
 {{-- Stat Cards --}}

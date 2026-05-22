@@ -23,17 +23,21 @@
                     <div>
                         <div style="font-weight:600;font-size:13px">{{ $terbaik?->karyawan?->nama ?? '—' }}</div>
                         <div style="font-size:11px;color:#185FA5;font-weight:600">
-                            Nilai Akhir: {{ $terbaik ? number_format($terbaik->nilai_preferensi, 4) : '—' }}
+                            Nilai Akhir: {{ $terbaik ? number_format($terbaik->nilai_preferensi, 3) : '—' }}
                         </div>
                     </div>
                 </div>
                 <div style="display:flex;gap:6px">
+                    @if($p->status === 'selesai' && $p->hasilRanking->isNotEmpty())
                     <a href="{{ route('ranking.hasil', $p) }}" class="btn btn-info-soft btn-sm" style="flex:1;justify-content:center">
                         <i class="ti ti-bar-chart"></i> Lihat Detail
                     </a>
                     <a href="{{ route('ranking.cetak', $p) }}" class="btn btn-outline-secondary btn-sm" target="_blank">
                         <i class="ti ti-file-text"></i>
                     </a>
+                    @else
+                    <span style="font-size:11px;color:#94a3b8;font-style:italic">Belum ada hasil</span>
+                    @endif
                 </div>
             </div>
         </div>

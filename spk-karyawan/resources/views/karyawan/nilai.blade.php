@@ -85,7 +85,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
         </div>
         <div class="stat-card" style="border-color:#c4b5fd;background:#f5f3ff">
             <div class="stat-lbl" style="color:#7c3aed"><i class="ti ti-star"></i> Nilai Akhir</div>
-            <div class="stat-val" style="font-size:24px;color:#7c3aed">{{ number_format($r->nilai_preferensi,4) }}</div>
+            <div class="stat-val" style="font-size:24px;color:#7c3aed">{{ number_format($r->nilai_preferensi, 3) }}</div>
         </div>
     </div>
 
@@ -151,7 +151,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
                     <i class="ti {{ $medal['icon'] }}" style="font-size:26px;color:{{ $medal['ic'] }}"></i>
                     <div style="font-size:10px;font-weight:600;color:{{ $medal['rc'] }};margin:4px 0 2px">Ranking #{{ $t->ranking }}</div>
                     <div style="font-size:13px;font-weight:700;color:#1e293b">{{ $t->karyawan?->nama ?? '—' }}</div>
-                    <div style="font-size:12px;color:#64748b;margin-top:2px;font-weight:600">{{ number_format($t->nilai_preferensi,4) }}</div>
+                    <div style="font-size:12px;color:#64748b;margin-top:2px;font-weight:600">{{ number_format($t->nilai_preferensi, 3) }}</div>
                 </div>
                 @endforeach
             </div>
@@ -160,7 +160,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
                 <div style="width:32px;height:32px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#1d4ed8;flex-shrink:0">#{{ $nilaiku->ranking }}</div>
                 <span style="font-size:12px;color:#64748b">
                     Posisi Anda dari <strong>{{ $top3Periode->hasilRanking->count() }}</strong> karyawan
-                    &nbsp;·&nbsp; Nilai Akhir: <strong style="color:#7c3aed">{{ number_format($nilaiku->nilai_preferensi,4) }}</strong>
+                    &nbsp;·&nbsp; Nilai Akhir: <strong style="color:#7c3aed">{{ number_format($nilaiku->nilai_preferensi, 3) }}</strong>
                 </span>
             </div>
             @endif

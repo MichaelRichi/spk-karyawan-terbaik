@@ -86,7 +86,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
                     @elseif($p->status === 'selesai')
                         @php $terbaik = $p->hasilRanking->where('ranking',1)->first(); @endphp
                         Terbaik: <strong style="color:#1e293b">{{ $terbaik?->karyawan?->nama ?? '—' }}</strong>
-                        · Nilai: <strong style="color:#185FA5">{{ $terbaik ? number_format($terbaik->nilai_preferensi,4) : '—' }}</strong>
+                        · Nilai: <strong style="color:#185FA5">{{ $terbaik ? number_format($terbaik->nilai_preferensi, 3) : '—' }}</strong>
                     @else
                         <span style="color:#94a3b8">Menunggu aktivasi</span>
                     @endif

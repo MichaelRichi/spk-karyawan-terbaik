@@ -2,17 +2,15 @@
 @section('title','Sub-Kriteria')
 @section('content')
 
-@push('scripts')
-<style>
-/* Sembunyikan breadcrumb di halaman ini */
-.bc { display:none !important; }
-.content { padding-top:10px; }
-</style>
-@endpush
 
-<div style="background:#fff;border-bottom:0.5px solid #e2e8f0;padding:16px 20px;margin:-20px -20px 20px -20px">
-    <div style="font-size:18px;font-weight:700;color:#1e293b">Sub-Kriteria</div>
-    <div style="font-size:12px;color:#64748b;margin-top:2px">Semua skala penilaian dari seluruh kriteria</div>
+
+<div style="max-width:700px;margin:0 auto 20px auto">
+    <div class="card">
+        <div style="padding:20px 24px">
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Sub-Kriteria</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Semua skala penilaian dari seluruh kriteria</div>
+        </div>
+    </div>
 </div>
 
 @foreach($kriteria as $k)
@@ -59,13 +57,11 @@
                 <a href="{{ route('kriteria.sub-kriteria', $k) }}" class="btn btn-sm" style="background:#2563eb;border-color:#2563eb;color:#fff">
                     <i class="ti ti-pencil"></i> Edit
                 </a>
-                <form action="{{ route('kriteria.sub-kriteria.destroy', [$k, $sk]) }}"
-                    method="POST" class="d-inline" onsubmit="return confirm('Hapus skala ini?')">
-                    @csrf @method('DELETE')
-                    <button class="btn btn-sm" style="background:#ef4444;border-color:#ef4444;color:#fff">
-                        <i class="ti ti-trash"></i> Hapus
-                    </button>
-                </form>
+                <button type="button" class="btn btn-sm"
+                    style="background:#ef4444;border-color:#ef4444;color:#fff"
+                    onclick="konfirmasiHapus('{{ route('kriteria.sub-kriteria.destroy', [$k, $sk]) }}', '{{ addslashes($sk->nama) }}')">
+                    <i class="ti ti-trash"></i> Hapus
+                </button>
             </div>
         </div>
         @empty
@@ -76,5 +72,49 @@
     </div>
 </div>
 @endforeach
+
+
+{{-- Modal Konfirmasi Hapus --}}
+<div id="modal-hapus" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:12px;padding:24px;max-width:380px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <div style="width:40px;height:40px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <i class="ti ti-trash" style="color:#ef4444;font-size:20px"></i>
+            </div>
+            <div>
+                <div style="font-weight:700;color:#1e293b;font-size:15px">Hapus Sub-Kriteria</div>
+                <div style="font-size:12px;color:#64748b;margin-top:2px">Tindakan ini tidak dapat dibatalkan</div>
+            </div>
+        </div>
+        <div style="background:#fef2f2;border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:13px;color:#374151">
+            Yakin ingin menghapus: <strong id="modal-nama" style="color:#ef4444"></strong>?
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button onclick="tutupModal()" class="btn btn-outline-secondary">Batal</button>
+            <form id="form-hapus" method="POST" style="display:inline">
+                @csrf @method('DELETE')
+                <button type="submit" class="btn btn-sm" style="background:#ef4444;border-color:#ef4444;color:#fff;padding:7px 16px">
+                    <i class="ti ti-trash"></i> Ya, Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+function konfirmasiHapus(url, nama) {
+    document.getElementById('form-hapus').action = url;
+    document.getElementById('modal-nama').textContent = nama;
+    document.getElementById('modal-hapus').style.display = 'flex';
+}
+function tutupModal() {
+    document.getElementById('modal-hapus').style.display = 'none';
+}
+document.getElementById('modal-hapus').addEventListener('click', function(e) {
+    if (e.target === this) tutupModal();
+});
+</script>
+@endpush
 
 @endsection

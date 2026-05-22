@@ -17,7 +17,9 @@ class RankingController extends Controller
     /** Halaman index ranking — pilih periode */
     public function index()
     {
-        $periode = Periode::whereIn('status', ['aktif', 'selesai'])
+        $periode = Periode::where('status', 'selesai')
+            ->has('hasilRanking')
+            ->with('hasilRanking.karyawan')
             ->orderByDesc('tahun')
             ->orderByDesc('bulan')
             ->get();
@@ -40,6 +42,11 @@ class RankingController extends Controller
     /** Tampilkan hasil ranking */
     public function hasil(Periode $periode)
     {
+        if ($periode->status !== 'selesai') {
+            return redirect()->route('ranking.index')
+                ->with('error', 'Hasil ranking hanya tersedia untuk periode yang sudah selesai.');
+        }
+
         $detail = $this->sawService->getDetailRanking($periode);
 
         // Karyawan hanya bisa lihat data dirinya sendiri
@@ -95,6 +102,10 @@ class RankingController extends Controller
     /** Cetak laporan PDF */
     public function cetak(Periode $periode)
     {
+        if ($periode->status !== 'selesai') {
+            return redirect()->route('ranking.index')
+                ->with('error', 'Laporan hanya tersedia untuk periode yang sudah selesai.');
+        }
         $detail          = $this->sawService->getDetailRanking($periode);
         $periodeKriteria = $periode->periodeKriteria()->get();
 

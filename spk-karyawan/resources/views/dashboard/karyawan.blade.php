@@ -40,7 +40,7 @@ $namaUser = auth()->user()->karyawan?->nama ?? auth()->user()->username;
             <i class="ti ti-star"></i> Nilai Akhir Terakhir
         </div>
         <div style="font-size:28px;font-weight:800;line-height:1">
-            {{ $nilaiTerakhir ? number_format($nilaiTerakhir->nilai_preferensi,4) : '—' }}
+            {{ $nilaiTerakhir ? number_format($nilaiTerakhir->nilai_preferensi, 3) : '—' }}
         </div>
         <div style="font-size:11px;opacity:.7;margin-top:4px">nilai SAW</div>
     </div>
@@ -70,7 +70,7 @@ $namaUser = auth()->user()->karyawan?->nama ?? auth()->user()->username;
             <div>
                 <div style="font-size:14px;font-weight:700;color:#1e293b">{{ $karyawan->nama }}</div>
                 <div style="font-size:12px;color:#64748b;margin-top:2px">
-                    Nilai Akhir: <strong style="color:#7c3aed">{{ number_format($nilaiTerakhir->nilai_preferensi,4) }}</strong>
+                    Nilai Akhir: <strong style="color:#7c3aed">{{ number_format($nilaiTerakhir->nilai_preferensi, 3) }}</strong>
                 </div>
             </div>
         </div>

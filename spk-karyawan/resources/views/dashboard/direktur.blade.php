@@ -13,7 +13,7 @@ $namaUser = auth()->user()->karyawan?->nama ?? auth()->user()->username;
     <div style="font-size:22px;font-weight:800;color:#1e293b">
         Selamat Datang, <span style="color:#2563eb">{{ $namaUser }}</span>!
     </div>
-    <div style="font-size:13px;color:#64748b;margin-top:2px">{{ auth()->user()->username }} &nbsp;·&nbsp; Direktur</div>
+
 </div>
 
 {{-- Stat Cards --}}
@@ -95,7 +95,7 @@ $namaUser = auth()->user()->karyawan?->nama ?? auth()->user()->username;
                         <td style="font-weight:600">{{ ($namaBulan[$p->bulan] ?? $p->bulan).' '.$p->tahun }}</td>
                         <td><span class="badge {{ $p->status=='selesai'?'bg-success-soft':($p->status=='aktif'?'bg-info-soft':'bg-gray-soft') }}">{{ ucfirst($p->status) }}</span></td>
                         <td style="font-size:13px">{{ $terbaik?->karyawan?->nama ?? '—' }}</td>
-                        <td class="text-center" style="color:#185FA5;font-weight:600;font-size:13px">{{ $terbaik ? number_format($terbaik->nilai_preferensi,4) : '—' }}</td>
+                        <td class="text-center" style="color:#185FA5;font-weight:600;font-size:13px">{{ $terbaik ? number_format($terbaik->nilai_preferensi, 3) : '—' }}</td>
                         <td class="text-center">
                             @if($p->status === 'selesai')
                             <a href="{{ route('ranking.hasil', $p) }}" class="btn btn-sm btn-info-soft">Hasil</a>
