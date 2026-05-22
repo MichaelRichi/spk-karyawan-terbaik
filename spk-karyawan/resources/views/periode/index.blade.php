@@ -6,14 +6,16 @@
 $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 @endphp
 
-<div class="ph">
-    <div>
-        <div class="ph-title">Penilaian</div>
-        <div class="ph-sub">Kelola periode penilaian karyawan</div>
+<div class="card" style="margin-bottom:16px">
+    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Penilaian</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Kelola periode penilaian karyawan</div>
+        </div>
+        <a href="{{ route('periode.create') }}" class="btn btn-primary">
+            <i class="ti ti-plus"></i> Buat Periode Baru
+        </a>
     </div>
-    <a href="{{ route('periode.create') }}" class="btn btn-primary">
-        <i class="ti ti-plus"></i> Buat Periode Baru
-    </a>
 </div>
 
 {{-- Filter --}}
@@ -27,20 +29,26 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
                 style="padding-left:32px">
         </div>
         {{-- Filter tahun --}}
-        <select name="tahun" class="form-select" style="width:120px">
+        <div style="position:relative;width:140px">
+        <select name="tahun" class="form-select" style="width:140px;appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer" onchange="this.form.submit()">
             <option value="">Semua Tahun</option>
             @foreach($tahunList as $t)
             <option value="{{ $t }}" {{ request('tahun')==$t?'selected':'' }}>{{ $t }}</option>
             @endforeach
         </select>
+        <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
+        </div>
         {{-- Filter status --}}
-        <select name="status" class="form-select" style="width:140px">
+        <div style="position:relative;width:150px">
+        <select name="status" class="form-select" style="width:150px;appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer" onchange="this.form.submit()">
             <option value="">Semua Status</option>
             <option value="aktif"    {{ request('status')=='aktif'   ?'selected':'' }}>Aktif</option>
             <option value="selesai"  {{ request('status')=='selesai' ?'selected':'' }}>Selesai</option>
             <option value="draft"    {{ request('status')=='draft'   ?'selected':'' }}>Draft</option>
         </select>
-        <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Filter</button>
+        <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="ti ti-search"></i> Cari</button>
         @if(request('search') || request('tahun') || request('status'))
         <a href="{{ route('periode.index') }}" class="btn btn-outline-secondary">
             <i class="ti ti-x"></i> Reset

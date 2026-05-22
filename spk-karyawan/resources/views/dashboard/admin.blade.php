@@ -12,11 +12,16 @@ $namaUser = auth()->user()->karyawan?->nama ?? auth()->user()->username;
     <div style="font-size:22px;font-weight:800;color:#1e293b">
         Selamat Datang, <span style="color:#2563eb">{{ $namaUser }}</span>!
     </div>
-
 </div>
 
-{{-- Stat Cards --}}
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+{{-- Stat Cards Admin --}}
+<div style="margin-bottom:8px">
+    <div style="font-size:15px;font-weight:700;color:#1e293b">
+        <i class="ti ti-layout-dashboard" style="color:#2563eb"></i> Ringkasan
+    </div>
+    <div style="font-size:12px;color:#64748b;margin-top:2px">Informasi data karyawan dan periode</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
     <div style="background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:12px;padding:18px 20px;color:#fff">
         <div style="font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">
             <i class="ti ti-users"></i> Karyawan Aktif
@@ -42,41 +47,73 @@ $namaUser = auth()->user()->karyawan?->nama ?? auth()->user()->username;
     </div>
 </div>
 
-{{-- Progress Penilaian --}}
-@if($periodeAktif)
+{{-- Section Nilai Saya --}}
+@if($karyawan)
 @php
-    $labelBulan = ($nb[$periodeAktif->bulan] ?? $periodeAktif->bulan).' '.$periodeAktif->tahun;
-    $persen = $totalKaryawan > 0 ? round($totalDinilai / $totalKaryawan * 100) : 0;
+$namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 @endphp
+<div style="margin-bottom:8px">
+    <div style="font-size:15px;font-weight:700;color:#1e293b">
+        <i class="ti ti-chart-bar" style="color:#2563eb"></i> Penilaian Saya
+    </div>
+    <div style="font-size:12px;color:#64748b;margin-top:2px">Hasil penilaian Anda sebagai karyawan</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
+    <div style="background:linear-gradient(135deg,#16a34a,#15803d);border-radius:12px;padding:16px 18px;color:#fff">
+        <div style="font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">
+            <i class="ti ti-trophy"></i> Ranking Terakhir
+        </div>
+        <div style="font-size:28px;font-weight:800;line-height:1">
+            {{ $nilaiTerakhir ? '#'.$nilaiTerakhir->ranking : '—' }}
+        </div>
+        <div style="font-size:11px;opacity:.7;margin-top:4px">
+            {{ $nilaiTerakhir ? ($namaBulan[$nilaiTerakhir->periode->bulan] ?? '').' '.$nilaiTerakhir->periode->tahun : 'belum ada penilaian' }}
+        </div>
+    </div>
+    <div style="background:linear-gradient(135deg,#7c3aed,#6d28d9);border-radius:12px;padding:16px 18px;color:#fff">
+        <div style="font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">
+            <i class="ti ti-star"></i> Nilai Akhir Terakhir
+        </div>
+        <div style="font-size:24px;font-weight:800;line-height:1">
+            {{ $nilaiTerakhir ? number_format($nilaiTerakhir->nilai_preferensi, 3) : '—' }}
+        </div>
+        <div style="font-size:11px;opacity:.7;margin-top:4px">nilai SAW</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#0891b2,#0e7490);border-radius:12px;padding:16px 18px;color:#fff">
+        <div style="font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">
+            <i class="ti ti-chart-bar"></i> Total Dinilai
+        </div>
+        <div style="font-size:28px;font-weight:800;line-height:1">{{ $totalDinilaiSaya }}</div>
+        <div style="font-size:11px;opacity:.7;margin-top:4px">periode</div>
+    </div>
+</div>
+
+@if($nilaiTerakhir)
 <div class="card">
     <div class="card-header">
-        <span><i class="ti ti-clipboard-check"></i> Progress Penilaian — {{ $labelBulan }}</span>
-        <span style="font-size:12px;font-weight:700;color:{{ $persen==100?'#16a34a':'#f59e0b' }}">
-            {{ $totalDinilai }} / {{ $totalKaryawan }} karyawan
+        <span><i class="ti ti-calendar-check"></i> Penilaian Terakhir Saya</span>
+        <span style="font-size:11px;color:#64748b">
+            {{ ($namaBulan[$nilaiTerakhir->periode->bulan] ?? $nilaiTerakhir->periode->bulan).' '.$nilaiTerakhir->periode->tahun }}
         </span>
     </div>
-    <div style="padding:16px">
-        <div style="height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin-bottom:10px">
-            <div style="height:100%;width:{{ $persen }}%;background:{{ $persen==100?'#16a34a':'#2563eb' }};border-radius:6px;transition:width .3s"></div>
+    <div style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:48px;height:48px;border-radius:50%;background:#f0fdf4;border:2px solid #86efac;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <span style="font-size:16px;font-weight:800;color:#16a34a">#{{ $nilaiTerakhir->ranking }}</span>
+            </div>
+            <div>
+                <div style="font-size:14px;font-weight:700;color:#1e293b">{{ $karyawan->nama }}</div>
+                <div style="font-size:12px;color:#64748b;margin-top:2px">
+                    Nilai Akhir: <strong style="color:#7c3aed">{{ number_format($nilaiTerakhir->nilai_preferensi, 3) }}</strong>
+                </div>
+            </div>
         </div>
-        @if($persen == 100)
-        <div class="alert-spk al-ok" style="margin:0">
-            <i class="ti ti-check-circle"></i>
-            <span>Semua karyawan sudah dinilai. Menunggu perhitungan SAW oleh Direktur.</span>
-        </div>
-        @else
-        <div class="alert-spk al-warn" style="margin:0">
-            <i class="ti ti-alert-triangle"></i>
-            <span>{{ $totalKaryawan - $totalDinilai }} karyawan belum dinilai.</span>
-        </div>
-        @endif
+        <a href="{{ route('karyawan.nilai') }}" class="btn btn-primary btn-sm">
+            <i class="ti ti-chart-bar"></i> Lihat Detail Nilai
+        </a>
     </div>
 </div>
-@else
-<div class="card" style="text-align:center;padding:32px">
-    <i class="ti ti-calendar-off" style="font-size:36px;color:#cbd5e1"></i>
-    <div style="color:#64748b;margin-top:8px;font-size:13px">Tidak ada periode penilaian yang sedang berjalan.</div>
-</div>
+@endif
 @endif
 
 @endsection

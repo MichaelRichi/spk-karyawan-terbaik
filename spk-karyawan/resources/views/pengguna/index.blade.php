@@ -19,14 +19,19 @@
 <div style="max-width:800px;margin:0 auto 12px auto">
     <form method="GET" action="{{ route('pengguna.index') }}">
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <div style="position:relative;flex:1;min-width:180px">
-                <i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px"></i>
-                <input type="text" name="search" value="{{ request('search') }}"
-                    class="form-control" placeholder="Cari pengguna..."
-                    style="padding-left:32px">
+            <div style="display:flex;flex:1;min-width:180px">
+                <div style="position:relative;flex:1">
+                    <i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px"></i>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        class="form-control" placeholder="Cari pengguna..."
+                        style="padding-left:32px;border-radius:8px 0 0 8px;border-right:none">
+                </div>
+                <button type="submit" class="btn btn-primary" style="border-radius:0 8px 8px 0;padding:8px 14px;flex-shrink:0">
+                    <i class="ti ti-search"></i>
+                </button>
             </div>
             <div style="position:relative;width:150px">
-                <select name="role" class="form-select" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer">
+                <select name="role" class="form-select" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer" onchange="this.form.submit()">
                     <option value="">Semua Role</option>
                     <option value="direktur" {{ request('role')=='direktur'?'selected':'' }}>Direktur</option>
                     <option value="admin"    {{ request('role')=='admin'   ?'selected':'' }}>Admin</option>
@@ -34,7 +39,6 @@
                 </select>
                 <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
             </div>
-            <button type="submit" class="btn btn-primary"><i class="ti ti-search"></i> Cari</button>
             @if(request('search') || request('role'))
             <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">
                 <i class="ti ti-x"></i> Reset
@@ -83,11 +87,7 @@
                                 <span style="font-size:9px;background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 5px;margin-left:4px">Anda</span>
                                 @endif
                             </div>
-                            <div style="font-size:11px;color:#94a3b8">
-                                <i class="ti ti-at" style="font-size:10px"></i> {{ $p->username }}
-                                &nbsp;·&nbsp;
-                                <i class="ti ti-briefcase" style="font-size:10px"></i> {{ $subDisplay }}
-                            </div>
+                            <div style="font-size:11px;color:#94a3b8">{{ $p->username }}</div>
                         </div>
                     </div>
                 </td>

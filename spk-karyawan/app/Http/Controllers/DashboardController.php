@@ -25,11 +25,22 @@ class DashboardController extends Controller
 
         // ── ADMIN ─────────────────────────────────────
         if ($role === 'admin') {
-            $totalKaryawan  = Karyawan::aktif()->count();
+            $totalKaryawan   = Karyawan::aktif()->count();
             $totalTidakAktif = Karyawan::where('status','tidak_aktif')->count();
-            $periodeAktif   = Periode::where('status','aktif')->with('penilaian')->first();
-            $totalDinilai   = $periodeAktif ? $periodeAktif->penilaian->pluck('karyawan_id')->unique()->count() : 0;
-            return view('dashboard.admin', compact('totalKaryawan','totalTidakAktif','periodeAktif','totalDinilai'));
+            $periodeAktif    = Periode::where('status','aktif')->with('penilaian')->first();
+            $totalDinilai    = $periodeAktif ? $periodeAktif->penilaian->pluck('karyawan_id')->unique()->count() : 0;
+            // Data karyawan admin (jika terhubung)
+            $karyawan      = $user->karyawan;
+            $nilaiTerakhir = $karyawan
+                ? HasilRanking::where('karyawan_id', $karyawan->id)->with('periode')->orderByDesc('id')->first()
+                : null;
+            $totalDinilaiSaya = $karyawan
+                ? HasilRanking::where('karyawan_id', $karyawan->id)->count()
+                : 0;
+            return view('dashboard.admin', compact(
+                'totalKaryawan','totalTidakAktif','periodeAktif','totalDinilai',
+                'karyawan','nilaiTerakhir','totalDinilaiSaya'
+            ));
         }
 
         // ── KARYAWAN ──────────────────────────────────

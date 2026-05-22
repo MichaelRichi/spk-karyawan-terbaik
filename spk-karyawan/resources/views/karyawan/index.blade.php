@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','Kelola Karyawan')
 @section('content')
-<div class="card" style="margin-bottom:16px;max-width:800px;margin-left:auto;margin-right:auto">
+<div class="card" style="margin-bottom:16px;max-width:750px;margin-left:auto;margin-right:auto">
     <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
         <div>
             <div style="font-size:18px;font-weight:800;color:#1e293b">Kelola Karyawan</div>
@@ -13,7 +13,36 @@
     </div>
 </div>
 
-<div class="card" style="max-width:800px;margin-left:auto;margin-right:auto">
+<form method="GET" action="{{ route('karyawan.index') }}" style="margin-bottom:12px;max-width:750px;margin-left:auto;margin-right:auto">
+    <div style="display:flex;gap:8px;align-items:center">
+        <div style="display:flex;flex:1">
+            <div style="position:relative;flex:1">
+                <i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px"></i>
+                <input type="text" name="search" value="{{ request('search') }}"
+                    class="form-control" placeholder="Cari nama karyawan..."
+                    style="padding-left:32px;border-radius:8px 0 0 8px;border-right:none">
+            </div>
+            <button type="submit" class="btn btn-primary" style="border-radius:0 8px 8px 0;padding:8px 14px;flex-shrink:0">
+                <i class="ti ti-search"></i>
+            </button>
+        </div>
+        <div style="position:relative;width:180px;flex-shrink:0">
+            <select name="status" class="form-select" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer" onchange="this.form.submit()">
+                <option value="">Semua Status</option>
+                <option value="aktif"       {{ request('status')=='aktif'      ?'selected':'' }}>Aktif</option>
+                <option value="tidak_aktif" {{ request('status')=='tidak_aktif'?'selected':'' }}>Tidak Aktif</option>
+            </select>
+            <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
+        </div>
+        @if(request('search') || request('status'))
+        <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary">
+            <i class="ti ti-x"></i> Reset
+        </a>
+        @endif
+    </div>
+</form>
+
+<div class="card" style="max-width:750px;margin-left:auto;margin-right:auto">
     <div class="card-header">
         <span><i class="ti ti-id-badge-2"></i> Daftar Karyawan</span>
         <span style="font-size:11px;color:#64748b">
