@@ -73,10 +73,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/periode/{periode}/hitung', [RankingController::class, 'hitung'])->name('ranking.hitung');
     });
 
-    // ── HASIL RANKING — semua role ─────────────────────
-    Route::get('/ranking',                         [RankingController::class, 'index'])->name('ranking.index');
-    Route::get('/periode/{periode}/ranking',       [RankingController::class, 'hasil'])->name('ranking.hasil');
-    Route::get('/periode/{periode}/ranking/cetak', [RankingController::class, 'cetak'])->name('ranking.cetak');
+    // ── HASIL RANKING — hanya direktur ────────────────
+    Route::middleware('role:direktur')->group(function () {
+        Route::get('/ranking',                                                    [RankingController::class, 'index'])->name('ranking.index');
+        Route::get('/periode/{periode}/ranking',                                  [RankingController::class, 'hasil'])->name('ranking.hasil');
+        Route::get('/periode/{periode}/ranking/cetak',                            [RankingController::class, 'cetak'])->name('ranking.cetak');
+        Route::get('/periode/{periode}/ranking/{karyawan}/edit-nilai',            [RankingController::class, 'editNilai'])->name('ranking.edit-nilai');
+        Route::put('/periode/{periode}/ranking/{karyawan}/edit-nilai',            [RankingController::class, 'updateNilai'])->name('ranking.update-nilai');
+    });
 
     // ── NILAI SAYA — admin & karyawan ──────────────────
     Route::middleware('role:admin,karyawan')->group(function () {

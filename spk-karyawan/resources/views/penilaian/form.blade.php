@@ -33,19 +33,14 @@
                     <span class="badge bg-info-soft">{{ $pk->bobot }}%</span>
                 </div>
                 <div style="padding:12px 14px;display:flex;flex-direction:column;gap:6px">
-                    @if($pk->jenis === 'cost')
-                    <div style="font-size:10px;color:#854F0B;margin-bottom:2px">
-                        <i class="ti ti-info-circle"></i> Skor rendah = lebih baik (Cost)
-                    </div>
-                    @endif
-                    @foreach($pk->periodeSubKriteria->sortByDesc('skor') as $psk)
+
+                    @foreach($pk->jenis === 'cost' ? $pk->periodeSubKriteria->sortBy('skor') : $pk->periodeSubKriteria->sortByDesc('skor') as $psk)
                     @php $terpilih = isset($nilaiExisting[$pk->id]) && $nilaiExisting[$pk->id]->periode_sub_kriteria_id == $psk->id; @endphp
                     <label style="display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:{{ $terpilih?'1.5px solid #2563eb':'0.5px solid #e2e8f0' }};border-radius:7px;cursor:pointer;background:{{ $terpilih?'#E6F1FB':'#fff' }};transition:all .15s">
                         <input type="radio" name="penilaian[{{ $pk->id }}]" value="{{ $psk->id }}" {{ $terpilih?'checked':'' }} required style="margin-top:3px">
                         <div style="flex:1">
                             <div>
-                                <span style="font-weight:600;color:{{ $terpilih?'#0C447C':'#374151' }}">Skor {{ $psk->skor }}</span>
-                                <span style="color:{{ $terpilih?'#185FA5':'#374151' }};font-weight:500;font-size:13px"> — {{ $psk->label }}</span>
+                                <span style="color:{{ $terpilih?'#0C447C':'#374151' }};font-weight:600;font-size:13px">{{ $psk->label }}</span>
                             </div>
                             @if($psk->keterangan)
                             <div style="color:#64748b;font-size:11px;margin-top:2px">

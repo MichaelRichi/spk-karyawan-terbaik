@@ -28,11 +28,6 @@
     <div class="step done"><i class="ti ti-lock"></i> Selesai</div>
 </div>
 
-<div class="alert-spk al-ok">
-    <i class="ti ti-shield-check"></i>
-    Periode dikunci. Data bersifat read-only untuk menjaga integritas hasil historis.
-</div>
-
 <div class="stat-grid">
     <div class="stat-card">
         <div class="stat-lbl">Karyawan Dinilai</div>
@@ -108,6 +103,7 @@
                     </th>
                     @endforeach
                     <th rowspan="2" class="text-center vi-c" style="vertical-align:middle;width:8%">Nilai Akhir</th>
+                    <th rowspan="2" class="text-center" style="vertical-align:middle;width:80px">Aksi</th>
                 </tr>
                 <tr>
                     @foreach($periode->periodeKriteria as $pk)
@@ -137,6 +133,12 @@
                     <td class="text-center"><span class="vw">{{ number_format($dk['nilai_terbobot'],3) }}</span></td>
                     @endforeach
                     <td class="text-center vi-c">{{ number_format($d['nilai_preferensi'],4) }}</td>
+                    <td class="text-center">
+                        <a href="{{ route('ranking.edit-nilai', [$periode, $d['karyawan']->id]) }}"
+                            class="btn btn-sm" style="background:#f59e0b;border-color:#f59e0b;color:#fff;font-size:10px">
+                            <i class="ti ti-pencil"></i> Edit
+                        </a>
+                    </td>
                 </tr>
                 @endforeach
             </tbody>

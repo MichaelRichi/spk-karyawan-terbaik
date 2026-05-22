@@ -17,21 +17,27 @@ class SawService
      *   Cost    : Rij = min(Xij) / Xij
      *   Vi      = Σ (Wj × Rij)
      */
+    public function hitungUlang(Periode $periode): array
+    {
+        // Hitung ulang tanpa cek isLocked — untuk koreksi nilai
+        return $this->prosesHitung($periode);
+    }
+
     public function hitung(Periode $periode): array
     {
         if ($periode->isLocked()) {
             throw new \Exception('Periode sudah selesai dan tidak dapat dihitung ulang.');
         }
 
+        return $this->prosesHitung($periode);
+    }
+
+    private function prosesHitung(Periode $periode): array
+    {
         $periodeKriteria = $periode->periodeKriteria()->get();
 
         if ($periodeKriteria->isEmpty()) {
             throw new \Exception('Belum ada kriteria yang dikonfigurasi untuk periode ini.');
-        }
-
-        if (!$periode->isBobotValid()) {
-            $total = $periodeKriteria->sum('bobot');
-            throw new \Exception("Total bobot kriteria harus 100%. Saat ini: {$total}%.");
         }
 
         $semuaPenilaian = Penilaian::where('periode_id', $periode->id)->get();
@@ -101,8 +107,10 @@ class SawService
                 ]);
             }
 
-            // STEP 6: Kunci periode → status selesai
-            $periode->update(['status' => 'selesai']);
+            // STEP 6: Set status selesai
+            if ($periode->status !== 'selesai') {
+                $periode->update(['status' => 'selesai']);
+            }
 
             DB::commit();
             return $rankingData;
