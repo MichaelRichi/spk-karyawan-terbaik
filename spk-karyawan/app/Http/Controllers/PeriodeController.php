@@ -14,12 +14,29 @@ class PeriodeController extends Controller
 
     public function index()
     {
-        $periode = Periode::withCount('penilaian')
+        $query = Periode::with(['penilaian','hasilRanking.karyawan','periodeKriteria'])
             ->orderByDesc('tahun')
-            ->orderByDesc('bulan')
-            ->paginate(12);
+            ->orderByDesc('bulan');
 
-        return view('periode.index', compact('periode'));
+        if ($search = (string) request('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('tahun', 'like', "%{$search}%")
+                  ->orWhereRaw("LOWER(nama) LIKE ?", ['%'.strtolower($search).'%']);
+            });
+        }
+
+        if ($tahun = request('tahun')) {
+            $query->where('tahun', $tahun);
+        }
+
+        if ($status = request('status')) {
+            $query->where('status', $status);
+        }
+
+        $periode   = $query->paginate(12)->withQueryString();
+        $tahunList = Periode::select('tahun')->distinct()->orderByDesc('tahun')->pluck('tahun');
+
+        return view('periode.index', compact('periode', 'tahunList'));
     }
 
     public function create()

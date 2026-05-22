@@ -1,89 +1,127 @@
 @extends('layouts.app')
-@section('title','Periode Penilaian')
+@section('title','Penilaian')
 @section('content')
+
+@php
+$namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+@endphp
+
 <div class="ph">
     <div>
-        <div class="ph-title">Periode Penilaian</div>
-        <div class="ph-sub">Setiap periode menyimpan snapshot kriteria & bobot sendiri</div>
+        <div class="ph-title">Penilaian</div>
+        <div class="ph-sub">Kelola periode penilaian karyawan</div>
     </div>
     <a href="{{ route('periode.create') }}" class="btn btn-primary">
         <i class="ti ti-plus"></i> Buat Periode Baru
     </a>
 </div>
 
-<div class="row g-3">
-    @forelse($periode as $p)
-    <div class="col-md-4">
-        <div class="card h-100" style="border-color:{{ $p->status=='aktif'?'#85B7EB':'#e2e8f0' }}">
-            <div class="card-header">
-                @php $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']; $labelBulan = ($namaBulan[$p->bulan] ?? $p->bulan).' '.$p->tahun; @endphp
-                <span style="font-weight:600">{{ $labelBulan }}</span>
-                <span class="badge {{ $p->status=='selesai'?'bg-success-soft':($p->status=='aktif'?'bg-info-soft':'bg-gray-soft') }}">
-                    {{ $p->status }}
-                </span>
-            </div>
-            <div style="padding:12px 14px">
-                @if($p->status === 'aktif')
-                    @php $dinilai = $p->penilaian->pluck('karyawan_id')->unique()->count(); $total = \App\Models\Karyawan::aktif()->count(); @endphp
-                    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px">
-                        <span style="color:#64748b">Karyawan dinilai</span>
-                        <span style="font-weight:600;color:#854F0B">{{ $dinilai }} / {{ $total }}</span>
-                    </div>
-                    <div class="pb mb-3"><div class="pf" style="width:{{ $total > 0 ? ($dinilai/$total*100) : 0 }}%"></div></div>
-                @elseif($p->status === 'selesai')
-                    @php $terbaik = $p->hasilRanking->where('ranking',1)->first(); @endphp
-                    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
-                        <span style="color:#64748b">Karyawan terbaik</span>
-                        <span style="font-weight:600">{{ $terbaik?->karyawan?->nama ?? '—' }}</span>
-                    </div>
-                    <div style="font-size:11px;font-weight:600;color:#185FA5;margin-bottom:10px">
-                        Nilai Akhir: {{ $terbaik ? number_format($terbaik->nilai_preferensi, 4) : '—' }}
-                    </div>
-                @else
-                    @php $total = $p->periodeKriteria->sum('bobot'); @endphp
-                    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:8px">
-                        <span style="color:#64748b">Total bobot</span>
-                        <span style="font-weight:600;color:{{ $total==100?'#27500A':'#A32D2D' }}">{{ $total }}%</span>
-                    </div>
-                    @if($total != 100)
-                    <div class="alert-spk al-warn" style="padding:5px 8px;font-size:10px;margin-bottom:8px">
-                        <i class="ti ti-alert-triangle"></i> Bobot belum 100%. Atur sebelum aktifkan.
-                    </div>
-                    @endif
-                @endif
-
-                <div style="display:flex;gap:6px;flex-wrap:wrap">
-                    <a href="{{ route('periode.show', $p) }}" class="btn btn-outline-secondary btn-sm">Detail</a>
-                    @if($p->status === 'aktif')
-                    <a href="{{ route('penilaian.index', $p) }}" class="btn btn-primary btn-sm">
-                        <i class="ti ti-pencil-check"></i> Input Nilai
-                    </a>
-                    @endif
-                    @if($p->status === 'selesai')
-                    <a href="{{ route('ranking.hasil', $p) }}" class="btn btn-success-soft btn-sm">
-                        <i class="ti ti-trophy"></i> Hasil
-                    </a>
-                    @endif
-                </div>
-            </div>
+{{-- Filter --}}
+<form method="GET" action="{{ route('periode.index') }}" style="margin-bottom:12px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+        {{-- Cari bulan --}}
+        <div style="position:relative;min-width:180px;flex:1;max-width:250px">
+            <i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px"></i>
+            <input type="text" name="search" value="{{ request('search') }}"
+                class="form-control" placeholder="Cari bulan atau tahun..."
+                style="padding-left:32px">
         </div>
-    </div>
-    @empty
-    <div class="col-12">
-        <div class="card text-center py-5" style="color:#64748b">
-            <i class="ti ti-calendar-off" style="font-size:32px;margin-bottom:8px;display:block"></i>
-            Belum ada periode. <a href="{{ route('periode.create') }}">Buat periode baru</a>
-        </div>
-    </div>
-    @endforelse
-
-    <div class="col-md-4">
-        <a href="{{ route('periode.create') }}" style="text-decoration:none">
-            <div class="card h-100 text-center py-5" style="border-style:dashed;cursor:pointer;color:#64748b">
-                <i class="ti ti-plus" style="font-size:28px;margin-bottom:6px;display:block"></i>
-                <div style="font-size:11px">Buat Periode Baru</div>
-            </div>
+        {{-- Filter tahun --}}
+        <select name="tahun" class="form-select" style="width:120px">
+            <option value="">Semua Tahun</option>
+            @foreach($tahunList as $t)
+            <option value="{{ $t }}" {{ request('tahun')==$t?'selected':'' }}>{{ $t }}</option>
+            @endforeach
+        </select>
+        {{-- Filter status --}}
+        <select name="status" class="form-select" style="width:140px">
+            <option value="">Semua Status</option>
+            <option value="aktif"    {{ request('status')=='aktif'   ?'selected':'' }}>Aktif</option>
+            <option value="selesai"  {{ request('status')=='selesai' ?'selected':'' }}>Selesai</option>
+            <option value="draft"    {{ request('status')=='draft'   ?'selected':'' }}>Draft</option>
+        </select>
+        <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Filter</button>
+        @if(request('search') || request('tahun') || request('status'))
+        <a href="{{ route('periode.index') }}" class="btn btn-outline-secondary">
+            <i class="ti ti-x"></i> Reset
         </a>
+        @endif
     </div>
+</form>
+
+{{-- Daftar Periode --}}
+<div class="card">
+    <div class="card-header">
+        <span><i class="ti ti-calendar"></i> Daftar Periode</span>
+        <span style="font-size:11px;color:#64748b">{{ $periode->total() }} periode</span>
+    </div>
+    <table class="table mb-0">
+        <thead>
+            <tr>
+                <th>Periode</th>
+                <th style="width:100px" class="text-center">Status</th>
+                <th>Info</th>
+                <th style="width:160px" class="text-center">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($periode as $p)
+            @php $labelBulan = ($namaBulan[$p->bulan] ?? $p->bulan).' '.$p->tahun; @endphp
+            <tr>
+                <td style="font-weight:600;font-size:14px;color:#1e293b">{{ $labelBulan }}</td>
+                <td class="text-center">
+                    <span class="badge {{ $p->status=='selesai'?'bg-success-soft':($p->status=='aktif'?'bg-info-soft':'bg-gray-soft') }}" style="font-size:11px">
+                        {{ $p->status=='aktif' ? 'Aktif' : ($p->status=='selesai' ? 'Selesai ✓' : 'Draft') }}
+                    </span>
+                </td>
+                <td style="font-size:12px;color:#64748b">
+                    @if($p->status === 'aktif')
+                        @php $dinilai = $p->penilaian->pluck('karyawan_id')->unique()->count(); $total = \App\Models\Karyawan::aktif()->count(); @endphp
+                        <div style="display:flex;align-items:center;gap:8px">
+                            <div style="flex:1;max-width:120px;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
+                                <div style="height:100%;width:{{ $total>0?($dinilai/$total*100):0 }}%;background:#2563eb;border-radius:3px"></div>
+                            </div>
+                            <span style="font-weight:600;color:{{ $dinilai==$total?'#16a34a':'#854F0B' }}">{{ $dinilai }}/{{ $total }} karyawan</span>
+                        </div>
+                    @elseif($p->status === 'selesai')
+                        @php $terbaik = $p->hasilRanking->where('ranking',1)->first(); @endphp
+                        Terbaik: <strong style="color:#1e293b">{{ $terbaik?->karyawan?->nama ?? '—' }}</strong>
+                        · Nilai: <strong style="color:#185FA5">{{ $terbaik ? number_format($terbaik->nilai_preferensi,4) : '—' }}</strong>
+                    @else
+                        <span style="color:#94a3b8">Menunggu aktivasi</span>
+                    @endif
+                </td>
+                <td class="text-center">
+                    <div style="display:flex;gap:5px;justify-content:center">
+                        <a href="{{ route('periode.show', $p) }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="ti ti-eye"></i>
+                        </a>
+                        @if($p->status === 'aktif')
+                        <a href="{{ route('penilaian.index', $p) }}" class="btn btn-sm" style="background:#2563eb;color:#fff;border-color:#2563eb">
+                            <i class="ti ti-pencil-check"></i> Input
+                        </a>
+                        @endif
+                        @if($p->status === 'selesai')
+                        <a href="{{ route('ranking.hasil', $p) }}" class="btn btn-sm" style="background:#16a34a;color:#fff;border-color:#16a34a">
+                            <i class="ti ti-trophy"></i> Hasil
+                        </a>
+                        @endif
+                    </div>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="4" class="text-center py-4" style="color:#64748b">
+                    <i class="ti ti-calendar-off" style="font-size:28px;display:block;margin-bottom:6px"></i>
+                    Belum ada periode yang sesuai filter.
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+    @if($periode->hasPages())
+    <div style="padding:10px 14px;border-top:0.5px solid #e2e8f0">{{ $periode->links() }}</div>
+    @endif
 </div>
+
 @endsection

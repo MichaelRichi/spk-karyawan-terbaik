@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Edit Nilai — '.$karyawan->nama)
+@section('title','Edit Nilai')
 @section('content')
 
 @php
@@ -9,7 +9,7 @@ $labelBulan = ($namaBulan[$periode->bulan] ?? $periode->bulan).' '.$periode->tah
 
 <div class="ph">
     <div>
-        <div class="ph-title">Edit Nilai — {{ $karyawan->nama }}</div>
+        <div class="ph-title">Edit Nilai</div>
         <div class="ph-sub">Periode {{ $labelBulan }} · Perubahan akan menghitung ulang ranking</div>
     </div>
     <a href="{{ route('ranking.hasil', $periode) }}" class="btn btn-outline-secondary">

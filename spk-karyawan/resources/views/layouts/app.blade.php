@@ -32,7 +32,7 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
 
 /* MAIN */
 .main{margin-left:220px;min-height:100vh;display:flex;flex-direction:column}
-.topbar{background:#fff;padding:0 20px;height:48px;border-bottom:0.5px solid #e2e8f0;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:50}
+.topbar{background:#fff;padding:0 20px;height:56px;border-bottom:0.5px solid #e2e8f0;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:50}
 .bc{display:flex;align-items:center;gap:4px;font-size:11px;color:#64748b}
 .bc .cur{color:#1e293b;font-weight:600}
 .topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
@@ -137,10 +137,10 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
 <div class="sb">
     <div class="sb-top">
         <div class="sb-logo-row">
-            <div class="sb-logo"><i class="ti ti-bolt"></i></div>
+            <div class="sb-logo" style="background:transparent;padding:0;overflow:hidden"><img src="{{ asset('images/logo-cia.png') }}" style="width:36px;height:36px;object-fit:contain;border-radius:6px;display:block"></div>
             <div class="sb-brand">
-                <strong>SPK Karyawan</strong>
-                <span>PT Cempaka Indah Abadi</span>
+                <strong>PT Cempaka Indah Abadi</strong>
+                <span>Palembang</span>
             </div>
         </div>
     </div>
@@ -186,18 +186,14 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
         </a>
         @endif
     </div>
-    <div class="sb-user">
-        @php $initials = strtoupper(substr(auth()->user()->username, 0, 2)); @endphp
-        <div class="sb-av">{{ $initials }}</div>
-        <div style="flex:1;min-width:0">
-            <div class="sb-un" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ auth()->user()->username }}</div>
-            <div class="sb-ur">{{ ucfirst(auth()->user()->role) }}</div>
-        </div>
+    <div style="padding:10px 12px;border-top:1px solid rgba(255,255,255,.06);background:#0f172a">
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" title="Keluar"
-                style="background:rgba(239,68,68,.15);border:none;color:#ef4444;cursor:pointer;padding:5px 7px;border-radius:6px;display:flex;align-items:center;justify-content:center">
-                <i class="ti ti-logout" style="font-size:15px"></i>
+            <button type="submit"
+                style="width:100%;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444;cursor:pointer;padding:9px;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:600;transition:background .15s"
+                onmouseover="this.style.background='rgba(239,68,68,.25)'"
+                onmouseout="this.style.background='rgba(239,68,68,.15)'">
+                <i class="ti ti-logout" style="font-size:16px"></i> Keluar
             </button>
         </form>
     </div>
@@ -205,14 +201,19 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
 
 <div class="main">
     <div class="topbar">
-        <div class="bc">
-            <i class="ti ti-home" style="font-size:12px"></i>
-            <i class="ti ti-chevron-right" style="font-size:10px"></i>
-            <span class="cur">@yield('title')</span>
+        <div style="flex:1">
+            <div style="font-size:15px;font-weight:700;color:#1e293b;line-height:1.2">@yield('title')</div>
         </div>
         <div class="topbar-right">
-            <span class="rpill">{{ ucfirst(auth()->user()->role) }}</span>
-            <span style="font-size:11px;color:#64748b">PT Cempaka Indah Abadi</span>
+            <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:32px;height:32px;border-radius:50%;background:#1e40af;display:flex;align-items:center;justify-content:center;color:#bfdbfe;font-size:11px;font-weight:700">
+                    {{ strtoupper(substr(auth()->user()->username,0,2)) }}
+                </div>
+                <div>
+                    <div style="font-size:12px;font-weight:600;color:#1e293b">{{ auth()->user()->username }}</div>
+                    <div style="font-size:10px;color:#64748b">{{ ucfirst(auth()->user()->role) }}</div>
+                </div>
+            </div>
         </div>
     </div>
 

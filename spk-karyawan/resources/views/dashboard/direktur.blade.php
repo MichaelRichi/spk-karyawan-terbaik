@@ -4,132 +4,111 @@
 
 @php
 $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-$labelAktif = $periodeAktif ? ($namaBulan[$periodeAktif->bulan] ?? $periodeAktif->bulan).' '.$periodeAktif->tahun : '—';
+$labelAktif = $periodeAktif ? ($namaBulan[$periodeAktif->bulan] ?? $periodeAktif->bulan).' '.$periodeAktif->tahun : null;
+$namaUser = auth()->user()->karyawan?->nama ?? auth()->user()->username;
 @endphp
 
-<div class="ph">
-    <div>
-        <div class="ph-title">Dashboard</div>
-        <div class="ph-sub">Selamat datang, {{ ucfirst(auth()->user()->role) }} {{ auth()->user()->username }}</div>
+{{-- Greeting --}}
+<div style="margin-bottom:20px">
+    <div style="font-size:22px;font-weight:800;color:#1e293b">
+        Selamat Datang, <span style="color:#2563eb">{{ $namaUser }}</span>!
     </div>
-    @if(auth()->user()->role === 'direktur')
-    <a href="{{ route('periode.create') }}" class="btn btn-primary">
-        <i class="ti ti-plus"></i> Buat Periode Baru
-    </a>
-    @endif
+    <div style="font-size:13px;color:#64748b;margin-top:2px">{{ auth()->user()->username }} &nbsp;·&nbsp; Direktur</div>
 </div>
 
 {{-- Stat Cards --}}
-<div class="stat-grid">
-    <div class="stat-card">
-        <div class="stat-lbl">Total Karyawan</div>
-        <div class="stat-val">{{ $totalKaryawan }}</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+    <div style="background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:12px;padding:18px 20px;color:#fff">
+        <div style="font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">
+            <i class="ti ti-users"></i> Total Karyawan
+        </div>
+        <div style="font-size:36px;font-weight:800;line-height:1">{{ $totalKaryawan }}</div>
+        <div style="font-size:11px;opacity:.7;margin-top:4px">karyawan aktif</div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl">Periode Selesai</div>
-        <div class="stat-val">{{ $totalPeriode }}</div>
+    <div style="background:linear-gradient(135deg,#0891b2,#0e7490);border-radius:12px;padding:18px 20px;color:#fff">
+        <div style="font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">
+            <i class="ti ti-calendar-check"></i> Periode Selesai
+        </div>
+        <div style="font-size:36px;font-weight:800;line-height:1">{{ $totalPeriode }}</div>
+        <div style="font-size:11px;opacity:.7;margin-top:4px">periode</div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl">Periode Aktif</div>
-        <div class="stat-val" style="font-size:14px;margin-top:3px">{{ $labelAktif }}</div>
+    <div style="background:{{ $periodeAktif ? 'linear-gradient(135deg,#16a34a,#15803d)' : 'linear-gradient(135deg,#64748b,#475569)' }};border-radius:12px;padding:18px 20px;color:#fff">
+        <div style="font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">
+            <i class="ti ti-calendar"></i> Periode Aktif
+        </div>
+        <div style="font-size:18px;font-weight:800;line-height:1.2">{{ $labelAktif ?? 'Tidak Ada' }}</div>
+        <div style="font-size:11px;opacity:.7;margin-top:4px">{{ $periodeAktif ? 'sedang berjalan' : 'tidak ada' }}</div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl">Karyawan Terbaik Terakhir</div>
-        <div class="stat-val" style="font-size:14px;margin-top:3px">
-            {{ $karyawanTerbaik?->karyawan?->nama ?? '—' }}
+    <div style="background:linear-gradient(135deg,#d97706,#b45309);border-radius:12px;padding:18px 20px;color:#fff">
+        <div style="font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">
+            <i class="ti ti-trophy"></i> Karyawan Terbaik
+        </div>
+        <div style="font-size:16px;font-weight:800;line-height:1.2">{{ $karyawanTerbaik?->karyawan?->nama ?? '—' }}</div>
+        <div style="font-size:11px;opacity:.7;margin-top:4px">
+            {{ $karyawanTerbaik ? ($namaBulan[$karyawanTerbaik->periode->bulan] ?? '').' '.$karyawanTerbaik->periode->tahun : 'belum ada' }}
         </div>
     </div>
 </div>
 
-<div class="row g-3 mb-3">
+<div class="row g-3">
     {{-- Periode Aktif --}}
     @if($periodeAktif)
-    <div class="col-md-6">
+    <div class="col-md-5">
         <div class="card h-100">
             <div class="card-header">
                 <span><i class="ti ti-calendar-event"></i> Periode Aktif</span>
-                @if(in_array(auth()->user()->role, ['direktur','admin']))
-                <a href="{{ route('penilaian.index', $periodeAktif) }}" class="btn btn-info-soft btn-sm">Input Nilai</a>
-                @endif
+                <a href="{{ route('penilaian.index', $periodeAktif) }}" class="btn btn-sm" style="background:#2563eb;color:#fff;border-color:#2563eb">Input Nilai</a>
             </div>
-            <div style="padding:12px 14px">
-                <div style="font-size:14px;font-weight:600;margin-bottom:8px">{{ $labelAktif }}</div>
-                @php $dinilai = $periodeAktif->penilaian->pluck('karyawan_id')->unique()->count(); @endphp
-                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px">
-                    <span style="color:#64748b">Karyawan dinilai</span>
-                    <span style="font-weight:600;color:{{ $dinilai < $totalKaryawan ? '#854F0B' : '#27500A' }}">{{ $dinilai }} / {{ $totalKaryawan }}</span>
+            <div style="padding:14px">
+                <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:10px">{{ $labelAktif }}</div>
+                @php $dinilai = $periodeAktif->penilaian->pluck('karyawan_id')->unique()->count(); $persen = $totalKaryawan>0?round($dinilai/$totalKaryawan*100):0; @endphp
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+                    <span style="color:#64748b">Progress Penilaian</span>
+                    <span style="font-weight:700;color:{{ $dinilai==$totalKaryawan?'#16a34a':'#f59e0b' }}">{{ $dinilai }}/{{ $totalKaryawan }}</span>
                 </div>
-                <div class="pb"><div class="pf" style="width:{{ $totalKaryawan > 0 ? ($dinilai/$totalKaryawan*100) : 0 }}%"></div></div>
+                <div style="height:10px;background:#e2e8f0;border-radius:5px;overflow:hidden">
+                    <div style="height:100%;width:{{ $persen }}%;background:{{ $persen==100?'#16a34a':'#2563eb' }};border-radius:5px"></div>
+                </div>
             </div>
         </div>
     </div>
     @endif
 
-    {{-- Karyawan Terbaik Terakhir --}}
-    <div class="col-md-{{ $periodeAktif ? '6' : '12' }}">
+    {{-- Riwayat Periode --}}
+    <div class="col-md-{{ $periodeAktif ? '7' : '12' }}">
         <div class="card h-100">
-            <div class="card-header"><i class="ti ti-trophy"></i> Karyawan Terbaik Terakhir</div>
-            <div style="padding:12px 14px;display:flex;align-items:center;gap:12px">
-                <div style="width:44px;height:44px;background:#FAEEDA;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏆</div>
-                <div>
-                    <div style="font-size:14px;font-weight:600">{{ $karyawanTerbaik?->karyawan?->nama ?? '—' }}</div>
-                    @if($karyawanTerbaik)
-                    <div style="font-size:10px;color:#64748b">
-                        {{ ($namaBulan[$karyawanTerbaik->periode->bulan] ?? $karyawanTerbaik->periode->bulan).' '.$karyawanTerbaik->periode->tahun }}
-                        · Nilai Akhir: {{ number_format($karyawanTerbaik->nilai_preferensi, 4) }}
-                    </div>
-                    <span class="badge bg-success-soft mt-1">Karyawan Terbaik</span>
-                    @endif
-                </div>
-            </div>
+            <div class="card-header"><i class="ti ti-clock-hour-4"></i> Riwayat Periode</div>
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Periode</th>
+                        <th>Status</th>
+                        <th>Terbaik</th>
+                        <th class="text-center">Nilai</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($riwayat as $p)
+                    @php $terbaik = $p->hasilRanking->where('ranking',1)->first(); @endphp
+                    <tr>
+                        <td style="font-weight:600">{{ ($namaBulan[$p->bulan] ?? $p->bulan).' '.$p->tahun }}</td>
+                        <td><span class="badge {{ $p->status=='selesai'?'bg-success-soft':($p->status=='aktif'?'bg-info-soft':'bg-gray-soft') }}">{{ ucfirst($p->status) }}</span></td>
+                        <td style="font-size:13px">{{ $terbaik?->karyawan?->nama ?? '—' }}</td>
+                        <td class="text-center" style="color:#185FA5;font-weight:600;font-size:13px">{{ $terbaik ? number_format($terbaik->nilai_preferensi,4) : '—' }}</td>
+                        <td class="text-center">
+                            @if($p->status === 'selesai')
+                            <a href="{{ route('ranking.hasil', $p) }}" class="btn btn-sm btn-info-soft">Hasil</a>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="5" class="text-center text-muted py-3">Belum ada periode.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-{{-- Riwayat Periode - hanya direktur dan admin --}}
-@if(in_array(auth()->user()->role, ['direktur','admin']))
-<div class="card">
-    <div class="card-header"><i class="ti ti-clock-hour-4"></i> Riwayat Periode</div>
-    <table class="table mb-0">
-        <thead>
-            <tr>
-                <th>Periode</th>
-                <th>Status</th>
-                <th>Karyawan Terbaik</th>
-                <th class="text-center">Nilai Akhir</th>
-                @if(auth()->user()->role === 'direktur')
-                <th class="text-center">Aksi</th>
-                @endif
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($riwayat as $p)
-            @php $terbaik = $p->hasilRanking->where('ranking',1)->first(); @endphp
-            <tr>
-                <td style="font-weight:600">{{ ($namaBulan[$p->bulan] ?? $p->bulan).' '.$p->tahun }}</td>
-                <td>
-                    <span class="badge {{ $p->status=='selesai'?'bg-success-soft':($p->status=='aktif'?'bg-info-soft':'bg-gray-soft') }}">
-                        {{ ucfirst($p->status) }}
-                    </span>
-                </td>
-                <td>{{ $terbaik?->karyawan?->nama ?? '—' }}</td>
-                <td class="text-center" style="color:#185FA5;font-weight:600">
-                    {{ $terbaik ? number_format($terbaik->nilai_preferensi, 4) : '—' }}
-                </td>
-                @if(auth()->user()->role === 'direktur')
-                <td class="text-center">
-                    @if($p->status === 'selesai')
-                    <a href="{{ route('ranking.hasil', $p) }}" class="btn btn-info-soft btn-sm">Lihat Hasil</a>
-                    @endif
-                </td>
-                @endif
-            </tr>
-            @empty
-            <tr><td colspan="5" class="text-center text-muted py-4">Belum ada periode.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
-@endif
 
 @endsection
