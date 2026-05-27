@@ -23,7 +23,7 @@
     <span class="step-arr">›</span>
     <div class="step done"><i class="ti ti-check"></i> Input Penilaian</div>
     <span class="step-arr">›</span>
-    <div class="step done"><i class="ti ti-check"></i> Hitung SAW</div>
+    <div class="step done"><i class="ti ti-check"></i> Hitung Penilaian</div>
     <span class="step-arr">›</span>
     <div class="step done"><i class="ti ti-lock"></i> Selesai</div>
 </div>
@@ -34,11 +34,11 @@
         <div class="stat-val">{{ count($detail) }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-lbl">Nilai Akhir Tertinggi</div>
+        <div class="stat-lbl">Nilai Kinerja Tertinggi</div>
         <div class="stat-val" style="color:#185FA5">{{ number_format(collect($detail)->max('nilai_preferensi'), 3) }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-lbl">Nilai Akhir Terendah</div>
+        <div class="stat-lbl">Nilai Kinerja Terendah</div>
         <div class="stat-val" style="color:#64748b;font-size:16px">{{ number_format(collect($detail)->min('nilai_preferensi'), 3) }}</div>
     </div>
     <div class="stat-card">
@@ -54,7 +54,7 @@
     <div class="pod g1">
         <div class="pod-ico">🥇</div>
         <div class="pod-nm">{{ $top3[0]['karyawan']->nama }}</div>
-        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[0]['nilai_preferensi'], 3) }}</div>
+        <div class="pod-vi">Nilai Kinerja: {{ number_format($top3[0]['nilai_preferensi'], 3) }}</div>
     </div>
     @else <div></div>
     @endif
@@ -62,7 +62,7 @@
     <div class="pod g2">
         <div class="pod-ico">🥈</div>
         <div class="pod-nm">{{ $top3[1]['karyawan']->nama }}</div>
-        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[1]['nilai_preferensi'], 3) }}</div>
+        <div class="pod-vi">Nilai Kinerja: {{ number_format($top3[1]['nilai_preferensi'], 3) }}</div>
     </div>
     @else <div></div>
     @endif
@@ -70,7 +70,7 @@
     <div class="pod g3">
         <div class="pod-ico">🥉</div>
         <div class="pod-nm">{{ $top3[2]['karyawan']->nama }}</div>
-        <div class="pod-vi">Nilai Akhir: {{ number_format($top3[2]['nilai_preferensi'], 3) }}</div>
+        <div class="pod-vi">Nilai Kinerja: {{ number_format($top3[2]['nilai_preferensi'], 3) }}</div>
     </div>
     @else <div></div>
     @endif
@@ -234,7 +234,7 @@
                         @foreach($periodeKriteria as $pk)
                         <th class="text-center" style="font-size:11px">{{ $pk->nama_kriteria }}</th>
                         @endforeach
-                        <th class="text-center vi-c">Nilai Akhir (Vi)</th>
+                        <th class="text-center vi-c">Nilai Kinerja (Vi)</th>
                         <th class="text-center" style="width:80px">Aksi</th>
                     </tr>
                 </thead>

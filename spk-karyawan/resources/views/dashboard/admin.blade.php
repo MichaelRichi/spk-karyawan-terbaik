@@ -72,12 +72,12 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
     </div>
     <div style="background:linear-gradient(135deg,#7c3aed,#6d28d9);border-radius:12px;padding:16px 18px;color:#fff">
         <div style="font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">
-            <i class="ti ti-star"></i> Nilai Akhir Terakhir
+            <i class="ti ti-star"></i> Nilai Kinerja Terakhir
         </div>
         <div style="font-size:24px;font-weight:800;line-height:1">
             {{ $nilaiTerakhir ? number_format($nilaiTerakhir->nilai_preferensi, 3) : '—' }}
         </div>
-        <div style="font-size:11px;opacity:.7;margin-top:4px">nilai SAW</div>
+        <div style="font-size:11px;opacity:.7;margin-top:4px">Nilai Kinerja</div>
     </div>
     <div style="background:linear-gradient(135deg,#0891b2,#0e7490);border-radius:12px;padding:16px 18px;color:#fff">
         <div style="font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">
@@ -104,7 +104,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
             <div>
                 <div style="font-size:14px;font-weight:700;color:#1e293b">{{ $karyawan->nama }}</div>
                 <div style="font-size:12px;color:#64748b;margin-top:2px">
-                    Nilai Akhir: <strong style="color:#7c3aed">{{ number_format($nilaiTerakhir->nilai_preferensi, 3) }}</strong>
+                    Nilai Kinerja: <strong style="color:#7c3aed">{{ number_format($nilaiTerakhir->nilai_preferensi, 3) }}</strong>
                 </div>
             </div>
         </div>

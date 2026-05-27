@@ -27,7 +27,7 @@
     <div class="step-arr"><i class="ti ti-chevron-right"></i></div>
     <div class="step"><i class="ti ti-pencil"></i> Input nilai</div>
     <div class="step-arr"><i class="ti ti-chevron-right"></i></div>
-    <div class="step"><i class="ti ti-calculator"></i> Hitung SAW</div>
+    <div class="step"><i class="ti ti-calculator"></i> Hitung Penilaian</div>
     <div class="step-arr"><i class="ti ti-chevron-right"></i></div>
     <div class="step"><i class="ti ti-lock"></i> Selesai</div>
 </div>

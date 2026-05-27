@@ -10,10 +10,12 @@ return new class extends Migration {
         Schema::create('karyawan', function (Blueprint $table) {
             $table->id();
             $table->string('nama', 100);
-            $table->string('jabatan', 100);
-            $table->enum('jenis_kelamin', ['laki-laki', 'perempuan']);
-            $table->date('tanggal_masuk');
+            $table->date('tgl_lahir')->nullable();
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
+            $table->date('tgl_masuk');
             $table->enum('status', ['aktif', 'tidak_aktif'])->default('aktif');
+            $table->string('no_telepon', 20)->nullable();
+            $table->text('alamat')->nullable();
             $table->timestamps();
         });
     }

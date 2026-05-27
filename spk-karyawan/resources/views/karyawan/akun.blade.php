@@ -31,7 +31,7 @@
             </div>
             <div>
                 <div style="font-size:10px;color:#64748b">Divisi</div>
-                <div style="font-weight:600;color:#1e293b">{{ $karyawan->jabatan }}</div>
+                
             </div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">

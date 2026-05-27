@@ -52,7 +52,7 @@
     </div>
     <table class="table mb-0">
         <thead>
-            <tr><th>#</th><th>Nama</th><th>Jenis Kelamin</th><th>Tgl Masuk</th><th>Status</th><th class="text-center">Aksi</th></tr>
+            <tr><th>#</th><th>Nama</th><th>Tgl Lahir</th><th>Tgl Masuk</th><th>Status</th><th class="text-center">Aksi</th></tr>
         </thead>
         <tbody>
             @forelse($karyawan as $k)
@@ -60,13 +60,13 @@
                 <td style="color:#64748b">{{ $loop->iteration }}</td>
                 <td>
                     <div style="font-weight:600;color:#1e293b">{{ $k->nama }}</div>
-                    <div style="font-size:11px;color:#94a3b8">{{ $k->divisi }}</div>
+                    
                     @if($k->status=='tidak_aktif')
                     <span style="font-size:9px;color:#A32D2D;font-weight:400">(tidak aktif)</span>
                     @endif
                 </td>
                 <td>{{ ucfirst($k->jenis_kelamin) }}</td>
-                <td style="color:#64748b">{{ $k->tanggal_masuk->format('d/m/Y') }}</td>
+                <td style="color:#64748b">{{ $k->tgl_masuk->format('d/m/Y') }}</td>
                 <td>
                     <span class="badge {{ $k->status=='aktif'?'bg-success-soft':'bg-danger-soft' }}">
                         {{ $k->status=='aktif'?'Aktif':'Tidak Aktif' }}

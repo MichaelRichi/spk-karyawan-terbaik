@@ -14,11 +14,11 @@
     @php $selesaiSemua = $karyawan->every(fn($k) => $penilaianSelesai->contains($k->id)); @endphp
     @if($selesaiSemua)
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHitungSAW">
-        <i class="ti ti-calculator"></i> Hitung SAW
+        <i class="ti ti-calculator"></i> Hitung Penilaian
     </button>
     @else
     <button class="btn btn-primary" style="opacity:.4;cursor:not-allowed" disabled>
-        <i class="ti ti-calculator"></i> Hitung SAW
+        <i class="ti ti-calculator"></i> Hitung Penilaian
     </button>
     @endif
 </div>
@@ -30,7 +30,7 @@
     <span class="step-arr">›</span>
     <div class="step now"><i class="ti ti-pencil-check"></i> Input Penilaian</div>
     <span class="step-arr">›</span>
-    <div class="step"><i class="ti ti-calculator"></i> Hitung SAW</div>
+    <div class="step"><i class="ti ti-calculator"></i> Hitung Penilaian</div>
     <span class="step-arr">›</span>
     <div class="step"><i class="ti ti-lock"></i> Selesai</div>
 </div>
@@ -38,12 +38,12 @@
 @if(!$selesaiSemua)
 <div class="alert-spk al-warn">
     <i class="ti ti-alert-triangle"></i>
-    {{ $karyawan->count() - $penilaianSelesai->count() }} karyawan belum dinilai. Tombol Hitung SAW akan aktif setelah semua karyawan selesai dinilai.
+    {{ $karyawan->count() - $penilaianSelesai->count() }} karyawan belum dinilai. Tombol Hitung Penilaian akan aktif setelah semua karyawan selesai dinilai.
 </div>
 @else
 <div class="alert-spk al-ok">
     <i class="ti ti-check-circle"></i>
-    Semua karyawan sudah dinilai. Klik <strong>Hitung SAW</strong> untuk memproses hasil akhir.
+    Semua karyawan sudah dinilai. Klik <strong>Hitung Penilaian</strong> untuk memproses hasil akhir.
 </div>
 @endif
 
@@ -89,7 +89,7 @@
                 <tr>
                     <td>
                         <div style="font-weight:600">{{ $k->nama }}</div>
-                        <div style="font-size:10px;color:#64748b">{{ $k->jabatan }}</div>
+                        <div style="font-size:10px;color:#64748b">{{ $k->divisi }}</div>
                     </td>
                     @foreach($periode->periodeKriteria as $pk)
                     @php $p = $nilaiKaryawan[$k->id][$pk->id] ?? null; @endphp
@@ -119,7 +119,7 @@
     </div>
 </div>
 
-{{-- Modal Konfirmasi Hitung SAW --}}
+{{-- Modal Konfirmasi Hitung Penilaian --}}
 <div class="modal fade" id="modalHitungSAW" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered" style="max-width:400px">
         <div class="modal-content" style="border:none;border-radius:14px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,.15)">

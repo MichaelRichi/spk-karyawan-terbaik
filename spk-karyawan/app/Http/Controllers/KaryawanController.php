@@ -18,7 +18,7 @@ class KaryawanController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('divisi', 'like', "%{$search}%");
+                  ;
             });
         }
 
@@ -50,7 +50,14 @@ class KaryawanController extends Controller
 
     public function update(StoreKaryawanRequest $request, Karyawan $karyawan)
     {
-        $karyawan->update($request->validated());
+        $karyawan->update($request->only(['nama','tgl_lahir','jenis_kelamin','tgl_masuk','status','no_telepon','alamat']));
+
+        // Sync is_active user mengikuti status karyawan
+        if ($karyawan->user) {
+            $karyawan->user->update([
+                'is_active' => $karyawan->status === 'aktif',
+            ]);
+        }
 
         return redirect()->route('karyawan.index')
             ->with('success', "Data {$karyawan->nama} berhasil diperbarui.");

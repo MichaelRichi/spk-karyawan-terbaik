@@ -11,15 +11,13 @@ class Karyawan extends Model
     protected $table = 'karyawan';
 
     protected $fillable = [
-        'nama',
-        'jabatan',
-        'jenis_kelamin',
-        'tanggal_masuk',
-        'status',
+        'nama', 'tgl_lahir', 'jenis_kelamin',
+        'tgl_masuk', 'status',
+        'no_telepon', 'alamat',
     ];
 
     protected $casts = [
-        'tanggal_masuk' => 'date',
+        'tgl_masuk' => 'date', 'tgl_lahir' => 'date',
     ];
 
     // Scope hanya karyawan aktif — dipakai di penilaian
@@ -45,6 +43,7 @@ class Karyawan extends Model
     }
 
     // Helper
+
     public function isAktif(): bool
     {
         return $this->status === 'aktif';

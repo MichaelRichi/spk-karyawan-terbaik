@@ -15,10 +15,12 @@ class StoreKaryawanRequest extends FormRequest
     {
         return [
             'nama'          => ['required', 'string', 'max:100'],
-            'jabatan'       => ['required', 'string', 'max:100'],
-            'jenis_kelamin' => ['required', 'in:laki-laki,perempuan'],
-            'tanggal_masuk' => ['required', 'date'],
+            'tgl_lahir'     => ['nullable', 'date'],
+            'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
+            'tgl_masuk'     => ['required', 'date'],
             'status'        => ['required', 'in:aktif,tidak_aktif'],
+            'no_telepon'    => ['nullable', 'string', 'max:20'],
+            'alamat'        => ['nullable', 'string', 'max:500'],
         ];
     }
 

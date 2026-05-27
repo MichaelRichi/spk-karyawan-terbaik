@@ -1,81 +1,92 @@
 @extends('layouts.app')
 @section('title','Edit Karyawan')
 @section('content')
-<style>
-.select-wrap { position:relative; }
-.select-wrap::after {
-    content:'';
-    position:absolute;
-    right:12px;
-    top:50%;
-    transform:translateY(-50%);
-    width:0;
-    height:0;
-    border-left:5px solid transparent;
-    border-right:5px solid transparent;
-    border-top:6px solid #64748b;
-    pointer-events:none;
-}
-.select-wrap select {
-    appearance:none;
-    -webkit-appearance:none;
-    padding-right:32px;
-    cursor:pointer;
-}
-</style>
+
 <div class="ph">
     <div>
-        <div class="ph-title">Edit Karyawan — {{ $karyawan->nama }}</div>
-        <div class="ph-sub">Perbarui data karyawan</div>
+        <div class="ph-title">Edit Karyawan</div>
+        <div class="ph-sub">Perbarui data karyawan — {{ $karyawan->nama }}</div>
     </div>
     <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary">
         <i class="ti ti-arrow-left"></i> Kembali
     </a>
 </div>
 
-<div class="card" style="max-width:500px">
-    <div class="card-header"><i class="ti ti-pencil"></i> Form Edit Karyawan</div>
-    <div style="padding:16px">
+<div style="max-width:560px;margin:0 auto">
+<div class="card">
+    <div class="card-header"><i class="ti ti-user-edit"></i> Data Karyawan</div>
+    <div style="padding:20px">
         <form method="POST" action="{{ route('karyawan.update', $karyawan) }}">
             @csrf @method('PUT')
+
+            {{-- Nama --}}
+            <div class="mb-3">
+                <label class="form-label">Nama Lengkap <span style="color:#ef4444">*</span></label>
+                <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror"
+                    value="{{ old('nama', $karyawan->nama) }}" required>
+                @error('nama')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            {{-- Jenis Kelamin & Tanggal Lahir --}}
             <div class="row g-3 mb-3">
-                <div class="col-md-12">
-                    <label class="form-label">Nama Lengkap <span style="color:#ef4444">*</span></label>
-                    <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror"
-                        value="{{ old('nama', $karyawan->nama) }}" required>
-                    @error('nama')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="col-md-12">
-                    <label class="form-label">Divisi <span style="color:#ef4444">*</span></label>
-                    <input type="text" name="jabatan" class="form-control @error('jabatan') is-invalid @enderror"
-                        value="{{ old('jabatan', $karyawan->jabatan) }}" required>
-                    @error('jabatan')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="col-md-6">
+                <div class="col-6">
                     <label class="form-label">Jenis Kelamin <span style="color:#ef4444">*</span></label>
-                    <div class="select-wrap"><select name="jenis_kelamin" class="form-select" required>
-                        <option value="laki-laki" {{ old('jenis_kelamin',$karyawan->jenis_kelamin)=='laki-laki'?'selected':'' }}>Laki-laki</option>
-                        <option value="perempuan" {{ old('jenis_kelamin',$karyawan->jenis_kelamin)=='perempuan'?'selected':'' }}>Perempuan</option>
-                    </select></div>
+                    <select name="jenis_kelamin" class="form-select @error('jenis_kelamin') is-invalid @enderror" required>
+                        <option value="Laki-laki"  {{ old('jenis_kelamin',$karyawan->jenis_kelamin)=='Laki-laki' ?'selected':'' }}>Laki-laki</option>
+                        <option value="Perempuan"  {{ old('jenis_kelamin',$karyawan->jenis_kelamin)=='Perempuan' ?'selected':'' }}>Perempuan</option>
+                    </select>
+                    @error('jenis_kelamin')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label">Tanggal Masuk <span style="color:#ef4444">*</span></label>
-                    <input type="date" name="tanggal_masuk" class="form-control"
-                        value="{{ old('tanggal_masuk', $karyawan->tanggal_masuk->format('Y-m-d')) }}" required>
-                </div>
-                <div class="col-md-12">
-                    <label class="form-label">Status <span style="color:#ef4444">*</span></label>
-                    <div class="select-wrap"><select name="status" class="form-select" required>
-                        <option value="aktif" {{ old('status',$karyawan->status)=='aktif'?'selected':'' }}>Aktif</option>
-                        <option value="tidak_aktif" {{ old('status',$karyawan->status)=='tidak_aktif'?'selected':'' }}>Tidak Aktif</option>
-                    </select></div>
+                <div class="col-6">
+                    <label class="form-label">Tanggal Lahir</label>
+                    <input type="date" name="tgl_lahir" class="form-control @error('tgl_lahir') is-invalid @enderror"
+                        value="{{ old('tgl_lahir', $karyawan->tgl_lahir?->format('Y-m-d')) }}">
+                    @error('tgl_lahir')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
             </div>
+
+            {{-- Tanggal Masuk & Status --}}
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Tanggal Masuk <span style="color:#ef4444">*</span></label>
+                    <input type="date" name="tgl_masuk" class="form-control @error('tgl_masuk') is-invalid @enderror"
+                        value="{{ old('tgl_masuk', $karyawan->tgl_masuk?->format('Y-m-d')) }}" required>
+                    @error('tgl_masuk')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Status <span style="color:#ef4444">*</span></label>
+                    <select name="status" class="form-select @error('status') is-invalid @enderror" required>
+                        <option value="aktif"       {{ old('status',$karyawan->status)=='aktif'       ?'selected':'' }}>Aktif</option>
+                        <option value="tidak_aktif" {{ old('status',$karyawan->status)=='tidak_aktif' ?'selected':'' }}>Tidak Aktif</option>
+                    </select>
+                    @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+            </div>
+
+            {{-- No. Telepon --}}
+            <div class="mb-3">
+                <label class="form-label">No. Telepon</label>
+                <input type="text" name="no_telepon" class="form-control @error('no_telepon') is-invalid @enderror"
+                    value="{{ old('no_telepon', $karyawan->no_telepon) }}" placeholder="Contoh: 08123456789">
+                @error('no_telepon')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            {{-- Alamat --}}
+            <div class="mb-4">
+                <label class="form-label">Alamat</label>
+                <textarea name="alamat" rows="3" class="form-control @error('alamat') is-invalid @enderror"
+                    placeholder="Alamat lengkap karyawan">{{ old('alamat', $karyawan->alamat) }}</textarea>
+                @error('alamat')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
             <div style="display:flex;gap:8px">
-                <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> Perbarui</button>
-                <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary">Batal</a>
+                <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary" style="flex:1;justify-content:center">Batal</a>
+                <button type="submit" class="btn btn-primary" style="flex:2;justify-content:center">
+                    <i class="ti ti-device-floppy"></i> Simpan Perubahan
+                </button>
             </div>
         </form>
     </div>
+</div>
 </div>
 @endsection
