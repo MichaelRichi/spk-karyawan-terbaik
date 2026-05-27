@@ -40,7 +40,7 @@
                     <span style="font-size:13px;font-weight:600;color:#1e293b">{{ $k->nama }}</span>
                     <span class="badge {{ $k->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }}" style="font-size:9px">{{ $k->jenis }}</span>
                 </div>
-                <span style="font-weight:700;color:#185FA5">{{ $k->bobot_default }}%</span>
+                <span style="font-weight:700;color:#185FA5">{{ $k->bobot }}%</span>
             </div>
             @endforeach
             <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:2px solid #e2e8f0;margin-top:4px">
@@ -82,7 +82,7 @@
                         <span style="font-size:13px;font-weight:600;color:#1e293b">{{ $k->nama }}</span>
                         <span class="badge {{ $k->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }}" style="font-size:9px">{{ $k->jenis }}</span>
                     </div>
-                    <span style="font-size:13px;font-weight:700;color:#185FA5">{{ $k->bobot_default }}%</span>
+                    <span style="font-size:13px;font-weight:700;color:#185FA5">{{ $k->bobot }}%</span>
                 </div>
                 @endforeach
                 <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1.5px solid #cbd5e1;margin-top:2px">

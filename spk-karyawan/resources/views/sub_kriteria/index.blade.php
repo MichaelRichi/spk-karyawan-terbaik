@@ -6,7 +6,7 @@
         <div class="ph-title">Sub-Kriteria — {{ $kriteria->nama }}</div>
         <div class="ph-sub">
             <span class="badge {{ $kriteria->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }}">{{ $kriteria->jenis }}</span>
-            &nbsp;Bobot default: <strong>{{ $kriteria->bobot_default }}%</strong>
+            &nbsp;Bobot default: <strong>{{ $kriteria->bobot }}%</strong>
         </div>
     </div>
     <div style="display:flex;gap:8px">

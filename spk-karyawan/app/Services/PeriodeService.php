@@ -40,7 +40,7 @@ class PeriodeService
                 'kriteria_id'   => $k->id,
                 'nama_kriteria' => $k->nama,
                 'jenis'         => $k->jenis,
-                'bobot'         => $k->bobot_default,
+                'bobot'         => $k->bobot,
             ]);
 
             // Simpan snapshot sub-kriteria

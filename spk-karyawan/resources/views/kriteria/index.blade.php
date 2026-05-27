@@ -48,7 +48,7 @@
     </div>
 </div>
 
-@php $totalBobot = $kriteria->sum('bobot_default'); $kurang = 100 - $totalBobot; @endphp
+@php $totalBobot = $kriteria->sum('bobot'); $kurang = 100 - $totalBobot; @endphp
 
 {{-- Status bobot total --}}
 <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
@@ -99,9 +99,9 @@
             <tr>
                 <td style="font-weight:600">{{ $k->nama }}</td>
                 <td><span class="badge {{ $k->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }}">{{ ucfirst($k->jenis) }}</span></td>
-                <td class="text-center" style="font-weight:700;color:#185FA5">{{ $k->bobot_default }}%</td>
+                <td class="text-center" style="font-weight:700;color:#185FA5">{{ $k->bobot }}%</td>
                 <td style="min-width:120px">
-                    <div class="pb"><div class="pf" style="width:{{ min($k->bobot_default,100) }}%"></div></div>
+                    <div class="pb"><div class="pf" style="width:{{ min($k->bobot,100) }}%"></div></div>
                 </td>
                 <td class="text-center">
                     <a href="{{ route('kriteria.sub-kriteria', $k) }}" class="btn btn-info-soft btn-sm">
@@ -111,7 +111,7 @@
                 <td class="text-center">
                     <div style="display:flex;gap:5px;justify-content:center">
                         <button class="btn btn-outline-primary btn-sm"
-                            onclick="isiModal({{ $k->id }},'{{ addslashes($k->nama) }}','{{ $k->jenis }}',{{ $k->bobot_default }})">
+                            onclick="isiModal({{ $k->id }},'{{ addslashes($k->nama) }}','{{ $k->jenis }}',{{ $k->bobot }})">
                             <i class="ti ti-pencil"></i>
                         </button>
                         <button type="button" class="btn btn-outline-danger btn-sm"
@@ -190,7 +190,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Bobot (%) <span style="color:#ef4444">*</span></label>
-                        <input type="number" name="bobot_default" id="inp-bobot" class="form-control"
+                        <input type="number" name="bobot" id="inp-bobot" class="form-control"
                             min="1" max="100" step="1" required placeholder="Contoh: 30">
                         <div style="font-size:11px;color:#64748b;margin-top:4px">
                             Total bobot semua kriteria harus = 100%.

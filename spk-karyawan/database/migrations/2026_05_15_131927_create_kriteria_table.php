@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->string('nama', 100);
             $table->enum('jenis', ['benefit', 'cost']);
-            $table->decimal('bobot_default', 5, 2);
+            $table->decimal('bobot', 5, 2);
             $table->timestamps();
         });
     }

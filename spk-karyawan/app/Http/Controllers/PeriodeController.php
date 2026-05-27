@@ -18,7 +18,7 @@ class PeriodeController extends Controller
             ->orderByDesc('tahun')
             ->orderByDesc('bulan');
 
-        if ($search = (string) request('search')) {
+        if ($search = request('search')) {
             $query->where(function($q) use ($search) {
                 $q->where('tahun', 'like', "%{$search}%")
                   ->orWhereRaw("LOWER(nama) LIKE ?", ['%'.strtolower($search).'%']);
@@ -43,7 +43,7 @@ class PeriodeController extends Controller
     {
         // Cek kriteria sudah ada dan total bobot = 100
         $kriteria    = Kriteria::with('subKriteria')->get();
-        $totalBobot  = $kriteria->sum('bobot_default');
+        $totalBobot  = $kriteria->sum('bobot');
         $bisaBuat    = $kriteria->isNotEmpty() && $totalBobot == 100;
 
         return view('periode.create', compact('kriteria', 'totalBobot', 'bisaBuat'));
@@ -55,7 +55,7 @@ class PeriodeController extends Controller
     public function store(StorePeriodeRequest $request)
     {
         // Validasi server: bobot harus 100% sebelum buat periode
-        $totalBobot = Kriteria::sum('bobot_default');
+        $totalBobot = Kriteria::sum('bobot');
         if ($totalBobot != 100) {
             return back()->with('error', "Total bobot kriteria harus 100%. Saat ini {$totalBobot}%. Atur di menu Kriteria terlebih dahulu.");
         }

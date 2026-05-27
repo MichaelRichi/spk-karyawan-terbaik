@@ -16,7 +16,7 @@ class StoreKriteriaRequest extends FormRequest
         return [
             'nama'          => ['required', 'string', 'max:100'],
             'jenis'         => ['required', 'in:benefit,cost'],
-            'bobot_default' => ['required', 'numeric', 'min:0', 'max:100'],
+            'bobot' => ['required', 'numeric', 'min:0', 'max:100'],
         ];
     }
 
@@ -24,8 +24,8 @@ class StoreKriteriaRequest extends FormRequest
     {
         return [
             'jenis.in'          => 'Tipe harus benefit atau cost.',
-            'bobot_default.min' => 'Bobot tidak boleh kurang dari 0.',
-            'bobot_default.max' => 'Bobot tidak boleh lebih dari 100.',
+            'bobot.min' => 'Bobot tidak boleh kurang dari 0.',
+            'bobot.max' => 'Bobot tidak boleh lebih dari 100.',
         ];
     }
 }

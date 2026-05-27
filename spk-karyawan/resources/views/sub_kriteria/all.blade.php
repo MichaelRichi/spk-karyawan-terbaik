@@ -26,7 +26,7 @@
                 <div style="font-size:15px;font-weight:700;color:#1e293b">{{ $k->nama }}</div>
                 <div style="display:flex;gap:6px;margin-top:3px">
                     <span class="badge {{ $k->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }}">{{ ucfirst($k->jenis) }}</span>
-                    <span class="badge bg-gray-soft">Bobot {{ $k->bobot_default }}%</span>
+                    <span class="badge bg-gray-soft">Bobot {{ $k->bobot }}%</span>
                 </div>
             </div>
         </div>
