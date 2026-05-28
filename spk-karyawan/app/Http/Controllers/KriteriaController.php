@@ -17,7 +17,9 @@ class KriteriaController extends Controller
 
     public function store(StoreKriteriaRequest $request)
     {
-        $kriteria = Kriteria::create($request->validated());
+        $data = $request->validated();
+        $data['has_rentang'] = $request->boolean('has_rentang');
+        $kriteria = Kriteria::create($data);
         return redirect()->route('kriteria.sub-kriteria', $kriteria)
             ->with('success', "Kriteria {$kriteria->nama} ditambahkan. Silakan tambah skala penilaian.");
     }
@@ -25,7 +27,9 @@ class KriteriaController extends Controller
     public function update(StoreKriteriaRequest $request, $id)
     {
         $kriteria = Kriteria::findOrFail($id);
-        $kriteria->update($request->validated());
+        $data = $request->validated();
+        $data['has_rentang'] = $request->boolean('has_rentang');
+        $kriteria->update($data);
         return redirect()->route('kriteria.index')
             ->with('success', "Kriteria {$kriteria->nama} berhasil diperbarui.");
     }
@@ -69,9 +73,11 @@ class KriteriaController extends Controller
     {
         $kriteria = Kriteria::findOrFail($id);
         $data = $request->validate([
-            'nama' => ['required', 'string', 'max:100'],
-            'skor' => ['required', 'integer', 'min:1', 'max:10',
+            'nama'      => ['required', 'string', 'max:100'],
+            'skor'      => ['required', 'integer', 'min:1', 'max:10',
                 'unique:sub_kriteria,skor,NULL,id,kriteria_id,' . $kriteria->id],
+            'nilai_min' => ['nullable', 'numeric', 'min:0'],
+            'nilai_max' => ['nullable', 'numeric', 'min:0'],
         ], ['skor.unique' => 'Skor ini sudah ada untuk kriteria tersebut.']);
 
         $kriteria->subKriteria()->create($data);
@@ -82,9 +88,11 @@ class KriteriaController extends Controller
     {
         $kriteria = Kriteria::findOrFail($kriteriaId);
         $data = $request->validate([
-            'nama' => ['required', 'string', 'max:100'],
-            'skor' => ['required', 'integer', 'min:1', 'max:10',
+            'nama'      => ['required', 'string', 'max:100'],
+            'skor'      => ['required', 'integer', 'min:1', 'max:10',
                 'unique:sub_kriteria,skor,' . $subKriteria->id . ',id,kriteria_id,' . $kriteria->id],
+            'nilai_min' => ['nullable', 'numeric', 'min:0'],
+            'nilai_max' => ['nullable', 'numeric', 'min:0'],
         ], ['skor.unique' => 'Skor ini sudah ada untuk kriteria tersebut.']);
 
         $subKriteria->update($data);

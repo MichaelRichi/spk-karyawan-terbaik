@@ -111,7 +111,7 @@
                 <td class="text-center">
                     <div style="display:flex;gap:5px;justify-content:center">
                         <button class="btn btn-outline-primary btn-sm"
-                            onclick="isiModal({{ $k->id }},'{{ addslashes($k->nama) }}','{{ $k->jenis }}',{{ $k->bobot }})">
+                            onclick="isiModal({{ $k->id }},'{{ addslashes($k->nama) }}','{{ $k->jenis }}',{{ $k->bobot }},{{ $k->has_rentang ? 1 : 0 }},'{{ $k->satuan_rentang }}')">
                             <i class="ti ti-pencil"></i>
                         </button>
                         <button type="button" class="btn btn-outline-danger btn-sm"
@@ -197,6 +197,38 @@
                             Sisa bobot saat ini: <strong id="sisa-bobot">{{ 100 - $totalBobot }}%</strong>
                         </div>
                     </div>
+                    {{-- Opsi Rentang --}}
+                    <div style="background:#f8fafc;border-radius:8px;padding:12px;border:0.5px solid #e2e8f0;margin-top:12px">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                            <input type="checkbox" name="has_rentang" id="inp-has-rentang" value="1"
+                                onchange="toggleRentang(this.checked)"
+                                style="width:15px;height:15px;accent-color:#2563eb;cursor:pointer">
+                            <label for="inp-has-rentang" style="font-size:13px;font-weight:600;color:#374151;cursor:pointer;margin:0">
+                                Gunakan Rentang Angka
+                            </label>
+                        </div>
+                        <div style="font-size:11px;color:#64748b;margin-bottom:8px">
+                            Aktifkan jika penilaian berdasarkan angka (contoh: hari hadir, tahun kerja)
+                        </div>
+                        <div id="div-satuan" style="display:none">
+                            <label class="form-label" style="font-size:12px">Satuan <span style="color:#ef4444">*</span></label>
+                            <div style="position:relative">
+                                <select id="inp-satuan" class="form-select form-select-sm" onchange="toggleSatuanLain(this.value)"
+                                    style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer"
+                                   >
+                                    <option value="">-- Pilih Satuan --</option>
+                                    <option value="hari">Hari</option>
+                                    <option value="tahun">Tahun</option>
+                                    <option value="lainnya">Lainnya (ketik manual)</option>
+                                </select>
+                                <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
+                            </div>
+                            <div id="div-satuan-manual" style="display:none;margin-top:6px">
+                                <input type="text" id="inp-satuan-manual" class="form-control form-control-sm"
+                                    placeholder="Ketik satuan, contoh: unit, poin, km">
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer" style="border-top:0.5px solid #e2e8f0">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
@@ -212,23 +244,47 @@
 const storeUrl    = '{{ route('kriteria.store') }}';
 const totalBobot  = {{ $totalBobot }};
 
+function prosesSatuan() {
+    document.getElementById('inp-satuan-final').value = document.getElementById('inp-satuan').value;
+}
 function resetModal() {
     document.getElementById('modal-title').textContent = 'Tambah Kriteria';
+    document.getElementById('inp-has-rentang').checked = false;
+    document.getElementById('div-satuan').style.display = 'none';
+    document.getElementById('inp-satuan').value = '';
     document.getElementById('form-kriteria').action    = storeUrl;
     document.getElementById('form-method').value  = 'POST';
     document.getElementById('inp-nama').value     = '';
     document.getElementById('inp-jenis').value    = '';
     document.getElementById('inp-bobot').value    = '';
+    document.getElementById('inp-has-rentang').checked = false;
+    document.getElementById('inp-satuan').value = '';
+    document.getElementById('div-satuan').style.display = 'none';
     document.getElementById('sisa-bobot').textContent = (100 - totalBobot) + '%';
 }
 
-function isiModal(id, nama, jenis, bobot) {
+function toggleSatuanLain(val) {
+    document.getElementById('div-satuan-manual').style.display = val === 'lainnya' ? 'block' : 'none';
+}
+function toggleRentang(checked) {
+    document.getElementById('div-satuan').style.display = checked ? 'block' : 'none';
+    if (!checked) {
+        document.getElementById('inp-satuan').value = '';
+        document.getElementById('div-satuan-manual').style.display = 'none';
+        document.getElementById('inp-satuan-manual').value = '';
+    }
+}
+function isiModal(id, nama, jenis, bobot, hasRentang, satuan) {
     document.getElementById('modal-title').textContent = 'Edit Kriteria';
     document.getElementById('form-kriteria').action    = '{{ url('kriteria') }}/' + id;
     document.getElementById('form-method').value  = 'PUT';
     document.getElementById('inp-nama').value     = nama;
     document.getElementById('inp-jenis').value    = jenis;
     document.getElementById('inp-bobot').value    = bobot;
+    const hasR = hasRentang == 1;
+    document.getElementById('inp-has-rentang').checked = hasR;
+    toggleRentang(hasR);
+    document.getElementById('inp-satuan').value = satuan || '';
     document.getElementById('sisa-bobot').textContent = (100 - totalBobot + bobot) + '%';
     // Buka modal setelah semua data terisi
     new bootstrap.Modal(document.getElementById('modalKriteria')).show();

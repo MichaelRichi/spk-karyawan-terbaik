@@ -21,7 +21,55 @@
 <form id="form-penilaian" method="POST" action="{{ route('penilaian.simpan', [$periode, $karyawan]) }}">
     @csrf
     <div class="row g-3">
-        @foreach($periode->periodeKriteria as $pk)
+        @php
+    // Hitung skor otomatis untuk semua kriteria yang has_rentang = true
+    $skorOtomatis = []; // [periode_kriteria_id => skor]
+    $infoOtomatis = []; // [periode_kriteria_id => info display]
+
+    foreach ($periode->periodeKriteria as $pk) {
+        // Cek apakah kriteria ini has_rentang
+        $kriteriaModel = \App\Models\Kriteria::where('nama', $pk->nama_kriteria)->first();
+        if (!$kriteriaModel || !$kriteriaModel->has_rentang) continue;
+
+        $satuan = $kriteriaModel->satuan_rentang ?? '';
+        $nilaiInput = null;
+        $infoText = null;
+
+        // Tentukan nilai input berdasarkan satuan
+        if ($satuan === 'tahun' && $karyawan->tgl_masuk) {
+            // Hitung hingga akhir bulan periode yang dinilai (bukan hari ini)
+            $akhirPeriode = \Carbon\Carbon::create($periode->tahun, $periode->bulan, 1)->endOfMonth();
+            $bulanKerja = \Carbon\Carbon::parse($karyawan->tgl_masuk)->diffInMonths($akhirPeriode);
+            $nilaiInput = $bulanKerja / 12;
+            $thn = floor($nilaiInput); $bln = $bulanKerja % 12;
+            $infoText = ($thn > 0 ? $thn.' tahun' : '').($bln > 0 ? ' '.$bln.' bulan' : '');
+            if (!$infoText) $infoText = '< 1 bulan';
+        }
+        // Untuk satuan 'hari' (kehadiran) - tidak bisa otomatis dari data karyawan
+        // Akan diisi dari absensi jika ada
+
+        if ($nilaiInput === null) continue;
+
+        // Cocokkan dengan rentang sub-kriteria
+        $subSorted = $pk->periodeSubKriteria->sortByDesc('skor');
+        foreach ($subSorted as $psk) {
+            $sk = $psk->subKriteria ?? null;
+            if (!$sk || $sk->nilai_min === null || $sk->nilai_max === null) continue;
+            $min = (float) $sk->nilai_min;
+            $max = (float) $sk->nilai_max;
+            if ($min == 0 && $max == 0) {
+                if ($nilaiInput < 1) { $skorOtomatis[$pk->id] = $psk->skor; break; }
+            } elseif ($nilaiInput >= $min && $nilaiInput <= $max) {
+                $skorOtomatis[$pk->id] = $psk->skor; break;
+            } elseif ($nilaiInput > $min && $max >= 99) {
+                $skorOtomatis[$pk->id] = $psk->skor; break;
+            }
+        }
+        if (isset($skorOtomatis[$pk->id])) $infoOtomatis[$pk->id] = $infoText;
+    }
+    @endphp
+    @foreach($periode->periodeKriteria as $pk)
+
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header">
@@ -29,13 +77,26 @@
                         <i class="ti ti-adjustments"></i>
                         {{ $pk->nama_kriteria }}
                         <span class="badge {{ $pk->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }} ms-1">{{ $pk->jenis }}</span>
+                        @if(isset($skorOtomatis[$pk->id]) && !isset($nilaiExisting[$pk->id]))
+                        <span class="badge" style="background:#fef3c7;color:#92400e;font-size:9px">
+                            ⚡ Otomatis{{ isset($infoOtomatis[$pk->id]) ? ' · '.$infoOtomatis[$pk->id] : '' }}
+                        </span>
+                        @endif
                     </span>
                     <span class="badge bg-info-soft">{{ $pk->bobot }}%</span>
                 </div>
                 <div style="padding:12px 14px;display:flex;flex-direction:column;gap:6px">
 
                     @foreach($pk->jenis === 'cost' ? $pk->periodeSubKriteria->sortBy('skor') : $pk->periodeSubKriteria->sortByDesc('skor') as $psk)
-                    @php $terpilih = isset($nilaiExisting[$pk->id]) && $nilaiExisting[$pk->id]->periode_sub_kriteria_id == $psk->id; @endphp
+                    @php
+                        if (isset($nilaiExisting[$pk->id])) {
+                            $terpilih = $nilaiExisting[$pk->id]->periode_sub_kriteria_id == $psk->id;
+                        } elseif (isset($skorOtomatis[$pk->id])) {
+                            $terpilih = $psk->skor == $skorOtomatis[$pk->id];
+                        } else {
+                            $terpilih = false;
+                        }
+                    @endphp
                     <label style="display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:{{ $terpilih?'1.5px solid #2563eb':'0.5px solid #e2e8f0' }};border-radius:7px;cursor:pointer;background:{{ $terpilih?'#E6F1FB':'#fff' }};transition:all .15s">
                         <input type="radio" name="penilaian[{{ $pk->id }}]" value="{{ $psk->id }}" {{ $terpilih?'checked':'' }} required style="margin-top:3px">
                         <div style="flex:1">

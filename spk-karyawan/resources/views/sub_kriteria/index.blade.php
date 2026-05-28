@@ -48,7 +48,7 @@
                     <div style="display:flex;gap:5px;justify-content:center">
                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
                             data-bs-target="#modalSk"
-                            onclick="isiModal({{ $sk->id }},'{{ addslashes($sk->nama) }}',{{ $sk->skor }})">
+                            onclick="isiModal({{ $sk->id }},'{{ addslashes($sk->nama) }}',{{ $sk->skor }},{{ $sk->nilai_min ?? 'null' }},{{ $sk->nilai_max ?? 'null' }})">
                             <i class="ti ti-pencil"></i>
                         </button>
                         <form action="{{ route('kriteria.sub-kriteria.destroy', [$kriteria, $sk]) }}"
@@ -86,6 +86,29 @@
                     <div class="mb-3">
                         <deskripsi class="form-deskripsi">Deskripsi <span style="color:#ef4444">*</span></deskripsi>
                         <input type="text" name="nama" id="inp-nama" class="form-control" placeholder="Contoh: ≥ 26 hari, Sangat Baik" required>
+                    @if($kriteria->has_rentang)
+                    <div class="mt-3">
+                        <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px">
+                            Rentang Tahun Kerja <span style="font-size:10px;color:#64748b">(untuk pengisian otomatis)</span>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <div style="flex:1">
+                                <label style="font-size:11px;color:#64748b;margin-bottom:3px;display:block">Min ({{ $kriteria->satuan_rentang ?? 'angka' }})</label>
+                                <input type="number" name="nilai_min" id="inp-nilai-min"
+                                    class="form-control" step="0.01" min="0" placeholder="0">
+                            </div>
+                            <div style="color:#94a3b8;margin-top:16px">—</div>
+                            <div style="flex:1">
+                                <label style="font-size:11px;color:#64748b;margin-bottom:3px;display:block">Max ({{ $kriteria->satuan_rentang ?? 'angka' }})</label>
+                                <input type="number" name="nilai_max" id="inp-nilai-max"
+                                    class="form-control" step="0.01" min="0" placeholder="99">
+                            </div>
+                        </div>
+                        <div style="font-size:10px;color:#94a3b8;margin-top:4px">
+                            Isi 0 dan 0 untuk "kurang dari 1 tahun"
+                        </div>
+                    </div>
+                    @endif
                     </div>
 
                 </div>
@@ -108,11 +131,13 @@ function resetModal() {
     document.getElementById('inp-skor').value = '';
     document.getElementById('inp-nama').value = '';
 }
-function isiModal(id, nama, skor) {
+function isiModal(id, nama, skor, nilaiMin, nilaiMax) {
     document.getElementById('modal-title').textContent = 'Edit Skala Penilaian';
     document.getElementById('sk-form').action = baseUrl + '/' + id;
     document.getElementById('form-method').value = 'PUT';
     document.getElementById('inp-skor').value = skor;
+    if (document.getElementById('inp-nilai-min')) document.getElementById('inp-nilai-min').value = nilaiMin || '';
+    if (document.getElementById('inp-nilai-max')) document.getElementById('inp-nilai-max').value = nilaiMax || '';
     document.getElementById('inp-nama').value = nama;
 }
 </script>

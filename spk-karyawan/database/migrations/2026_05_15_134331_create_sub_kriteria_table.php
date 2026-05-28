@@ -10,9 +10,11 @@ return new class extends Migration {
         Schema::create('sub_kriteria', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kriteria_id')->constrained('kriteria')->cascadeOnDelete();
-            $table->string('nama', 100);  // contoh: ">= 26 hari", "Sangat Bagus"
-            $table->integer('skor');      // nilai numerik: 1-5
-            $table->text('keterangan')->nullable(); // penjelasan detail skala
+            $table->string('nama', 100);
+            $table->integer('skor');
+            $table->decimal('nilai_min', 8, 2)->nullable(); // untuk kriteria berbasis angka (Masa Kerja)
+            $table->decimal('nilai_max', 8, 2)->nullable();
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }
