@@ -31,11 +31,14 @@
             <div class="row g-3 mb-3">
                 <div class="col-6">
                     <label class="form-label">Jenis Kelamin <span style="color:#ef4444">*</span></label>
-                    <select name="jenis_kelamin" class="form-select @error('jenis_kelamin') is-invalid @enderror" required>
+                    <div style="position:relative">
+                    <select name="jenis_kelamin" class="form-select @error('jenis_kelamin') is-invalid @enderror" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer" required>
                         <option value="">-- Pilih --</option>
                         <option value="Laki-laki"  {{ old('jenis_kelamin')=='Laki-laki' ?'selected':'' }}>Laki-laki</option>
                         <option value="Perempuan"  {{ old('jenis_kelamin')=='Perempuan' ?'selected':'' }}>Perempuan</option>
                     </select>
+                    <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
+                    </div>
                     @error('jenis_kelamin')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-6">
@@ -56,10 +59,13 @@
                 </div>
                 <div class="col-6">
                     <label class="form-label">Status <span style="color:#ef4444">*</span></label>
-                    <select name="status" class="form-select @error('status') is-invalid @enderror" required>
+                    <div style="position:relative">
+                    <select name="status" class="form-select @error('status') is-invalid @enderror" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer" required>
                         <option value="aktif"       {{ old('status','aktif')=='aktif'       ?'selected':'' }}>Aktif</option>
                         <option value="tidak_aktif" {{ old('status')=='tidak_aktif'         ?'selected':'' }}>Tidak Aktif</option>
                     </select>
+                    <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
+                    </div>
                     @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
             </div>

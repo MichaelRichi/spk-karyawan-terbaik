@@ -57,11 +57,11 @@
     <table class="table mb-0">
         <thead>
             <tr>
-                <th style="width:40px">#</th>
-                <th>Pengguna</th>
-                <th style="width:100px">Role</th>
-                <th style="width:80px" class="text-center">Status</th>
-                <th style="width:80px" class="text-center">Aksi</th>
+                <th style="width:40px;color:#374151;font-weight:700">No.</th>
+                <th style="color:#374151;font-weight:700">Pengguna</th>
+                <th style="width:100px;color:#374151;font-weight:700">Role</th>
+                <th style="width:80px;color:#374151;font-weight:700" class="text-center">Status</th>
+                <th style="width:80px;color:#374151;font-weight:700" class="text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -69,25 +69,25 @@
             @php
                 $nonaktif    = $p->karyawan && $p->karyawan->status === 'tidak_aktif';
                 $namaDisplay = $p->karyawan ? $p->karyawan->nama : ucwords(str_replace(['_','.','@'],[' ',' ',' '],$p->username));
-                $subDisplay  = $p->karyawan ? $p->karyawan->divisi : ucfirst($p->role);
+                $subDisplay  = ucfirst($p->role);
                 $avatarBg    = $p->role=='direktur' ? '#dbeafe' : ($p->role=='admin' ? '#f3f4f6' : '#dcfce7');
                 $avatarColor = $p->role=='direktur' ? '#1d4ed8' : ($p->role=='admin' ? '#374151' : '#16a34a');
             @endphp
             <tr>
-                <td style="color:#94a3b8;font-size:12px">{{ $loop->iteration }}</td>
+                <td style="color:#374151;font-size:13px;font-weight:600">{{ $loop->iteration }}</td>
                 <td>
                     <div style="display:flex;align-items:center;gap:10px">
                         <div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;background:{{ $avatarBg }};color:{{ $avatarColor }}">
                             {{ strtoupper(substr($namaDisplay,0,1)) }}
                         </div>
                         <div>
-                            <div style="font-weight:600;color:#1e293b;font-size:13px">
+                            <div style="font-weight:700;color:#1e293b;font-size:13px">
                                 {{ $namaDisplay }}
                                 @if($p->id === auth()->id())
                                 <span style="font-size:9px;background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 5px;margin-left:4px">Anda</span>
                                 @endif
                             </div>
-                            <div style="font-size:11px;color:#94a3b8">{{ $p->username }}</div>
+                            <div style="font-size:11px;color:#64748b">{{ $p->username }}</div>
                         </div>
                     </div>
                 </td>

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','Kelola Karyawan')
 @section('content')
-<div class="card" style="margin-bottom:16px;max-width:750px;margin-left:auto;margin-right:auto">
+<div class="card" style="margin-bottom:16px;max-width:950px;margin-left:auto;margin-right:auto">
     <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
         <div>
             <div style="font-size:18px;font-weight:800;color:#1e293b">Kelola Karyawan</div>
@@ -13,7 +13,7 @@
     </div>
 </div>
 
-<form method="GET" action="{{ route('karyawan.index') }}" style="margin-bottom:12px;max-width:750px;margin-left:auto;margin-right:auto">
+<form method="GET" action="{{ route('karyawan.index') }}" style="margin-bottom:12px;max-width:950px;margin-left:auto;margin-right:auto">
     <div style="display:flex;gap:8px;align-items:center">
         <div style="display:flex;flex:1">
             <div style="position:relative;flex:1">
@@ -42,22 +42,22 @@
     </div>
 </form>
 
-<div class="card" style="max-width:750px;margin-left:auto;margin-right:auto">
+<div class="card" style="max-width:950px;margin-left:auto;margin-right:auto">
     <div class="card-header">
         <span><i class="ti ti-id-badge-2"></i> Daftar Karyawan</span>
         <span style="font-size:11px;color:#64748b">
-            <span style="color:#27500A;font-weight:600">{{ $karyawan->where('status','aktif')->count() }}</span> aktif ·
-            <span style="color:#A32D2D;font-weight:600">{{ $karyawan->where('status','tidak_aktif')->count() }}</span> tidak aktif
+            <span style="color:#27500A;font-weight:600">{{ $karyawan->where('status','aktif')->count() }}</span> Aktif ·
+            <span style="color:#A32D2D;font-weight:600">{{ $karyawan->where('status','tidak_aktif')->count() }}</span> Tidak Aktif
         </span>
     </div>
     <table class="table mb-0">
         <thead>
-            <tr><th>#</th><th>Nama</th><th>Tgl Lahir</th><th>Tgl Masuk</th><th>Status</th><th class="text-center">Aksi</th></tr>
+            <tr><th style="color:#374151;font-weight:700">No.</th><th style="color:#374151;font-weight:700">Nama</th><th style="color:#374151;font-weight:700">Jenis Kelamin</th><th style="color:#374151;font-weight:700">Tanggal Masuk</th><th style="color:#374151;font-weight:700">Masa Kerja</th><th style="color:#374151;font-weight:700">Status</th><th class="text-center" style="color:#374151;font-weight:700">Aksi</th></tr>
         </thead>
         <tbody>
             @forelse($karyawan as $k)
             <tr style="{{ $k->status=='tidak_aktif'?'opacity:.6':'' }}">
-                <td style="color:#64748b">{{ $loop->iteration }}</td>
+                <td style="color:#374151;font-size:13px;font-weight:600">{{ $loop->iteration }}</td>
                 <td>
                     <div style="font-weight:600;color:#1e293b">{{ $k->nama }}</div>
                     
@@ -65,8 +65,25 @@
                     <span style="font-size:9px;color:#A32D2D;font-weight:400">(tidak aktif)</span>
                     @endif
                 </td>
-                <td>{{ ucfirst($k->jenis_kelamin) }}</td>
-                <td style="color:#64748b">{{ $k->tgl_masuk->format('d/m/Y') }}</td>
+                <td style="color:#374151">{{ $k->jenis_kelamin }}</td>
+                <td style="color:#374151">
+                    @if($k->tgl_masuk)
+                    @php $nb = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']; @endphp
+                    {{ $k->tgl_masuk->format('d') }} {{ $nb[(int)$k->tgl_masuk->format('n')] }} {{ $k->tgl_masuk->format('Y') }}
+                    @else —
+                    @endif
+                </td>
+                <td style="color:#374151;font-size:13px">
+                    @if($k->tgl_masuk)
+                    @php
+                        $bulan = $k->tgl_masuk->diffInMonths(now());
+                        $thn = floor($bulan / 12);
+                        $bln = $bulan % 12;
+                    @endphp
+                    {{ $thn > 0 ? $thn.' tahun' : '' }}{{ $bln > 0 ? ' '.$bln.' bulan' : '' }}{{ $thn == 0 && $bln == 0 ? '< 1 bulan' : '' }}
+                    @else —
+                    @endif
+                </td>
                 <td>
                     <span class="badge {{ $k->status=='aktif'?'bg-success-soft':'bg-danger-soft' }}">
                         {{ $k->status=='aktif'?'Aktif':'Tidak Aktif' }}
