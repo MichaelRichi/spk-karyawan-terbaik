@@ -7,6 +7,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\KriteriaController;
 use App\Http\Controllers\PeriodeController;
+use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\PenggunaController;
@@ -25,6 +27,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard — semua role
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profil',     [ProfilController::class, 'show'])->name('profil.show');
+    Route::get('/profil/edit',[ProfilController::class, 'edit'])->name('profil.edit');
+    Route::put('/profil',     [ProfilController::class, 'update'])->name('profil.update');
 
     // ── PENGGUNA — admin & direktur ────────────────────
     Route::middleware('role:admin,direktur')->group(function () {
@@ -37,6 +42,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/karyawan/{karyawan}/akun',        [KaryawanController::class, 'akunForm'])->name('karyawan.akun.form');
         Route::post('/karyawan/{karyawan}/akun',       [KaryawanController::class, 'akunStore'])->name('karyawan.akun.store');
         Route::put('/karyawan/{karyawan}/akun',        [KaryawanController::class, 'akunUpdate'])->name('karyawan.akun.update');
+    });
+
+    // ── ABSENSI — admin & direktur ────────────────────
+    Route::middleware('role:admin,direktur')->group(function () {
+        // Rekap absensi (halaman utama menu Absensi) — grid kehadiran harian
+        Route::get('/absensi', [AbsensiController::class, 'rekap'])->name('absensi.rekap');
+
+        // Upload dari menu Absensi (pilih periode sendiri)
+        Route::get('/absensi/upload',  [AbsensiController::class, 'uploadFormIndex'])->name('absensi.upload.index');
+        Route::post('/absensi/upload', [AbsensiController::class, 'uploadProsesIndex'])->name('absensi.upload.proses-index');
+
+        // Upload dari halaman Penilaian (periode sudah diketahui)
+        Route::get('/periode/{periode}/absensi/upload',  [AbsensiController::class, 'uploadForm'])->name('absensi.upload.form');
+        Route::post('/periode/{periode}/absensi/upload', [AbsensiController::class, 'uploadProses'])->name('absensi.upload.proses');
     });
 
     // ── KRITERIA & SUB-KRITERIA — hanya direktur ───────

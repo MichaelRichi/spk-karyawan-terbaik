@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $username
  * @property string $role
  * @property int|null $karyawan_id
+ * @mixin \Illuminate\Database\Eloquent\Model
  */
 class User extends Authenticatable
 {

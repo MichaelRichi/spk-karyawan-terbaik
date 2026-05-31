@@ -12,15 +12,20 @@
         <div class="ph-sub">Pilih karyawan untuk mengisi atau mengedit nilai penilaian</div>
     </div>
     @php $selesaiSemua = $karyawan->every(fn($k) => $penilaianSelesai->contains($k->id)); @endphp
-    @if($selesaiSemua)
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHitungSAW">
-        <i class="ti ti-calculator"></i> Hitung Penilaian
-    </button>
-    @else
-    <button class="btn btn-primary" style="opacity:.4;cursor:not-allowed" disabled>
-        <i class="ti ti-calculator"></i> Hitung Penilaian
-    </button>
-    @endif
+    <div class="d-flex gap-2 align-items-start">
+        <a href="{{ route('periode.show', $periode) }}" class="btn btn-outline-secondary">
+            <i class="ti ti-arrow-left"></i> Kembali
+        </a>
+        @if($selesaiSemua)
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHitungSAW">
+            <i class="ti ti-calculator"></i> Hitung Penilaian
+        </button>
+        @else
+        <button class="btn btn-primary" style="opacity:.4;cursor:not-allowed" disabled>
+            <i class="ti ti-calculator"></i> Hitung Penilaian
+        </button>
+        @endif
+    </div>
 </div>
 
 <div class="steps">
