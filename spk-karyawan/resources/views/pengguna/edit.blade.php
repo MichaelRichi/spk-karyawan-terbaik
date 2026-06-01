@@ -2,14 +2,16 @@
 @section('title','Edit Pengguna — '.$pengguna->username)
 @section('content')
 
-<div class="ph">
-    <div>
-        <div class="ph-title">Edit Pengguna — {{ $pengguna->username }}</div>
-        <div class="ph-sub">Perbarui data akun pengguna</div>
+<div class="card" style="margin-bottom:16px">
+    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Edit Pengguna — {{ $pengguna->username }}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Perbarui data akun pengguna</div>
+        </div>
+        <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">
+            <i class="ti ti-arrow-left"></i> Kembali
+        </a>
     </div>
-    <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">
-        <i class="ti ti-arrow-left"></i> Kembali
-    </a>
 </div>
 
 {{-- Info Pengguna --}}

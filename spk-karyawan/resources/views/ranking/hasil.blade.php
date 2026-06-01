@@ -1,18 +1,20 @@
 @extends('layouts.app')
 @section('title','Hasil Ranking — '.(['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun)
 @section('content')
-<div class="ph">
-    <div>
-        <div class="ph-title">Hasil Ranking — {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</div>
-        <div class="ph-sub">Perhitungan SAW selesai · Periode dikunci</div>
-    </div>
-    <div style="display:flex;gap:8px">
-        <a href="{{ route('ranking.index') }}" class="btn btn-outline-secondary">
-            <i class="ti ti-arrow-left"></i> Kembali
-        </a>
-        <a href="{{ route('ranking.cetak', $periode) }}" class="btn btn-info-soft" target="_blank">
-            <i class="ti ti-file-text"></i> Cetak PDF
-        </a>
+<div class="card" style="margin-bottom:16px">
+    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Hasil Ranking — {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Perhitungan SAW selesai · Periode dikunci</div>
+        </div>
+        <div style="display:flex;gap:8px">
+            <a href="{{ route('ranking.index') }}" class="btn btn-outline-secondary">
+                <i class="ti ti-arrow-left"></i> Kembali
+            </a>
+            <a href="{{ route('ranking.cetak', $periode) }}" class="btn btn-info-soft" target="_blank">
+                <i class="ti ti-file-text"></i> Cetak PDF
+            </a>
+        </div>
     </div>
 </div>
 

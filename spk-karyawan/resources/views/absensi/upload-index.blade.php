@@ -3,25 +3,22 @@
 
 @section('content')
 
-<div class="ph">
-    <div>
-        <div class="ph-title"><i class="ti ti-file-upload" style="color:#2563eb"></i> Import Data Absen</div>
-        <div class="ph-sub">Upload file Excel untuk mengimpor data kehadiran karyawan — pilih bulan & tahun sendiri</div>
+<div class="card" style="margin-bottom:16px;max-width:1000px;margin-left:auto;margin-right:auto">
+    <div style="padding:20px 24px">
+        <div style="font-size:18px;font-weight:800;color:#1e293b">Import Data Absen</div>
+        <div style="font-size:12px;color:#64748b;margin-top:2px">Upload file Excel untuk mengimpor data kehadiran karyawan — pilih bulan &amp; tahun sendiri</div>
     </div>
-    <a href="{{ route('absensi.rekap') }}" class="btn btn-outline-secondary">
-        <i class="ti ti-arrow-left"></i> Kembali
-    </a>
 </div>
 
 {{-- PETUNJUK --}}
-<div class="card" style="max-width:760px">
+<div class="card" style="max-width:1000px;margin-left:auto;margin-right:auto">
     <div class="card-header">
         <span><i class="ti ti-info-circle"></i> Petunjuk Import Data</span>
     </div>
     <div class="card-body p-3">
         <div class="alert-spk al-info" style="align-items:flex-start">
             <i class="ti ti-list-check"></i>
-            <div style="line-height:1.7">
+            <div style="line-height:1.8;font-size:12px;white-space:nowrap">
                 <div>• File harus dalam format Excel <strong>.xlsx</strong>.</div>
                 <div>• Baris pertama berisi header: <code style="background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px">NO | NAMA | 1 | 2 | 3 | … | 31</code></div>
                 <div>• Isi sel <strong>1</strong> = hadir, sel <strong>kosong</strong> = tidak hadir.</div>
@@ -34,7 +31,7 @@
 </div>
 
 {{-- FORM IMPORT --}}
-<div class="card" style="max-width:760px">
+<div class="card" style="max-width:1000px;margin-left:auto;margin-right:auto">
     <div class="card-header">
         <span><i class="ti ti-table-import"></i> Form Import Data</span>
     </div>
@@ -92,7 +89,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="ti ti-upload"></i> Import Data Absen
                 </button>
-                <a href="{{ route('absensi.rekap') }}" class="btn btn-outline-secondary">
+                <a href="{{ route('absensi.rekap') }}" class="btn" style="background:#475569;border:1px solid #475569;color:#fff;font-weight:600">
                     <i class="ti ti-x"></i> Batal
                 </a>
             </div>

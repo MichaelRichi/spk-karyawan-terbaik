@@ -2,14 +2,16 @@
 @section('title','Edit Karyawan')
 @section('content')
 
-<div class="ph">
-    <div>
-        <div class="ph-title">Edit Karyawan</div>
-        <div class="ph-sub">Perbarui data karyawan — {{ $karyawan->nama }}</div>
+<div class="card" style="margin-bottom:16px;max-width:560px;margin-left:auto;margin-right:auto">
+    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Edit Karyawan</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Perbarui data karyawan — {{ $karyawan->nama }}</div>
+        </div>
+        <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary">
+            <i class="ti ti-arrow-left"></i> Kembali
+        </a>
     </div>
-    <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary">
-        <i class="ti ti-arrow-left"></i> Kembali
-    </a>
 </div>
 
 <div style="max-width:560px;margin:0 auto">
