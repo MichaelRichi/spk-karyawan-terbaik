@@ -14,9 +14,11 @@ class StoreKriteriaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nama'          => ['required', 'string', 'max:100'],
-            'jenis'         => ['required', 'in:benefit,cost'],
-            'bobot' => ['required', 'numeric', 'min:0', 'max:100'],
+            'nama'           => ['required', 'string', 'max:100'],
+            'jenis'          => ['required', 'in:benefit,cost'],
+            'bobot'          => ['required', 'numeric', 'min:0', 'max:100'],
+            'has_rentang'    => ['nullable', 'boolean'],
+            'satuan_rentang' => ['nullable', 'string', 'max:30'],
         ];
     }
 

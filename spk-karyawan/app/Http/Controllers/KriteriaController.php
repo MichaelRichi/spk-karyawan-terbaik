@@ -19,6 +19,9 @@ class KriteriaController extends Controller
     {
         $data = $request->validated();
         $data['has_rentang'] = $request->boolean('has_rentang');
+        $data['satuan_rentang'] = $data['has_rentang']
+            ? strtolower(trim($request->input('satuan_rentang') ?? '')) ?: null
+            : null;
         $kriteria = Kriteria::create($data);
         return redirect()->route('kriteria.sub-kriteria', $kriteria)
             ->with('success', "Kriteria {$kriteria->nama} ditambahkan. Silakan tambah skala penilaian.");
@@ -29,6 +32,9 @@ class KriteriaController extends Controller
         $kriteria = Kriteria::findOrFail($id);
         $data = $request->validated();
         $data['has_rentang'] = $request->boolean('has_rentang');
+        $data['satuan_rentang'] = $data['has_rentang']
+            ? strtolower(trim($request->input('satuan_rentang') ?? '')) ?: null
+            : null;
         $kriteria->update($data);
         return redirect()->route('kriteria.index')
             ->with('success', "Kriteria {$kriteria->nama} berhasil diperbarui.");

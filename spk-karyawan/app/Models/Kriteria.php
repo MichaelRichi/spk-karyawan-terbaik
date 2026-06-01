@@ -10,11 +10,12 @@ class Kriteria extends Model
     protected $table = 'kriteria';
 
     protected $fillable = [
-        'nama', 'jenis', 'bobot',
+        'nama', 'jenis', 'bobot', 'has_rentang', 'satuan_rentang',
     ];
 
     protected $casts = [
         'bobot' => 'float',
+        'has_rentang' => 'boolean',
     ];
 
     public function subKriteria(): HasMany

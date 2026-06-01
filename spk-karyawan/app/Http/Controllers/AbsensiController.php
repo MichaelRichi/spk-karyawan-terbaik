@@ -147,14 +147,10 @@ class AbsensiController extends Controller
 
         $workingDays = $result['days']; // nomor tanggal hari kerja, mis. [5,6,...,31]
 
-        // Periode opsional — hanya untuk auto-isi nilai (Kehadiran & Kedisiplinan)
+        // Periode opsional — hanya dipakai untuk menyusun pesan info
         $periode = Periode::where('bulan', $bulan)->where('tahun', $tahun)->first();
-        $bolehIsi = $periode && !$periode->isLocked();
-        $pkKehadiran   = $bolehIsi ? $periode->kriteriaKehadiran()    : null;
-        $pkKedisiplinan = $bolehIsi ? $periode->kriteriaKedisiplinan() : null;
 
         $berhasil       = 0;
-        $nilaiTerisi    = 0;
         $tidakDitemukan = [];
 
         foreach ($result['data'] as $item) {
@@ -181,24 +177,18 @@ class AbsensiController extends Controller
             // 2. Simpan kehadiran PER-TANGGAL (hadir / terlambat / alpha)
             $this->simpanAbsensiHarian($karyawan->id, $bulan, $tahun, $workingDays, $hadirDays, $terlambatDays);
             $berhasil++;
-
-            // 3. (opsional) Isi nilai ke penilaian bila ada periode aktif
-            $adaIsi = false;
-            if ($this->isiNilai($pkKehadiran, $periode, $karyawan->id, $totalHadir))      $adaIsi = true;
-            if ($this->isiNilai($pkKedisiplinan, $periode, $karyawan->id, $totalTerlambat)) $adaIsi = true;
-            if ($adaIsi) $nilaiTerisi++;
         }
 
         $label      = $this->namaBulan($bulan) . ' ' . $tahun;
         $sheetLabel = $result['sheet_name'] ? " (sheet: {$result['sheet_name']})" : '';
         $pesan      = "Berhasil menyimpan absensi {$berhasil} karyawan untuk {$label}{$sheetLabel}.";
 
-        if ($nilaiTerisi > 0) {
-            $pesan .= " Nilai Kehadiran & Kedisiplinan {$nilaiTerisi} karyawan otomatis terisi ke penilaian periode {$label}.";
+        if ($periode && !$periode->isLocked()) {
+            $pesan .= " Nilai Kehadiran & Kedisiplinan akan otomatis terisi sebagai pilihan default saat membuka form Input Nilai periode {$label} (tersimpan setelah Anda klik Simpan).";
         } elseif (!$periode) {
-            $pesan .= " (Belum ada periode {$label}, jadi hanya data absensi yang disimpan.)";
+            $pesan .= " (Belum ada periode {$label} — data absensi tetap tersimpan.)";
         } elseif ($periode->isLocked()) {
-            $pesan .= " (Periode {$label} sudah selesai/terkunci, nilai penilaian tidak diubah.)";
+            $pesan .= " (Periode {$label} sudah selesai/terkunci.)";
         }
 
         if (!empty($tidakDitemukan)) {
@@ -209,32 +199,6 @@ class AbsensiController extends Controller
         }
 
         return $redirectTarget->with('success', $pesan);
-    }
-
-    /**
-     * Isi satu nilai penilaian dari sebuah angka (mis. total hadir / total terlambat).
-     * Skor dihitung dari rentang sub-kriteria di DB. Mengembalikan true bila tersimpan.
-     */
-    private function isiNilai($pk, ?Periode $periode, int $karyawanId, int $nilai): bool
-    {
-        if (!$pk || !$periode) return false;
-
-        $skor = Absensi::hitungSkor($nilai, $pk->id);
-        $psk  = $pk->periodeSubKriteria->where('skor', $skor)->first();
-        if (!$psk) return false;
-
-        Penilaian::updateOrCreate(
-            [
-                'periode_id'          => $periode->id,
-                'karyawan_id'         => $karyawanId,
-                'periode_kriteria_id' => $pk->id,
-            ],
-            [
-                'periode_sub_kriteria_id' => $psk->id,
-                'nilai'                   => $psk->skor,
-            ]
-        );
-        return true;
     }
 
     /**

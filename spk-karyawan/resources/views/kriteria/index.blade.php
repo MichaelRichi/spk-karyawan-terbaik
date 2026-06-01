@@ -172,9 +172,10 @@
                 <h6 class="modal-title fw-bold" id="modal-title">Tambah Kriteria</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="form-kriteria" method="POST" action="{{ route('kriteria.store') }}">
+            <form id="form-kriteria" method="POST" action="{{ route('kriteria.store') }}" onsubmit="prosesSatuan()">
                 @csrf
                 <input type="hidden" name="_method" id="form-method" value="POST">
+                <input type="hidden" name="satuan_rentang" id="inp-satuan-final">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Nama Kriteria <span style="color:#ef4444">*</span></label>
@@ -217,8 +218,9 @@
                                     style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer"
                                    >
                                     <option value="">-- Pilih Satuan --</option>
-                                    <option value="hari">Hari</option>
-                                    <option value="tahun">Tahun</option>
+                                    <option value="hari">Hari (otomatis dari jumlah hadir)</option>
+                                    <option value="tahun">Tahun (otomatis dari masa kerja)</option>
+                                    <option value="kali">Keterlambatan (otomatis dari jumlah terlambat)</option>
                                     <option value="lainnya">Lainnya (ketik manual)</option>
                                 </select>
                                 <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
@@ -245,7 +247,15 @@ const storeUrl    = '{{ route('kriteria.store') }}';
 const totalBobot  = {{ $totalBobot }};
 
 function prosesSatuan() {
-    document.getElementById('inp-satuan-final').value = document.getElementById('inp-satuan').value;
+    var final = '';
+    if (document.getElementById('inp-has-rentang').checked) {
+        var sel = document.getElementById('inp-satuan').value;
+        if (sel === 'lainnya') {
+            sel = (document.getElementById('inp-satuan-manual').value || '');
+        }
+        final = sel.trim().toLowerCase();
+    }
+    document.getElementById('inp-satuan-final').value = final;
 }
 function resetModal() {
     document.getElementById('modal-title').textContent = 'Tambah Kriteria';
@@ -284,7 +294,15 @@ function isiModal(id, nama, jenis, bobot, hasRentang, satuan) {
     const hasR = hasRentang == 1;
     document.getElementById('inp-has-rentang').checked = hasR;
     toggleRentang(hasR);
-    document.getElementById('inp-satuan').value = satuan || '';
+    const baku = ['hari','tahun','kali'];
+    if (satuan && baku.indexOf(satuan) === -1) {
+        document.getElementById('inp-satuan').value = 'lainnya';
+        document.getElementById('inp-satuan-manual').value = satuan;
+        toggleSatuanLain('lainnya');
+    } else {
+        document.getElementById('inp-satuan').value = satuan || '';
+        toggleSatuanLain(satuan || '');
+    }
     document.getElementById('sisa-bobot').textContent = (100 - totalBobot + bobot) + '%';
     // Buka modal setelah semua data terisi
     new bootstrap.Modal(document.getElementById('modalKriteria')).show();

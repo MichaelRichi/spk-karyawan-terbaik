@@ -45,8 +45,22 @@
             $infoText = ($thn > 0 ? $thn.' tahun' : '').($bln > 0 ? ' '.$bln.' bulan' : '');
             if (!$infoText) $infoText = '< 1 bulan';
         }
-        // Untuk satuan 'hari' (kehadiran) - tidak bisa otomatis dari data karyawan
-        // Akan diisi dari absensi jika ada
+        // Untuk satuan 'hari' (Kehadiran) & 'kali' (Kedisiplinan) — ambil dari data absensi
+        elseif ($satuan === 'hari' || $satuan === 'kali') {
+            $adaAbsensi = \App\Models\Absensi::where('karyawan_id', $karyawan->id)
+                ->whereMonth('tanggal', $periode->bulan)
+                ->whereYear('tanggal', $periode->tahun)
+                ->exists();
+            if ($adaAbsensi) {
+                if ($satuan === 'hari') {
+                    $nilaiInput = \App\Models\Absensi::totalHadir($karyawan->id, $periode->bulan, $periode->tahun);
+                    $infoText   = $nilaiInput.' hari hadir';
+                } else {
+                    $nilaiInput = \App\Models\Absensi::totalTerlambat($karyawan->id, $periode->bulan, $periode->tahun);
+                    $infoText   = $nilaiInput.' kali terlambat';
+                }
+            }
+        }
 
         if ($nilaiInput === null) continue;
 
