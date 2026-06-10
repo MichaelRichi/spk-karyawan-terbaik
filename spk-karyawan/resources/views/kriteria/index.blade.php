@@ -35,6 +35,11 @@
     padding-right:32px;
     cursor:pointer;
 }
+#modalKriteria .form-label {
+    font-weight:700;
+    color:#1e293b;
+    font-size:13px;
+}
 </style>
 <div class="card" style="margin-bottom:16px">
     <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
@@ -42,7 +47,7 @@
             <div style="font-size:18px;font-weight:800;color:#1e293b">Kriteria & Bobot</div>
             <div style="font-size:12px;color:#64748b;margin-top:2px">Atur kriteria, bobot, dan sub-kriteria di sini sebelum membuat periode penilaian</div>
         </div>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalKriteria" onclick="resetModal()">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalKriteria" onclick="resetModal()" style="padding:8px 14px;font-size:12px;font-weight:600">
             <i class="ti ti-plus"></i> Tambah Kriteria
         </button>
     </div>
@@ -51,18 +56,44 @@
 @php $totalBobot = $kriteria->sum('bobot'); $kurang = 100 - $totalBobot; @endphp
 
 {{-- Status bobot total --}}
-<div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
-    <div class="stat-card">
-        <div class="stat-lbl"><i class="ti ti-adjustments-horizontal"></i> Jumlah Kriteria</div>
-        <div class="stat-val" style="font-size:22px">{{ $kriteria->count() }}</div>
+<style>
+.kr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.kr-stat{background:var(--cb,#fff);border:1px solid var(--brd,#e9eef5);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-left:4px solid var(--ac)}
+.kr-stat-lbl{font-size:12px;color:#64748b;font-weight:600;margin-bottom:5px}
+.kr-stat-val{font-size:24px;font-weight:800;line-height:1}
+.kr-stat-ic{width:46px;height:46px;border-radius:12px;background:var(--icbg,var(--ac));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kr-stat-ic i{font-size:23px;color:var(--ac)}
+@media(max-width:640px){.kr-stats{grid-template-columns:1fr}}
+</style>
+
+@php
+    $tbOk = $totalBobot == 100;
+    $tbAc = $tbOk ? '#16a34a' : '#dc2626';  $tbCb = $tbOk ? '#dcfce7' : '#fde2e2';
+    $kgOk = $kurang == 0;
+    $kgAc = $kgOk ? '#16a34a' : '#dc2626';   $kgCb = $kgOk ? '#dcfce7' : '#fde2e2';
+    $kgLbl = $kurang < 0 ? 'Kelebihan Bobot' : 'Kekurangan Bobot';
+@endphp
+<div class="kr-stats">
+    <div class="kr-stat" style="--ac:#2563eb;--icbg:#dbeafe">
+        <div>
+            <div class="kr-stat-lbl">Jumlah Kriteria</div>
+            <div class="kr-stat-val" style="color:#1e293b">{{ $kriteria->count() }}</div>
+        </div>
+        <div class="kr-stat-ic"><i class="ti ti-list-check"></i></div>
     </div>
-    <div class="stat-card" style="{{ $totalBobot==100?'border-color:#97C459;background:#EAF3DE':'border-color:#f59e0b;background:#FAEEDA' }}">
-        <div class="stat-lbl" style="{{ $totalBobot==100?'color:#3B6D11':'color:#854F0B' }}">Total bobot</div>
-        <div class="stat-val" style="font-size:22px;{{ $totalBobot==100?'color:#27500A':'color:#633806' }}">{{ $totalBobot }}%</div>
+    <div class="kr-stat" style="--ac:{{ $tbAc }};--cb:{{ $tbCb }};--brd:{{ $tbAc }};--icbg:#fff">
+        <div>
+            <div class="kr-stat-lbl" style="color:{{ $tbAc }}">Total Bobot</div>
+            <div class="kr-stat-val" style="color:{{ $tbAc }}">{{ $totalBobot }}%</div>
+        </div>
+        <div class="kr-stat-ic"><i class="ti ti-percentage"></i></div>
     </div>
-    <div class="stat-card" style="{{ $kurang==0?'border-color:#97C459;background:#EAF3DE':($kurang<0?'border-color:#fca5a5;background:#FCEBEB':'border-color:#fca5a5;background:#FCEBEB') }}">
-        <div class="stat-lbl" style="{{ $kurang==0?'color:#3B6D11':'color:#791F1F' }}">{{ $kurang < 0 ? 'Kelebihan' : 'Kekurangan' }} bobot</div>
-        <div class="stat-val" style="font-size:22px;{{ $kurang==0?'color:#27500A':'color:#ef4444' }}">{{ abs($kurang) }}%</div>
+    <div class="kr-stat" style="--ac:{{ $kgAc }};--cb:{{ $kgCb }};--brd:{{ $kgAc }};--icbg:#fff">
+        <div>
+            <div class="kr-stat-lbl" style="color:{{ $kgAc }}">{{ $kgLbl }}</div>
+            <div class="kr-stat-val" style="color:{{ $kgAc }}">{{ abs($kurang) }}%</div>
+        </div>
+        <div class="kr-stat-ic"><i class="ti ti-scale"></i></div>
     </div>
 </div>
 
@@ -80,25 +111,25 @@
 
 <div class="card">
     <div class="card-header">
-        <span><i class="ti ti-adjustments-horizontal"></i> Daftar Kriteria</span>
-        <span style="font-size:11px;color:#64748b">Perubahan hanya berlaku untuk periode yang dibuat setelah ini</span>
+        <span style="font-size:16px;font-weight:700"><i class="ti ti-adjustments-horizontal"></i> Daftar Kriteria</span>
+        
     </div>
     <table class="table mb-0">
         <thead>
             <tr>
-                <th>Nama Kriteria</th>
-                <th style="width:90px">Jenis</th>
-                <th style="width:100px" class="text-center">Bobot (%)</th>
-                <th>Distribusi</th>
-                <th style="width:100px" class="text-center">Sub-Kriteria</th>
-                <th style="width:80px" class="text-center">Aksi</th>
+                <th style="color:#475569;font-weight:700"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-tag"></i> Nama Kriteria</span></th>
+                <th style="width:90px;color:#475569;font-weight:700"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-category"></i> Jenis</span></th>
+                <th style="width:110px;color:#475569;font-weight:700" class="text-center"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-percentage"></i> Bobot</span></th>
+                <th style="color:#475569;font-weight:700"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-chart-bar"></i> Distribusi</span></th>
+                <th style="width:110px;color:#475569;font-weight:700" class="text-center"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-list-details"></i> Sub-Kriteria</span></th>
+                <th style="width:80px;color:#475569;font-weight:700" class="text-center"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-settings"></i> Aksi</span></th>
             </tr>
         </thead>
         <tbody>
             @forelse($kriteria as $k)
             <tr>
-                <td style="font-weight:600">{{ $k->nama }}</td>
-                <td><span class="badge {{ $k->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }}">{{ ucfirst($k->jenis) }}</span></td>
+                <td style="font-weight:700;color:#1e293b;font-size:14px">{{ $k->nama }}</td>
+                <td><span class="badge {{ $k->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }}" style="font-size:12px;padding:4px 11px">{{ ucfirst($k->jenis) }}</span></td>
                 <td class="text-center" style="font-weight:700;color:#185FA5">{{ $k->bobot }}%</td>
                 <td style="min-width:120px">
                     <div class="pb"><div class="pf" style="width:{{ min($k->bobot,100) }}%"></div></div>

@@ -2,21 +2,35 @@
 @section('title','Tambah Karyawan')
 @section('content')
 
-<div class="ph">
-    <div>
-        <div class="ph-title">Tambah Karyawan</div>
-        <div class="ph-sub">Isi data karyawan baru</div>
+<style>
+.kform .form-label{font-size:14px;font-weight:700;color:#1e293b;margin-bottom:5px}
+.kform .form-control,.kform .form-select,.kform textarea{font-size:14px;padding:9px 12px}
+.kform .form-select{padding-right:32px}
+.kform .card-header{justify-content:flex-start;gap:8px;font-weight:700}
+</style>
+
+<div class="card" style="margin-bottom:16px;max-width:560px;margin-left:auto;margin-right:auto">
+    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:46px;height:46px;border-radius:12px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <i class="ti ti-user-plus" style="font-size:23px;color:#2563eb"></i>
+            </div>
+            <div>
+                <div style="font-size:18px;font-weight:800;color:#1e293b">Tambah Karyawan</div>
+                <div style="font-size:12px;color:#64748b;margin-top:2px">Isi data karyawan baru</div>
+            </div>
+        </div>
+        <a href="{{ route('karyawan.index') }}" class="btn" style="background:#475569;border:1px solid #475569;color:#fff;font-weight:600">
+            <i class="ti ti-arrow-left"></i> Kembali
+        </a>
     </div>
-    <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary">
-        <i class="ti ti-arrow-left"></i> Kembali
-    </a>
 </div>
 
 <div style="max-width:560px;margin:0 auto">
 <div class="card">
-    <div class="card-header"><i class="ti ti-user-plus"></i> Data Karyawan</div>
+    <div class="card-header" style="justify-content:flex-start"><i class="ti ti-user-plus"></i> Data Karyawan</div>
     <div style="padding:20px">
-        <form method="POST" action="{{ route('karyawan.store') }}">
+        <form method="POST" action="{{ route('karyawan.store') }}" class="kform">
             @csrf
 
             {{-- Nama --}}
@@ -86,9 +100,8 @@
                 @error('alamat')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
-            <div style="display:flex;gap:8px">
-                <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary" style="flex:1;justify-content:center">Batal</a>
-                <button type="submit" class="btn btn-primary" style="flex:2;justify-content:center">
+            <div style="margin-top:4px">
+                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:10px;font-weight:600">
                     <i class="ti ti-device-floppy"></i> Simpan Karyawan
                 </button>
             </div>

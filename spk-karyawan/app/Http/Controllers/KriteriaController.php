@@ -19,28 +19,24 @@ class KriteriaController extends Controller
     {
         $data = $request->validated();
         $data['has_rentang'] = $request->boolean('has_rentang');
-        $data['satuan_rentang'] = $data['has_rentang']
-            ? strtolower(trim($request->input('satuan_rentang') ?? '')) ?: null
-            : null;
+        $data['satuan_rentang'] = $this->parseSatuanRentang($request, $data['has_rentang']);
         $kriteria = Kriteria::create($data);
         return redirect()->route('kriteria.sub-kriteria', $kriteria)
             ->with('success', "Kriteria {$kriteria->nama} ditambahkan. Silakan tambah skala penilaian.");
     }
 
-    public function update(StoreKriteriaRequest $request, $id)
+    public function update(StoreKriteriaRequest $request, int $id)
     {
         $kriteria = Kriteria::findOrFail($id);
         $data = $request->validated();
         $data['has_rentang'] = $request->boolean('has_rentang');
-        $data['satuan_rentang'] = $data['has_rentang']
-            ? strtolower(trim($request->input('satuan_rentang') ?? '')) ?: null
-            : null;
+        $data['satuan_rentang'] = $this->parseSatuanRentang($request, $data['has_rentang']);
         $kriteria->update($data);
         return redirect()->route('kriteria.index')
             ->with('success', "Kriteria {$kriteria->nama} berhasil diperbarui.");
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $kriteria = Kriteria::findOrFail($id);
         if ($kriteria->periodeKriteria()->exists()) {
@@ -68,14 +64,20 @@ class KriteriaController extends Controller
 
     // ── Sub-Kriteria via halaman Kriteria ─────────────────────
 
-    public function subKriteriaIndex($id)
+    public function subKriteriaIndex(int $id)
     {
         $kriteria = Kriteria::findOrFail($id);
         $kriteria->load('subKriteria');
         return view('sub_kriteria.index', compact('kriteria'));
     }
 
-    public function subKriteriaStore(Request $request, $id)
+    public function subKriteriaEdit(int $kriteriaId, SubKriteria $subKriteria)
+    {
+        $kriteria = Kriteria::findOrFail($kriteriaId);
+        return view('sub_kriteria.edit', compact('kriteria', 'subKriteria'));
+    }
+
+    public function subKriteriaStore(Request $request, int $id)
     {
         $kriteria = Kriteria::findOrFail($id);
         $data = $request->validate([
@@ -90,7 +92,7 @@ class KriteriaController extends Controller
         return back()->with('success', 'Skala penilaian berhasil ditambahkan.');
     }
 
-    public function subKriteriaUpdate(Request $request, $kriteriaId, SubKriteria $subKriteria)
+    public function subKriteriaUpdate(Request $request, int $kriteriaId, SubKriteria $subKriteria)
     {
         $kriteria = Kriteria::findOrFail($kriteriaId);
         $data = $request->validate([
@@ -105,7 +107,13 @@ class KriteriaController extends Controller
         return back()->with('success', 'Skala penilaian berhasil diperbarui.');
     }
 
-    public function subKriteriaDestroy($kriteriaId, SubKriteria $subKriteria)
+    private function parseSatuanRentang(Request $request, bool $hasRentang): ?string
+    {
+        if (!$hasRentang) return null;
+        return strtolower(trim($request->input('satuan_rentang', ''))) ?: null;
+    }
+
+    public function subKriteriaDestroy(int $kriteriaId, SubKriteria $subKriteria)
     {
         $kriteria = Kriteria::findOrFail($kriteriaId);
         if ($subKriteria->periodeSubKriteria()->exists()) {

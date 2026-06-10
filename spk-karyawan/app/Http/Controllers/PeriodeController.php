@@ -101,4 +101,18 @@ class PeriodeController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
+
+    /** Hapus periode aktif beserta semua data terkait */
+    public function hapus(Periode $periode)
+    {
+        if ($periode->status !== 'aktif') {
+            return back()->with('error', 'Hanya periode aktif yang dapat dihapus.');
+        }
+
+        $nama = $periode->nama;
+        $periode->delete(); // cascade: periode_kriteria, penilaian, hasil_ranking ikut terhapus
+
+        return redirect()->route('periode.index')
+            ->with('success', 'Hapus Periode');
+    }
 }

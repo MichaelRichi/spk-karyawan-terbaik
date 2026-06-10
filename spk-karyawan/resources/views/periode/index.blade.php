@@ -12,7 +12,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
             <div style="font-size:18px;font-weight:800;color:#1e293b">Penilaian</div>
             <div style="font-size:12px;color:#64748b;margin-top:2px">Kelola periode penilaian karyawan</div>
         </div>
-        <a href="{{ route('periode.create') }}" class="btn btn-primary">
+        <a href="{{ route('periode.create') }}" class="btn btn-primary" style="padding:8px 14px;font-size:12px;font-weight:600">
             <i class="ti ti-plus"></i> Buat Periode Baru
         </a>
     </div>
@@ -49,27 +49,22 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
         <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
         </div>
         <button type="submit" class="btn btn-primary"><i class="ti ti-search"></i> Cari</button>
-        @if(request('search') || request('tahun') || request('status'))
-        <a href="{{ route('periode.index') }}" class="btn btn-outline-secondary">
-            <i class="ti ti-x"></i> Reset
-        </a>
-        @endif
     </div>
 </form>
 
 {{-- Daftar Periode --}}
 <div class="card">
     <div class="card-header">
-        <span><i class="ti ti-calendar"></i> Daftar Periode</span>
-        <span style="font-size:11px;color:#64748b">{{ $periode->total() }} periode</span>
+        <span style="font-size:16px;font-weight:700"><i class="ti ti-calendar"></i> Daftar Periode</span>
+        <span style="font-size:13px;color:#64748b">{{ $periode->total() }} Periode</span>
     </div>
     <table class="table mb-0">
         <thead>
             <tr>
-                <th>Periode</th>
-                <th style="width:100px" class="text-center">Status</th>
-                <th>Info</th>
-                <th style="width:160px" class="text-center">Aksi</th>
+                <th style="color:#475569;font-weight:700"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-calendar"></i> Periode</span></th>
+                <th style="width:110px;color:#475569;font-weight:700" class="text-center"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-circle-check"></i> Status</span></th>
+                <th style="color:#475569;font-weight:700"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-info-circle"></i> Info</span></th>
+                <th style="width:160px;color:#475569;font-weight:700" class="text-center"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-settings"></i> Aksi</span></th>
             </tr>
         </thead>
         <tbody>
@@ -78,7 +73,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
             <tr>
                 <td style="font-weight:600;font-size:14px;color:#1e293b">{{ $labelBulan }}</td>
                 <td class="text-center">
-                    <span class="badge {{ $p->status=='selesai'?'bg-success-soft':($p->status=='aktif'?'bg-info-soft':'bg-gray-soft') }}" style="font-size:11px">
+                    <span class="badge {{ $p->status=='selesai'?'bg-success-soft':($p->status=='aktif'?'bg-info-soft':'bg-gray-soft') }}" style="font-size:12px;padding:4px 11px">
                         {{ $p->status=='aktif' ? 'Aktif' : ($p->status=='selesai' ? 'Selesai ✓' : 'Draft') }}
                     </span>
                 </td>

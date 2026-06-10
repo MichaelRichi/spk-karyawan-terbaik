@@ -2,14 +2,11 @@
 @section('title','Buat Periode Baru')
 @section('content')
 
-<div class="ph">
-    <div>
-        <div class="ph-title">Buat Periode Baru</div>
-        <div class="ph-sub">Periode akan langsung aktif menggunakan kriteria & bobot yang berlaku saat ini</div>
+<div class="card" style="margin-bottom:16px;max-width:560px;margin-left:auto;margin-right:auto">
+    <div style="padding:20px 24px">
+        <div style="font-size:18px;font-weight:800;color:#1e293b">Buat Periode Baru</div>
+        <div style="font-size:12px;color:#64748b;margin-top:2px">Periode akan langsung aktif menggunakan kriteria & bobot yang berlaku saat ini</div>
     </div>
-    <a href="{{ route('periode.index') }}" class="btn btn-outline-secondary">
-        <i class="ti ti-arrow-left"></i> Kembali
-    </a>
 </div>
 
 <div style="max-width:560px;margin:0 auto">

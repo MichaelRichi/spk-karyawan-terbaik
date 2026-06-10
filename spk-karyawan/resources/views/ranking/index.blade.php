@@ -16,8 +16,8 @@
     <div class="col-md-4">
         <div class="card h-100">
             <div class="card-header">
-                <span style="font-weight:600">{{ ((['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$p->bulan]) ?? $p->bulan).' '.$p->tahun }}</span>
-                <span class="badge bg-success-soft">Selesai</span>
+                <span style="font-size:15px;font-weight:700">{{ ((['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$p->bulan]) ?? $p->bulan).' '.$p->tahun }}</span>
+                <span class="badge bg-success-soft" style="font-size:12px;padding:4px 11px">Selesai</span>
             </div>
             <div style="padding:12px 14px">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">

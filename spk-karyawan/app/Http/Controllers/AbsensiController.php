@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Absensi;
 use App\Models\Periode;
 use App\Models\Karyawan;
-use App\Models\Penilaian;
 use App\Services\AbsensiExcelReader;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AbsensiController extends Controller
 {
@@ -83,6 +84,79 @@ class AbsensiController extends Controller
         return view('absensi.upload-index');
     }
 
+    /** Absensi pribadi — untuk karyawan & admin yang terhubung ke data karyawan */
+    public function absensiPribadi(Request $request)
+    {
+        $karyawan = Auth::user()?->karyawan;
+
+        $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli',
+                      'Agustus','September','Oktober','November','Desember'];
+
+        if (!$karyawan) {
+            return view('absensi.pribadi', [
+                'karyawan' => null, 'grid' => [], 'workingDays' => [],
+                'stat' => [], 'labelBulan' => '—', 'bulanTersedia' => collect(),
+                'bulan' => null, 'tahun' => null, 'namaBulan' => $namaBulan,
+            ]);
+        }
+
+        // Bulan-tahun yang punya data absensi untuk karyawan ini
+        $bulanTersedia = Absensi::where('karyawan_id', $karyawan->id)
+            ->get()
+            ->map(fn($a) => [
+                'tahun' => (int) Carbon::parse($a->tanggal)->format('Y'),
+                'bulan' => (int) Carbon::parse($a->tanggal)->format('n'),
+            ])
+            ->unique(fn($b) => $b['tahun'].'-'.$b['bulan'])
+            ->sortByDesc(fn($b) => $b['tahun'] * 100 + $b['bulan'])
+            ->values();
+
+        $prevMonth    = now()->subMonth();
+        $defaultBulan = (int) $prevMonth->format('n');
+        $defaultTahun = (int) $prevMonth->format('Y');
+
+        $bulan = (int) $request->input('bulan', $defaultBulan);
+        $tahun = (int) $request->input('tahun', $defaultTahun);
+
+        // Data absensi bulan ini
+        $absensi = Absensi::where('karyawan_id', $karyawan->id)
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->get();
+
+        // Hari kerja bulan ini (kecuali Minggu)
+        $workingDays = [];
+        $daysInMonth = Carbon::create($tahun, $bulan, 1)->daysInMonth;
+        for ($d = 1; $d <= $daysInMonth; $d++) {
+            if (Carbon::create($tahun, $bulan, $d)->dayOfWeek !== 0) { // 0 = Sunday
+                $workingDays[] = $d;
+            }
+        }
+
+        // Grid [hari => ['status', 'terlambat']]
+        $grid = [];
+        foreach ($absensi as $a) {
+            $day = (int) Carbon::parse($a->tanggal)->format('j');
+            $grid[$day] = ['status' => $a->status, 'terlambat' => (bool) $a->terlambat];
+        }
+
+        $totalHadir     = $absensi->where('status', 'hadir')->count();
+        $totalTerlambat = $absensi->where('terlambat', true)->count();
+
+        $stat = [
+            'total_hadir'      => $totalHadir,
+            'total_terlambat'  => $totalTerlambat,
+            'tidak_hadir'      => count($workingDays) - $totalHadir,
+            'hari_kerja'       => count($workingDays),
+        ];
+
+        $labelBulan = ($namaBulan[$bulan] ?? $bulan).' '.$tahun;
+
+        return view('absensi.pribadi', compact(
+            'karyawan','grid','workingDays','stat','labelBulan','bulanTersedia','bulan','tahun','namaBulan'
+        ));
+    }
+
     public function uploadProsesIndex(Request $request)
     {
         $request->validate([
@@ -128,11 +202,11 @@ class AbsensiController extends Controller
     /**
      * Import absensi berdasarkan bulan & tahun (TIDAK butuh periode aktif).
      *
-     * - Data kehadiran per-tanggal selalu disimpan ke tabel absensi.
-     * - JIKA ada periode untuk bulan+tahun tsb dan belum terkunci,
-     *   nilai kehadiran ikut otomatis terisi ke penilaian.
+     * - Data kehadiran per-tanggal disimpan ke tabel absensi.
+     * - Nilai Kehadiran & Kedisiplinan tampil sebagai pilihan default di form
+     *   Input Nilai (tersimpan ke penilaian setelah direktur klik Simpan).
      */
-    private function importAbsensi(string $filePath, int $bulan, int $tahun, $redirectTarget)
+    private function importAbsensi(string $filePath, int $bulan, int $tahun, RedirectResponse $redirectTarget)
     {
         $reader = new AbsensiExcelReader();
         $result = $reader->readDetailByBulan($filePath, $bulan);

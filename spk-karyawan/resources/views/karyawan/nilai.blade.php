@@ -6,10 +6,15 @@
 $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 @endphp
 
-<div class="ph">
-    <div>
-        <div class="ph-title">Nilai Saya</div>
-        <div class="ph-sub">Riwayat penilaian</div>
+<div class="card" style="margin-bottom:16px">
+    <div style="padding:20px 24px;display:flex;align-items:center;gap:14px">
+        <div style="width:46px;height:46px;border-radius:12px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="ti ti-chart-bar" style="font-size:23px;color:#2563eb"></i>
+        </div>
+        <div>
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Nilai Saya</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Riwayat penilaian kinerja Anda per periode</div>
+        </div>
     </div>
 </div>
 
@@ -28,14 +33,14 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
         </label>
         <div style="position:relative;flex:1;min-width:200px;max-width:320px">
             <select id="pilih-periode" class="form-select" onchange="tampilPeriode(this.value)"
-                style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer">
+                style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer;font-weight:700;color:#1e293b;font-size:15px">
                 @foreach($riwayat as $r)
                 <option value="{{ $r->id }}" {{ $loop->first ? 'selected' : '' }}>
                     {{ ($namaBulan[$r->periode->bulan] ?? $r->periode->bulan).' '.$r->periode->tahun }}
                 </option>
                 @endforeach
             </select>
-            <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b"></i>
+            <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#1e293b;font-size:16px"></i>
         </div>
     </div>
 </div>

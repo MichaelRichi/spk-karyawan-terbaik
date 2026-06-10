@@ -26,7 +26,7 @@ class KaryawanController extends Controller
             $query->where('status', $status);
         }
 
-        $karyawan = $query->with('user')->orderBy('nama')->paginate(15)->withQueryString();
+        $karyawan = $query->with('user')->orderBy('nama')->paginate(1000)->withQueryString();
         return view('karyawan.index', compact('karyawan'));
     }
 

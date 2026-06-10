@@ -2,13 +2,24 @@
 @section('title','Edit Karyawan')
 @section('content')
 
+<style>
+.ek-form .form-label{font-size:14px;font-weight:700;color:#1e293b;margin-bottom:5px}
+.ek-form .form-control,.ek-form .form-select,.ek-form textarea{font-size:14px;padding:9px 12px}
+.ek-form .form-select{padding-right:32px}
+</style>
+
 <div class="card" style="margin-bottom:16px;max-width:560px;margin-left:auto;margin-right:auto">
     <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <div>
-            <div style="font-size:18px;font-weight:800;color:#1e293b">Edit Karyawan</div>
-            <div style="font-size:12px;color:#64748b;margin-top:2px">Perbarui data karyawan — {{ $karyawan->nama }}</div>
+        <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:46px;height:46px;border-radius:12px;background:#fef3c7;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <i class="ti ti-user-edit" style="font-size:23px;color:#d97706"></i>
+            </div>
+            <div>
+                <div style="font-size:18px;font-weight:800;color:#1e293b">Edit Karyawan</div>
+                <div style="font-size:12px;color:#64748b;margin-top:2px">Perbarui data karyawan — {{ $karyawan->nama }}</div>
+            </div>
         </div>
-        <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary">
+        <a href="{{ route('karyawan.index') }}" class="btn" style="background:#475569;border:1px solid #475569;color:#fff;font-weight:600">
             <i class="ti ti-arrow-left"></i> Kembali
         </a>
     </div>
@@ -16,9 +27,9 @@
 
 <div style="max-width:560px;margin:0 auto">
 <div class="card">
-    <div class="card-header"><i class="ti ti-user-edit"></i> Data Karyawan</div>
+    <div class="card-header" style="justify-content:flex-start"><i class="ti ti-user-edit"></i> Data Karyawan</div>
     <div style="padding:20px">
-        <form method="POST" action="{{ route('karyawan.update', $karyawan) }}">
+        <form method="POST" action="{{ route('karyawan.update', $karyawan) }}" class="ek-form">
             @csrf @method('PUT')
 
             {{-- Nama --}}
@@ -87,9 +98,8 @@
                 @error('alamat')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
-            <div style="display:flex;gap:8px">
-                <a href="{{ route('karyawan.index') }}" class="btn btn-outline-secondary" style="flex:1;justify-content:center">Batal</a>
-                <button type="submit" class="btn btn-primary" style="flex:2;justify-content:center">
+            <div>
+                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:10px">
                     <i class="ti ti-device-floppy"></i> Simpan Perubahan
                 </button>
             </div>

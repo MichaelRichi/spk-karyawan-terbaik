@@ -1,11 +1,53 @@
 @extends('layouts.app')
 @section('title','Hasil Ranking — '.(['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun)
 @section('content')
+
+<style>
+.rk-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.rk-stat{
+    position:relative;
+    background:var(--cb,#fff);
+    border:1px solid var(--brd,#e9eef5);
+    border-radius:14px;
+    padding:18px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(15,23,42,.04);
+    transition:transform .15s ease, box-shadow .15s ease;
+}
+.rk-stat::before{
+    content:'';
+    position:absolute;
+    left:0;top:0;bottom:0;
+    width:5px;
+    background:var(--ac);
+}
+.rk-stat:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 16px rgba(15,23,42,.08);
+}
+.rk-stat-lbl{font-size:12px;color:#64748b;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px}
+.rk-stat-val{font-size:26px;font-weight:800;line-height:1.1;color:#1e293b}
+.rk-stat-ic{
+    width:50px;height:50px;
+    border-radius:13px;
+    background:var(--icbg,var(--ac));
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+}
+.rk-stat-ic i{font-size:25px;color:var(--ac)}
+@media(max-width:900px){.rk-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.rk-stats{grid-template-columns:1fr}}
+</style>
+
 <div class="card" style="margin-bottom:16px">
     <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <div>
             <div style="font-size:18px;font-weight:800;color:#1e293b">Hasil Ranking — {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</div>
-            <div style="font-size:12px;color:#64748b;margin-top:2px">Perhitungan SAW selesai · Periode dikunci</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Perhitungan nilai selesai · Periode dikunci</div>
         </div>
         <div style="display:flex;gap:8px">
             <a href="{{ route('ranking.index') }}" class="btn btn-outline-secondary">
@@ -30,22 +72,34 @@
     <div class="step done"><i class="ti ti-lock"></i> Selesai</div>
 </div>
 
-<div class="stat-grid">
-    <div class="stat-card">
-        <div class="stat-lbl">Karyawan Dinilai</div>
-        <div class="stat-val">{{ count($detail) }}</div>
+<div class="rk-stats">
+    <div class="rk-stat" style="--ac:#2563eb;--icbg:#dbeafe">
+        <div>
+            <div class="rk-stat-lbl">Karyawan Dinilai</div>
+            <div class="rk-stat-val">{{ count($detail) }}</div>
+        </div>
+        <div class="rk-stat-ic"><i class="ti ti-users"></i></div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl">Nilai Kinerja Tertinggi</div>
-        <div class="stat-val" style="color:#185FA5">{{ number_format(collect($detail)->max('nilai_preferensi'), 3) }}</div>
+    <div class="rk-stat" style="--ac:#16a34a;--icbg:#dcfce7">
+        <div>
+            <div class="rk-stat-lbl">Nilai Kinerja Tertinggi</div>
+            <div class="rk-stat-val" style="color:#16a34a">{{ number_format(collect($detail)->max('nilai_preferensi'), 3) }}</div>
+        </div>
+        <div class="rk-stat-ic"><i class="ti ti-arrow-up-right"></i></div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl">Nilai Kinerja Terendah</div>
-        <div class="stat-val" style="color:#64748b;font-size:16px">{{ number_format(collect($detail)->min('nilai_preferensi'), 3) }}</div>
+    <div class="rk-stat" style="--ac:#64748b;--icbg:#f1f5f9">
+        <div>
+            <div class="rk-stat-lbl">Nilai Kinerja Terendah</div>
+            <div class="rk-stat-val" style="color:#64748b">{{ number_format(collect($detail)->min('nilai_preferensi'), 3) }}</div>
+        </div>
+        <div class="rk-stat-ic"><i class="ti ti-arrow-down-right"></i></div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl">Karyawan Terbaik</div>
-        <div class="stat-val" style="font-size:14px;margin-top:3px">{{ collect($detail)->where('ranking',1)->first()['karyawan']->nama ?? '—' }}</div>
+    <div class="rk-stat" style="--ac:#f59e0b;--icbg:#fef3c7">
+        <div>
+            <div class="rk-stat-lbl">Karyawan Terbaik</div>
+            <div class="rk-stat-val" style="font-size:17px;margin-top:2px">{{ collect($detail)->where('ranking',1)->first()['karyawan']->nama ?? '—' }}</div>
+        </div>
+        <div class="rk-stat-ic"><i class="ti ti-trophy"></i></div>
     </div>
 </div>
 
@@ -102,7 +156,7 @@
             <table class="table mb-0" style="min-width:600px">
                 <thead>
                     <tr>
-                        <th>Karyawan</th>
+                        <th style="color:#475569;font-weight:700">Karyawan</th>
                         @foreach($periodeKriteria as $pk)
                         <th class="text-center" style="font-size:11px">
                             {{ $pk->nama_kriteria }}<br>
@@ -146,9 +200,9 @@
             <table class="table mb-0" style="min-width:600px">
                 <thead>
                     <tr>
-                        <th>Karyawan</th>
+                        <th style="color:#475569;font-weight:700">Karyawan</th>
                         @foreach($periodeKriteria as $pk)
-                        <th class="text-center" style="font-size:11px">{{ $pk->nama_kriteria }}</th>
+                        <th class="text-center" style="font-size:11px;color:#475569;font-weight:700">{{ $pk->nama_kriteria }}</th>
                         @endforeach
                     </tr>
                 </thead>
@@ -187,7 +241,7 @@
             <table class="table mb-0" style="min-width:600px">
                 <thead>
                     <tr>
-                        <th>Karyawan</th>
+                        <th style="color:#475569;font-weight:700">Karyawan</th>
                         @foreach($periodeKriteria as $pk)
                         <th class="text-center" style="font-size:11px">
                             {{ $pk->nama_kriteria }}<br>
@@ -231,13 +285,13 @@
             <table class="table mb-0" style="min-width:600px">
                 <thead>
                     <tr>
-                        <th style="width:60px" class="text-center">Rank</th>
-                        <th>Karyawan</th>
+                        <th style="width:60px;color:#475569;font-weight:700" class="text-center">Rank</th>
+                        <th style="color:#475569;font-weight:700">Karyawan</th>
                         @foreach($periodeKriteria as $pk)
-                        <th class="text-center" style="font-size:11px">{{ $pk->nama_kriteria }}</th>
+                        <th class="text-center" style="font-size:11px;color:#475569;font-weight:700">{{ $pk->nama_kriteria }}</th>
                         @endforeach
-                        <th class="text-center vi-c">Nilai Kinerja (Vi)</th>
-                        <th class="text-center" style="width:80px">Aksi</th>
+                        <th class="text-center vi-c" style="color:#475569;font-weight:700">Nilai Kinerja (Vi)</th>
+                        <th class="text-center" style="width:80px;color:#475569;font-weight:700">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -54,40 +54,63 @@
 </div>
 @endif
 
-<div class="stat-grid">
-    <div class="stat-card">
-        <div class="stat-lbl">Sudah Dinilai</div>
-        <div class="stat-val" style="color:#27500A">{{ $penilaianSelesai->count() }}</div>
+<style>
+.pn-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:16px}
+.pn-stat{background:#fff;border:1px solid #e9eef5;border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-left:4px solid var(--ac)}
+.pn-stat-lbl{font-size:12px;color:#64748b;font-weight:600;margin-bottom:5px}
+.pn-stat-val{font-size:24px;font-weight:800;line-height:1}
+.pn-stat-ic{width:46px;height:46px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pn-stat-ic i{font-size:23px;color:var(--ac)}
+</style>
+
+@php $belum = $karyawan->count() - $penilaianSelesai->count(); @endphp
+<div class="pn-stats">
+    <div class="pn-stat" style="--ac:#16a34a;--bg:#dcfce7">
+        <div>
+            <div class="pn-stat-lbl">Sudah Dinilai</div>
+            <div class="pn-stat-val" style="color:#16a34a">{{ $penilaianSelesai->count() }}</div>
+        </div>
+        <div class="pn-stat-ic"><i class="ti ti-user-check"></i></div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl">Belum Dinilai</div>
-        <div class="stat-val" style="color:#A32D2D">{{ $karyawan->count() - $penilaianSelesai->count() }}</div>
+    <div class="pn-stat" style="--ac:{{ $belum>0?'#dc2626':'#16a34a' }};--bg:{{ $belum>0?'#fee2e2':'#dcfce7' }}">
+        <div>
+            <div class="pn-stat-lbl">Belum Dinilai</div>
+            <div class="pn-stat-val" style="color:{{ $belum>0?'#dc2626':'#16a34a' }}">{{ $belum }}</div>
+        </div>
+        <div class="pn-stat-ic"><i class="ti ti-user-exclamation"></i></div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl">Total Kriteria</div>
-        <div class="stat-val">{{ $periode->periodeKriteria->count() }}</div>
+    <div class="pn-stat" style="--ac:#2563eb;--bg:#dbeafe">
+        <div>
+            <div class="pn-stat-lbl">Total Kriteria</div>
+            <div class="pn-stat-val" style="color:#1e293b">{{ $periode->periodeKriteria->count() }}</div>
+        </div>
+        <div class="pn-stat-ic"><i class="ti ti-list-check"></i></div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl">Total Bobot</div>
-        <div class="stat-val" style="font-size:16px;color:#185FA5">{{ $periode->periodeKriteria->sum('bobot') }}%</div>
+    @php $tb = $periode->periodeKriteria->sum('bobot'); @endphp
+    <div class="pn-stat" style="--ac:#7c3aed;--bg:#ede9fe">
+        <div>
+            <div class="pn-stat-lbl">Total Bobot</div>
+            <div class="pn-stat-val" style="color:#7c3aed">{{ rtrim(rtrim(number_format($tb,2),'0'),'.') }}%</div>
+        </div>
+        <div class="pn-stat-ic"><i class="ti ti-percentage"></i></div>
     </div>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <span><i class="ti ti-users"></i> Status Penilaian per Karyawan</span>
-        <span style="font-size:11px;color:#64748b">{{ $penilaianSelesai->count() }} / {{ $karyawan->count() }} selesai</span>
+        <span style="font-size:16px;font-weight:700"><i class="ti ti-users"></i> Status Penilaian per Karyawan</span>
+        <span style="font-size:13px;color:#64748b">{{ $penilaianSelesai->count() }} / {{ $karyawan->count() }} Selesai</span>
     </div>
     <div style="overflow-x:auto">
         <table class="table mb-0" style="min-width:600px">
             <thead>
                 <tr>
-                    <th>Karyawan</th>
+                    <th style="color:#475569;font-weight:700"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-user"></i> Karyawan</span></th>
                     @foreach($periode->periodeKriteria as $pk)
-                    <th class="text-center" style="font-size:9px">{{ $pk->nama_kriteria }}<br><span style="color:#64748b">{{ $pk->bobot }}%</span></th>
+                    <th class="text-center" style="font-size:11px;color:#475569;font-weight:700">{{ $pk->nama_kriteria }}<br><span style="color:#64748b;font-weight:600">{{ $pk->bobot }}%</span></th>
                     @endforeach
-                    <th class="text-center">Status</th>
-                    <th class="text-center">Aksi</th>
+                    <th class="text-center" style="color:#475569;font-weight:700">Status</th>
+                    <th class="text-center" style="color:#475569;font-weight:700">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -95,7 +118,7 @@
                 @php $sudah = $penilaianSelesai->contains($k->id); @endphp
                 <tr>
                     <td>
-                        <div style="font-weight:600">{{ $k->nama }}</div>
+                        <div style="font-weight:700;color:#1e293b;font-size:14px">{{ $k->nama }}</div>
                         <div style="font-size:10px;color:#64748b">{{ $k->divisi }}</div>
                     </td>
                     @foreach($periode->periodeKriteria as $pk)
@@ -109,7 +132,7 @@
                     </td>
                     @endforeach
                     <td class="text-center">
-                        <span class="badge {{ $sudah?'bg-success-soft':'bg-warning-soft' }}">
+                        <span class="badge {{ $sudah?'bg-success-soft':'bg-warning-soft' }}" style="font-size:12px;padding:4px 11px">
                             {{ $sudah?'Lengkap':'Belum' }}
                         </span>
                     </td>
@@ -136,8 +159,7 @@
                 <div style="width:60px;height:60px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:2px solid rgba(255,255,255,.3)">
                     <i class="ti ti-calculator" style="font-size:30px;color:#fff"></i>
                 </div>
-                <div style="color:#fff;font-weight:700;font-size:17px;margin-bottom:4px">Jalankan Perhitungan SAW?</div>
-                <div style="color:rgba(255,255,255,.7);font-size:11px;letter-spacing:.5px;text-transform:uppercase">Simple Additive Weighting</div>
+                <div style="color:#fff;font-weight:700;font-size:17px;margin-bottom:4px">Perhitungan Nilai</div>
             </div>
 
             {{-- Body --}}
@@ -162,12 +184,6 @@
                             <span style="font-size:13px;font-weight:600;color:#1e293b">{{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</span>
                         </div>
                     </div>
-                </div>
-
-                {{-- Peringatan --}}
-                <div style="background:#fffbeb;border:0.5px solid #fcd34d;border-radius:8px;padding:10px 12px;margin-bottom:18px;display:flex;gap:8px;align-items:flex-start">
-                    <i class="ti ti-alert-triangle" style="color:#d97706;font-size:15px;flex-shrink:0;margin-top:1px"></i>
-                    <span style="font-size:11px;color:#92400e;line-height:1.5">Setelah dihitung, periode akan <strong>dikunci</strong> dan nilai tidak dapat diubah lagi.</span>
                 </div>
 
                 {{-- Tombol --}}

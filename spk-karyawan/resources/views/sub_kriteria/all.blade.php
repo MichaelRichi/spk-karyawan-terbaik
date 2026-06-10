@@ -2,14 +2,10 @@
 @section('title','Sub-Kriteria')
 @section('content')
 
-
-
-<div style="max-width:700px;margin:0 auto 20px auto">
-    <div class="card">
-        <div style="padding:20px 24px">
-            <div style="font-size:18px;font-weight:800;color:#1e293b">Sub-Kriteria</div>
-            <div style="font-size:12px;color:#64748b;margin-top:2px">Semua skala penilaian dari seluruh kriteria</div>
-        </div>
+<div class="card" style="max-width:700px;margin:0 auto 16px">
+    <div style="padding:20px 24px">
+        <div style="font-size:18px;font-weight:800;color:#1e293b">Sub-Kriteria</div>
+        <div style="font-size:12px;color:#64748b;margin-top:2px">Semua skala penilaian dari seluruh kriteria</div>
     </div>
 </div>
 
@@ -31,7 +27,7 @@
             </div>
         </div>
         <a href="{{ route('kriteria.sub-kriteria', $k) }}" class="btn btn-primary btn-sm">
-            <i class="ti ti-edit" style="color:#fff"></i> Kelola Skala
+            <i class="ti ti-edit" style="color:#fff"></i> Kelola Sub-Kriteria
         </a>
     </div>
 
@@ -54,7 +50,7 @@
             </div>
             {{-- Aksi --}}
             <div style="display:flex;gap:6px;flex-shrink:0">
-                <a href="{{ route('kriteria.sub-kriteria', $k) }}" class="btn btn-sm" style="background:#2563eb;border-color:#2563eb;color:#fff">
+                <a href="{{ route('kriteria.sub-kriteria.edit', [$k->id, $sk->id]) }}" class="btn btn-sm" style="background:#2563eb;border-color:#2563eb;color:#fff">
                     <i class="ti ti-pencil"></i> Edit
                 </a>
                 <button type="button" class="btn btn-sm"

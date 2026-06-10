@@ -1,29 +1,36 @@
 @extends('layouts.app')
-@section('title','Edit Pengguna — '.$pengguna->username)
+@section('title','Edit Pengguna')
 @section('content')
 
-<div class="card" style="margin-bottom:16px">
+<style>
+.pg-form .form-label{font-size:14px}
+.pg-form .form-control,.pg-form .form-select{font-size:14px;padding:9px 12px}
+</style>
+
+<div class="card" style="margin-bottom:16px;max-width:680px;margin-left:auto;margin-right:auto">
     <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <div>
-            <div style="font-size:18px;font-weight:800;color:#1e293b">Edit Pengguna — {{ $pengguna->username }}</div>
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Edit Pengguna</div>
             <div style="font-size:12px;color:#64748b;margin-top:2px">Perbarui data akun pengguna</div>
         </div>
-        <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">
+        <a href="{{ route('pengguna.index') }}" class="btn" style="background:#475569;border:1px solid #475569;color:#fff;font-weight:600">
             <i class="ti ti-arrow-left"></i> Kembali
         </a>
     </div>
 </div>
 
+<div style="max-width:680px;margin:0 auto">
+
 {{-- Info Pengguna --}}
 <div class="card" style="margin-bottom:12px">
-    <div class="card-header"><i class="ti ti-user-circle"></i> Informasi Akun</div>
+    <div class="card-header" style="justify-content:flex-start"><i class="ti ti-user-circle"></i> Informasi Akun</div>
     <div style="padding:14px 16px;display:flex;gap:20px;flex-wrap:wrap">
         <div style="display:flex;align-items:center;gap:10px">
             <div style="width:40px;height:40px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
                 <i class="ti ti-user" style="color:#1d4ed8;font-size:18px"></i>
             </div>
             <div>
-                <div style="font-size:10px;color:#64748b">Username</div>
+                <div style="font-size:12px;color:#64748b">Username</div>
                 <div style="font-weight:600;color:#1e293b">{{ $pengguna->username }}</div>
             </div>
         </div>
@@ -32,7 +39,7 @@
                 <i class="ti ti-shield" style="color:#7c3aed;font-size:18px"></i>
             </div>
             <div>
-                <div style="font-size:10px;color:#64748b">Role saat ini</div>
+                <div style="font-size:12px;color:#64748b">Role saat ini</div>
                 <div style="font-weight:600;color:#7c3aed">{{ ucfirst($pengguna->role) }}</div>
             </div>
         </div>
@@ -42,8 +49,8 @@
                 <i class="ti ti-id-badge-2" style="color:#16a34a;font-size:18px"></i>
             </div>
             <div>
-                <div style="font-size:10px;color:#64748b">Terhubung ke</div>
-                <div style="font-weight:600;color:#16a34a">{{ $pengguna->karyawan->nama }} — {{ $pengguna->karyawan->jabatan }}</div>
+                <div style="font-size:12px;color:#64748b">Terhubung ke</div>
+                <div style="font-weight:600;color:#16a34a">{{ $pengguna->karyawan->nama }}</div>
             </div>
         </div>
         @endif
@@ -52,7 +59,7 @@
 
 {{-- Form Edit --}}
 <div class="card">
-    <div class="card-header"><i class="ti ti-pencil"></i> Form Edit Pengguna</div>
+    <div class="card-header" style="justify-content:flex-start"><i class="ti ti-pencil"></i> Form Edit Pengguna</div>
     <div style="padding:16px">
         @if($errors->any())
         <div class="alert-spk al-warn" style="margin-bottom:14px">
@@ -65,7 +72,7 @@
         </div>
         @endif
 
-        <form method="POST" action="{{ route('pengguna.update', $pengguna) }}">
+        <form method="POST" action="{{ route('pengguna.update', $pengguna) }}" class="pg-form">
             @csrf @method('PUT')
 
             <div class="row g-3 mb-3">
@@ -135,7 +142,7 @@
                             <option value="">-- Tidak terhubung --</option>
                             @foreach($karyawan as $k)
                             <option value="{{ $k->id }}" {{ old('karyawan_id',$pengguna->karyawan_id)==$k->id?'selected':'' }}>
-                                {{ $k->nama }} — {{ $k->jabatan }}
+                                {{ $k->nama }}
                             </option>
                             @endforeach
                         </select>
@@ -143,14 +150,15 @@
                 </div>
             </div>
 
-            <div style="display:flex;gap:8px">
-                <button type="submit" class="btn btn-primary">
+            <div>
+                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:10px">
                     <i class="ti ti-device-floppy"></i> Perbarui
                 </button>
-                <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">Batal</a>
             </div>
         </form>
     </div>
+</div>
+
 </div>
 
 @push('scripts')

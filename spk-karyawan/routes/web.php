@@ -66,10 +66,11 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('kriteria/{kriteria}/sub-kriteria')
             ->name('kriteria.sub-kriteria')
             ->group(function () {
-                Route::get('/',                 [KriteriaController::class, 'subKriteriaIndex'])->name('');
-                Route::post('/',                [KriteriaController::class, 'subKriteriaStore'])->name('.store');
-                Route::put('/{subKriteria}',    [KriteriaController::class, 'subKriteriaUpdate'])->name('.update');
-                Route::delete('/{subKriteria}', [KriteriaController::class, 'subKriteriaDestroy'])->name('.destroy');
+                Route::get('/',                      [KriteriaController::class, 'subKriteriaIndex'])->name('');
+                Route::post('/',                     [KriteriaController::class, 'subKriteriaStore'])->name('.store');
+                Route::get('/{subKriteria}/edit',    [KriteriaController::class, 'subKriteriaEdit'])->name('.edit');
+                Route::put('/{subKriteria}',         [KriteriaController::class, 'subKriteriaUpdate'])->name('.update');
+                Route::delete('/{subKriteria}',      [KriteriaController::class, 'subKriteriaDestroy'])->name('.destroy');
             });
 
     });
@@ -84,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/periode',                      [PeriodeController::class, 'store'])->name('periode.store');
         Route::get('/periode/{periode}',             [PeriodeController::class, 'show'])->name('periode.show');
         Route::post('/periode/{periode}/selesaikan', [PeriodeController::class, 'selesaikan'])->name('periode.selesaikan');
+        Route::delete('/periode/{periode}/hapus',    [PeriodeController::class, 'hapus'])->name('periode.hapus');
 
         Route::get('/periode/{periode}/penilaian',                    [PenilaianController::class, 'index'])->name('penilaian.index');
         Route::get('/periode/{periode}/penilaian/{karyawan}/form',    [PenilaianController::class, 'form'])->name('penilaian.form');
@@ -103,6 +105,7 @@ Route::middleware(['auth'])->group(function () {
 
     // ── NILAI SAYA — admin & karyawan ──────────────────
     Route::middleware('role:admin,karyawan')->group(function () {
+        Route::get('/absensi/pribadi', [AbsensiController::class, 'absensiPribadi'])->name('absensi.pribadi');
         Route::get('/hasil-penilaian', function () {
             $periodeSelesai = \App\Models\Periode::where('status', 'selesai')
                 ->with(['hasilRanking.karyawan'])

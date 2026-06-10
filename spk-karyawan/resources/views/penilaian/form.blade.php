@@ -1,21 +1,23 @@
 @extends('layouts.app')
 @section('title','Penilaian — '.$karyawan->nama)
 @section('content')
-<div class="ph">
-    <div style="display:flex;align-items:center;gap:10px">
-        <a href="{{ route('penilaian.index', $periode) }}" class="btn btn-outline-secondary btn-sm">
-            <i class="ti ti-arrow-left"></i>
-        </a>
-        @php $initials = strtoupper(substr($karyawan->nama,0,2)); @endphp
-        <div style="width:40px;height:40px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#1e40af;flex-shrink:0">{{ $initials }}</div>
-        <div>
-            <div class="ph-title">{{ $karyawan->nama }}</div>
-            <div class="ph-sub">{{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }} · Pilih skor untuk setiap kriteria</div>
+<div class="card" style="margin-bottom:16px">
+    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:10px">
+            <a href="{{ route('penilaian.index', $periode) }}" class="btn btn-sm" style="background:#475569;border:1px solid #475569;color:#fff;font-weight:600">
+                <i class="ti ti-arrow-left"></i>
+            </a>
+            @php $initials = strtoupper(substr($karyawan->nama,0,2)); @endphp
+            <div style="width:40px;height:40px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#1e40af;flex-shrink:0">{{ $initials }}</div>
+            <div>
+                <div style="font-size:18px;font-weight:800;color:#1e293b">{{ $karyawan->nama }}</div>
+                <div style="font-size:12px;color:#64748b;margin-top:2px">{{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }} · Pilih skor untuk setiap kriteria</div>
+            </div>
         </div>
+        <button type="submit" form="form-penilaian" class="btn btn-primary">
+            <i class="ti ti-device-floppy"></i> Simpan Penilaian
+        </button>
     </div>
-    <button type="submit" form="form-penilaian" class="btn btn-primary">
-        <i class="ti ti-device-floppy"></i> Simpan Penilaian
-    </button>
 </div>
 
 <form id="form-penilaian" method="POST" action="{{ route('penilaian.simpan', [$periode, $karyawan]) }}">
@@ -130,11 +132,6 @@
         </div>
         @endforeach
     </div>
-    <div style="margin-top:16px;display:flex;gap:8px">
-        <button type="submit" class="btn btn-primary">
-            <i class="ti ti-device-floppy"></i> Simpan Penilaian
-        </button>
-        <a href="{{ route('penilaian.index', $periode) }}" class="btn btn-outline-secondary">Batal</a>
-    </div>
+
 </form>
 @endsection

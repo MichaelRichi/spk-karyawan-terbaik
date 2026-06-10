@@ -4,23 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Models\HasilRanking;
 use App\Models\Karyawan;
+use App\Models\Kriteria;
 use App\Models\Periode;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $role = $user->role;
 
         // ── DIREKTUR ──────────────────────────────────
         if ($role === 'direktur') {
             $totalKaryawan   = Karyawan::aktif()->count();
             $totalPeriode    = Periode::where('status', 'selesai')->count();
+            $totalKriteria   = Kriteria::count();
             $periodeAktif    = Periode::where('status', 'aktif')->with('penilaian')->first();
-            $riwayat         = Periode::with('hasilRanking.karyawan')->orderByDesc('id')->take(5)->get();
-            $karyawanTerbaik = HasilRanking::where('ranking', 1)->with('karyawan','periode')->orderByDesc('id')->first();
-            return view('dashboard.direktur', compact('totalKaryawan','totalPeriode','periodeAktif','riwayat','karyawanTerbaik'));
+
+            // Periode selesai terakhir + Top 3 karyawan terbaik
+            $periodeTerakhir = Periode::where('status', 'selesai')->orderByDesc('id')->first();
+            $topKaryawan = $periodeTerakhir
+                ? HasilRanking::where('periode_id', $periodeTerakhir->id)
+                    ->with('karyawan')->orderBy('ranking')->take(5)->get()
+                : collect();
+
+            // Distribusi kriteria saat ini
+            $kriteriaList = Kriteria::orderByDesc('bobot')->get();
+
+            return view('dashboard.direktur', compact(
+                'totalKaryawan','totalPeriode','totalKriteria','periodeAktif',
+                'periodeTerakhir','topKaryawan','kriteriaList'
+            ));
         }
 
         // ── ADMIN ─────────────────────────────────────

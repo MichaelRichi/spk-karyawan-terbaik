@@ -51,7 +51,7 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
 .card-header i{font-size:14px;color:#64748b;margin-right:5px}
 
 /* TABLES */
-.table th{background:#f8fafc;color:#64748b;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:7px 10px;border-bottom:0.5px solid #e2e8f0;white-space:nowrap}
+.table th{background:#f8fafc;color:#64748b;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:7px 10px;border-bottom:0.5px solid #e2e8f0;white-space:nowrap}
 .table td{padding:8px 10px;border-bottom:0.5px solid #f1f5f9;font-size:12px;vertical-align:middle}
 .table tr:last-child td{border-bottom:none}
 .table-hover tbody tr:hover td{background:#f8fafc}
@@ -184,6 +184,9 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
         </a>
         @endif
         @if(in_array(auth()->user()->role, ['admin','karyawan']))
+        <a href="{{ route('absensi.pribadi') }}" class="sbi {{ request()->routeIs('absensi.pribadi') ? 'on' : '' }}">
+            <i class="ti ti-calendar-user"></i> Absensi Saya
+        </a>
         <a href="{{ route('karyawan.nilai') }}" class="sbi {{ request()->routeIs('karyawan.nilai') ? 'on' : '' }}">
             <i class="ti ti-chart-bar"></i> Nilai Saya
         </a>

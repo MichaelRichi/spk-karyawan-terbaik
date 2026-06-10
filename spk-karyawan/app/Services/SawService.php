@@ -55,7 +55,7 @@ class SawService
         DB::beginTransaction();
         try {
             // STEP 1 & 2: Normalisasi
-            foreach ($semuaPenilaian as $p) { /** @var \App\Models\Penilaian $p */
+            foreach ($semuaPenilaian as $p) { /** @var Penilaian $p */
                 $pk    = $periodeKriteria->firstWhere('id', $p->periode_kriteria_id);
                 $nilai = (float) $p->nilai;
                 $kolom = $nilaiPerKriteria[$p->periode_kriteria_id] ?? [$nilai];

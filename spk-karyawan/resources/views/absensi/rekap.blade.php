@@ -10,7 +10,7 @@
 .rk-grid-wrap{overflow-x:auto;border:0.5px solid #e2e8f0;border-radius:8px}
 .rk-table{border-collapse:separate;border-spacing:0;width:100%;min-width:max-content}
 .rk-table th,.rk-table td{border-bottom:0.5px solid #f1f5f9;border-right:0.5px solid #f1f5f9;text-align:center;white-space:nowrap}
-.rk-table thead th{background:#f8fafc;color:#64748b;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding:7px 4px;position:sticky;top:0;z-index:3}
+.rk-table thead th{background:#f8fafc;color:#475569;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:7px 4px;position:sticky;top:0;z-index:3}
 .rk-table tbody td{padding:5px 4px;font-size:11px;vertical-align:middle}
 .rk-table tbody tr:hover td{background:#f8fafc}
 /* kolom No + Nama dibuat sticky di kiri */
@@ -18,7 +18,7 @@
 .rk-col-nm{position:sticky;left:34px;z-index:4;background:#fff;text-align:left !important;min-width:150px;padding-left:10px !important}
 .rk-table thead .rk-col-no,.rk-table thead .rk-col-nm{z-index:5;background:#f8fafc}
 .rk-table tbody tr:hover .rk-col-no,.rk-table tbody tr:hover .rk-col-nm{background:#f8fafc}
-.rk-col-nm .nm{font-weight:600;color:#1e293b;font-size:12px}
+.rk-col-nm .nm{font-weight:700;color:#1e293b;font-size:13px}
 .rk-day{min-width:30px;width:30px}
 .rk-total{position:sticky;right:0;z-index:4;background:#fff;min-width:54px;font-weight:700;color:#0C447C}
 .rk-table thead .rk-total{z-index:5;background:#f8fafc}
@@ -33,6 +33,14 @@
 .cellb.x{background:#f8fafc;color:#cbd5e1}
 .rk-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:#64748b;margin-top:10px}
 .rk-legend .lg{display:flex;align-items:center;gap:5px}
+
+.rk-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:16px}
+.rk-stat{background:#fff;border:1px solid #e9eef5;border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-left:4px solid var(--ac)}
+.rk-stat-lbl{font-size:12px;color:#64748b;font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.rk-stat-val{font-size:24px;font-weight:800;color:#1e293b;line-height:1}
+.rk-stat-val.sm{font-size:18px}
+.rk-stat-ic{width:46px;height:46px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rk-stat-ic i{font-size:23px;color:var(--ac)}
 
 @media print{
     .sb,.topbar,.rk-noprint{display:none !important}
@@ -52,32 +60,41 @@
             <div style="font-size:18px;font-weight:800;color:#1e293b">Rekap Absensi</div>
             <div style="font-size:12px;color:#64748b;margin-top:2px">Pantau kehadiran karyawan per hari</div>
         </div>
-        <a href="{{ route('absensi.upload.index') }}" class="btn btn-primary rk-noprint">
+        <a href="{{ route('absensi.upload.index') }}" class="btn btn-primary rk-noprint" style="padding:8px 14px;font-size:12px;font-weight:600">
             <i class="ti ti-file-upload"></i> Import Excel
         </a>
     </div>
 </div>
 
 {{-- STAT CARDS --}}
-<div class="stat-grid">
-    <div class="stat-card">
-        <div class="stat-lbl"><i class="ti ti-users"></i> Total Karyawan</div>
-        <div class="stat-val">{{ $stat['total_karyawan'] }}</div>
+<div class="rk-stats">
+    <div class="rk-stat" style="--ac:#2563eb;--bg:#dbeafe">
+        <div>
+            <div class="rk-stat-lbl">Total Karyawan</div>
+            <div class="rk-stat-val">{{ $stat['total_karyawan'] }}</div>
+        </div>
+        <div class="rk-stat-ic"><i class="ti ti-users"></i></div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl"><i class="ti ti-calendar-check"></i> Hari Kerja</div>
-        <div class="stat-val">{{ $stat['hari_kerja'] }}</div>
+    <div class="rk-stat" style="--ac:#16a34a;--bg:#dcfce7">
+        <div>
+            <div class="rk-stat-lbl">Hari Kerja</div>
+            <div class="rk-stat-val">{{ $stat['hari_kerja'] }}</div>
+        </div>
+        <div class="rk-stat-ic"><i class="ti ti-calendar-check"></i></div>
     </div>
-    <div class="stat-card">
-        <div class="stat-lbl"><i class="ti ti-calendar"></i> Bulan</div>
-        <div class="stat-val" style="font-size:15px;padding-top:5px">{{ $labelBulan }}</div>
+    <div class="rk-stat" style="--ac:#7c3aed;--bg:#ede9fe">
+        <div>
+            <div class="rk-stat-lbl">Bulan</div>
+            <div class="rk-stat-val sm">{{ $labelBulan }}</div>
+        </div>
+        <div class="rk-stat-ic"><i class="ti ti-calendar-month"></i></div>
     </div>
 </div>
 
 {{-- FILTER --}}
 <div class="card rk-noprint">
-    <div class="card-header">
-        <span><i class="ti ti-filter"></i> Filter Data Absen</span>
+    <div class="card-header" style="justify-content:flex-start">
+        <span style="font-size:16px;font-weight:700"><i class="ti ti-filter"></i> Filter Data Absen</span>
     </div>
     <div class="card-body p-3">
         <form method="GET" action="{{ route('absensi.rekap') }}" class="rk-toolbar">
@@ -85,34 +102,33 @@
                 $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
                 $thnSkrg   = (int) now()->year;
             @endphp
-            <div class="fld" style="min-width:160px">
-                <label class="form-label">Pilih Bulan</label>
+            <div class="fld" style="min-width:190px">
+                <label class="form-label" style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">Pilih Bulan</label>
                 <div style="position:relative">
-                    <select name="bulan" class="form-select" style="appearance:none;-webkit-appearance:none;padding-right:30px;cursor:pointer" onchange="this.form.submit()">
+                    <i class="ti ti-calendar-month" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#2563eb;font-size:16px"></i>
+                    <select name="bulan" class="form-select" style="appearance:none;-webkit-appearance:none;padding:10px 36px 10px 36px;font-size:14px;font-weight:600;color:#1e293b;border:1px solid #e2e8f0;border-radius:10px;cursor:pointer;width:100%" onchange="this.form.submit()">
                         @for($b = 1; $b <= 12; $b++)
                             <option value="{{ $b }}" @selected((int)$bulan === $b)>{{ $namaBulan[$b] }}</option>
                         @endfor
                     </select>
-                    <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:14px"></i>
+                    <i class="ti ti-chevron-down" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:15px"></i>
                 </div>
             </div>
-            <div class="fld" style="min-width:120px">
-                <label class="form-label">Pilih Tahun</label>
+            <div class="fld" style="min-width:150px">
+                <label class="form-label" style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">Pilih Tahun</label>
                 <div style="position:relative">
-                    <select name="tahun" class="form-select" style="appearance:none;-webkit-appearance:none;padding-right:30px;cursor:pointer" onchange="this.form.submit()">
+                    <i class="ti ti-calendar-event" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#7c3aed;font-size:16px"></i>
+                    <select name="tahun" class="form-select" style="appearance:none;-webkit-appearance:none;padding:10px 36px 10px 36px;font-size:14px;font-weight:600;color:#1e293b;border:1px solid #e2e8f0;border-radius:10px;cursor:pointer;width:100%" onchange="this.form.submit()">
                         @for($t = $thnSkrg + 1; $t >= $thnSkrg - 5; $t--)
                             <option value="{{ $t }}" @selected((int)$tahun === $t)>{{ $t }}</option>
                         @endfor
                     </select>
-                    <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:14px"></i>
+                    <i class="ti ti-chevron-down" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:15px"></i>
                 </div>
             </div>
             <div>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" style="padding:8px 14px;font-size:12px;font-weight:600">
                     <i class="ti ti-search"></i> Tampilkan
-                </button>
-                <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
-                    <i class="ti ti-printer"></i> Cetak
                 </button>
             </div>
         </form>
@@ -121,8 +137,8 @@
 
 {{-- TABEL GRID --}}
 <div class="card">
-    <div class="card-header">
-        <span><i class="ti ti-table"></i> Tabel Kehadiran Karyawan — {{ $labelBulan }}</span>
+    <div class="card-header" style="justify-content:flex-start">
+        <span style="font-size:16px;font-weight:700"><i class="ti ti-table"></i> Tabel Kehadiran Karyawan — {{ $labelBulan }}</span>
     </div>
     <div class="card-body p-2">
 
