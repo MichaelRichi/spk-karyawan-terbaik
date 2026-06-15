@@ -10,7 +10,7 @@
 </style>
 
 <div class="card" style="margin-bottom:16px;max-width:560px;margin-left:auto;margin-right:auto">
-    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div style="padding:20px 24px">
         <div style="display:flex;align-items:center;gap:14px">
             <div style="width:46px;height:46px;border-radius:12px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
                 <i class="ti ti-user-plus" style="font-size:23px;color:#2563eb"></i>
@@ -20,9 +20,6 @@
                 <div style="font-size:12px;color:#64748b;margin-top:2px">Isi data karyawan baru</div>
             </div>
         </div>
-        <a href="{{ route('karyawan.index') }}" class="btn" style="background:#475569;border:1px solid #475569;color:#fff;font-weight:600">
-            <i class="ti ti-arrow-left"></i> Kembali
-        </a>
     </div>
 </div>
 
@@ -100,8 +97,9 @@
                 @error('alamat')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
-            <div style="margin-top:4px">
-                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:10px;font-weight:600">
+            <div style="display:flex;gap:10px;margin-top:4px">
+                <a href="{{ route('karyawan.index') }}" class="btn" style="flex:1;justify-content:center;font-size:14px;padding:10px;background:#e2e8f0;border:1.5px solid #94a3b8;color:#1e293b;font-weight:700">Batal</a>
+                <button type="submit" class="btn btn-primary" style="flex:2;justify-content:center;font-size:14px;padding:10px;font-weight:600">
                     <i class="ti ti-device-floppy"></i> Simpan Karyawan
                 </button>
             </div>

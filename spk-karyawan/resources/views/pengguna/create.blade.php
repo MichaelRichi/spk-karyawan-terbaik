@@ -8,14 +8,11 @@
 </style>
 
 <div class="card" style="margin-bottom:16px;max-width:440px;margin-left:auto;margin-right:auto">
-    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div style="padding:20px 24px">
         <div>
             <div style="font-size:18px;font-weight:800;color:#1e293b">Tambah Pengguna</div>
             <div style="font-size:12px;color:#64748b;margin-top:2px">Buat akun baru untuk mengakses sistem</div>
         </div>
-        <a href="{{ route('pengguna.index') }}" class="btn" style="background:#475569;border:1px solid #475569;color:#fff;font-weight:600">
-            <i class="ti ti-arrow-left"></i> Kembali
-        </a>
     </div>
 </div>
 
@@ -69,8 +66,9 @@
                 </div>
                 @error('karyawan_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
-            <div style="margin-top:4px">
-                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-weight:600;padding:10px"><i class="ti ti-check"></i> Simpan</button>
+            <div style="display:flex;gap:10px;margin-top:4px">
+                <a href="{{ route('pengguna.index') }}" class="btn" style="flex:1;justify-content:center;font-weight:600;padding:10px;background:#e2e8f0;border:1.5px solid #94a3b8;color:#1e293b;font-weight:700">Batal</a>
+                <button type="submit" class="btn btn-primary" style="flex:2;justify-content:center;font-weight:600;padding:10px"><i class="ti ti-check"></i> Simpan</button>
             </div>
         </form>
     </div>

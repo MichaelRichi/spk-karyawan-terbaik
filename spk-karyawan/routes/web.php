@@ -67,6 +67,7 @@ Route::middleware(['auth'])->group(function () {
             ->name('kriteria.sub-kriteria')
             ->group(function () {
                 Route::get('/',                      [KriteriaController::class, 'subKriteriaIndex'])->name('');
+                Route::get('/create',                [KriteriaController::class, 'subKriteriaCreate'])->name('.create');
                 Route::post('/',                     [KriteriaController::class, 'subKriteriaStore'])->name('.store');
                 Route::get('/{subKriteria}/edit',    [KriteriaController::class, 'subKriteriaEdit'])->name('.edit');
                 Route::put('/{subKriteria}',         [KriteriaController::class, 'subKriteriaUpdate'])->name('.update');

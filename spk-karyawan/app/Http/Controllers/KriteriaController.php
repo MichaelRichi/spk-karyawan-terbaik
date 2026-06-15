@@ -15,6 +15,19 @@ class KriteriaController extends Controller
         return view('kriteria.index', compact('kriteria'));
     }
 
+    public function create()
+    {
+        $totalBobot = Kriteria::sum('bobot');
+        return view('kriteria.create', compact('totalBobot'));
+    }
+
+    public function edit(int $id)
+    {
+        $kriteria = Kriteria::findOrFail($id);
+        $totalBobot = Kriteria::where('id', '!=', $id)->sum('bobot');
+        return view('kriteria.edit', compact('kriteria', 'totalBobot'));
+    }
+
     public function store(StoreKriteriaRequest $request)
     {
         $data = $request->validated();
@@ -69,6 +82,12 @@ class KriteriaController extends Controller
         $kriteria = Kriteria::findOrFail($id);
         $kriteria->load('subKriteria');
         return view('sub_kriteria.index', compact('kriteria'));
+    }
+
+    public function subKriteriaCreate(int $id)
+    {
+        $kriteria = Kriteria::findOrFail($id);
+        return view('sub_kriteria.create', compact('kriteria'));
     }
 
     public function subKriteriaEdit(int $kriteriaId, SubKriteria $subKriteria)

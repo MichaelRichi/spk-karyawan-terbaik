@@ -14,9 +14,9 @@
             <a href="{{ route('sub-kriteria.index') }}" class="btn" style="background:#475569;border:1px solid #475569;color:#fff;font-weight:600">
                 <i class="ti ti-arrow-left"></i> Kembali
             </a>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSk" onclick="resetModal()">
+            <a href="{{ route('kriteria.sub-kriteria.create', $kriteria) }}" class="btn btn-primary">
                 <i class="ti ti-plus"></i> Tambah Sub-Kriteria
-            </button>
+            </a>
         </div>
     </div>
 </div>
@@ -66,79 +66,4 @@
     </table>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="modalSk" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content" style="border:0.5px solid #e2e8f0;border-radius:10px">
-            <div class="modal-header" style="border-bottom:0.5px solid #e2e8f0">
-                <h6 class="modal-title fw-bold" id="modal-title">Tambah Sub-Kriteria</h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="sk-form" method="POST" action="{{ route('kriteria.sub-kriteria', $kriteria) }}">
-                @csrf
-                <input type="hidden" name="_method" id="form-method" value="POST">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label" style="font-weight:700;color:#1e293b;font-size:13px">Skor <span style="color:#ef4444">*</span></label>
-                        <input type="number" name="skor" id="inp-skor" class="form-control" min="1" max="10" required>
-                        <div style="font-size:10px;color:#64748b;margin-top:3px">Nilai numerik 1–10. Tidak boleh duplikat dalam satu kriteria.</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" style="font-weight:700;color:#1e293b;font-size:13px">Deskripsi <span style="color:#ef4444">*</span></label>
-                        <input type="text" name="nama" id="inp-nama" class="form-control" placeholder="Contoh: ≥ 26 hari, Sangat Baik" required>
-                    @if($kriteria->has_rentang)
-                    <div class="mt-3">
-                        <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:6px">
-                            Rentang Tahun Kerja <span style="font-size:10px;color:#64748b;font-weight:400">(untuk pengisian otomatis)</span>
-                        </div>
-                        <div style="display:flex;gap:8px;align-items:center">
-                            <div style="flex:1">
-                                <label style="font-size:12px;color:#475569;font-weight:600;margin-bottom:3px;display:block">Min ({{ $kriteria->satuan_rentang ?? 'angka' }})</label>
-                                <input type="number" name="nilai_min" id="inp-nilai-min"
-                                    class="form-control" step="0.01" min="0" placeholder="0">
-                            </div>
-                            <div style="color:#94a3b8;margin-top:16px">—</div>
-                            <div style="flex:1">
-                                <label style="font-size:12px;color:#475569;font-weight:600;margin-bottom:3px;display:block">Max ({{ $kriteria->satuan_rentang ?? 'angka' }})</label>
-                                <input type="number" name="nilai_max" id="inp-nilai-max"
-                                    class="form-control" step="0.01" min="0" placeholder="99">
-                            </div>
-                        </div>
-                        <div style="font-size:10px;color:#94a3b8;margin-top:4px">
-                            Isi 0 dan 0 untuk "kurang dari 1 tahun"
-                        </div>
-                    </div>
-                    @endif
-                    </div>
-
-                </div>
-                <div class="modal-footer" style="border-top:0.5px solid #e2e8f0">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 @endsection
-@push('scripts')
-<script>
-const baseUrl = '{{ route('kriteria.sub-kriteria', $kriteria) }}';
-function resetModal() {
-    document.getElementById('modal-title').textContent = 'Tambah Sub-Kriteria';
-    document.getElementById('sk-form').action = baseUrl;
-    document.getElementById('form-method').value = 'POST';
-    document.getElementById('inp-skor').value = '';
-    document.getElementById('inp-nama').value = '';
-}
-function isiModal(id, nama, skor, nilaiMin, nilaiMax) {
-    document.getElementById('modal-title').textContent = 'Edit Sub-Kriteria';
-    document.getElementById('sk-form').action = baseUrl + '/' + id;
-    document.getElementById('form-method').value = 'PUT';
-    document.getElementById('inp-skor').value = skor;
-    if (document.getElementById('inp-nilai-min')) document.getElementById('inp-nilai-min').value = nilaiMin || '';
-    if (document.getElementById('inp-nilai-max')) document.getElementById('inp-nilai-max').value = nilaiMax || '';
-    document.getElementById('inp-nama').value = nama;
-}
-</script>
-@endpush

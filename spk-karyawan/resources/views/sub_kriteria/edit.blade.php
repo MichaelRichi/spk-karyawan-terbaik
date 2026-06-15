@@ -11,14 +11,11 @@
 </style>
 
 <div class="card" style="max-width:560px;margin:0 auto 16px">
-    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div style="padding:20px 24px">
         <div>
             <div style="font-size:18px;font-weight:800;color:#1e293b">Edit Sub-Kriteria</div>
             <div style="font-size:12px;color:#64748b;margin-top:2px">{{ $kriteria->nama }}</div>
         </div>
-        <a href="{{ route('kriteria.sub-kriteria', $kriteria->id) }}" class="btn" style="background:#475569;border:1px solid #475569;color:#fff;font-weight:600">
-            <i class="ti ti-arrow-left"></i> Kembali
-        </a>
     </div>
 </div>
 
@@ -37,7 +34,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-600">Skor <span style="color:#64748b;font-weight:400">(1–5)</span></label>
+                    <label class="form-label fw-600">Skor</label>
                     <input type="number" name="skor" class="form-control @error('skor') is-invalid @enderror"
                         value="{{ old('skor', $subKriteria->skor) }}" min="1" max="5" required>
                     @error('skor')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -71,8 +68,9 @@
                         placeholder="Deskripsi singkat untuk pilihan ini">{{ old('keterangan', $subKriteria->keterangan) }}</textarea>
                 </div>
 
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
+                <div style="display:flex;gap:10px">
+                    <a href="{{ route('kriteria.sub-kriteria', $kriteria->id) }}" class="btn" style="flex:1;justify-content:center;font-size:14px;padding:10px;background:#e2e8f0;border:1.5px solid #94a3b8;color:#1e293b;font-weight:700">Batal</a>
+                    <button type="submit" class="btn btn-primary" style="flex:2;justify-content:center;font-weight:600;padding:10px;font-size:14px">
                         <i class="ti ti-device-floppy"></i> Simpan Perubahan
                     </button>
                 </div>

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Hasil Ranking — '.(['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun)
+@section('title','Detail Hasil Ranking — '.(['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun)
 @section('content')
 
 <style>
@@ -46,7 +46,7 @@
 <div class="card" style="margin-bottom:16px">
     <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <div>
-            <div style="font-size:18px;font-weight:800;color:#1e293b">Hasil Ranking — {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</div>
+            <div style="font-size:18px;font-weight:800;color:#1e293b">Detail Hasil Ranking — {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</div>
             <div style="font-size:12px;color:#64748b;margin-top:2px">Perhitungan nilai selesai · Periode dikunci</div>
         </div>
         <div style="display:flex;gap:8px">
