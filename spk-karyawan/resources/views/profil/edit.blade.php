@@ -9,14 +9,18 @@ $roleColor = $user->role === 'direktur' ? '#1d4ed8' : ($user->role === 'admin' ?
 $roleBg    = $user->role === 'direktur' ? '#dbeafe' : ($user->role === 'admin' ? '#f3f4f6' : '#dcfce7');
 @endphp
 
-<div class="ph">
-    <div>
-        <div class="ph-title">Edit Profil</div>
-        <div class="ph-sub">Perbarui informasi akun Anda</div>
+<div class="card" style="margin:0 auto 16px;max-width:560px">
+    <div style="padding:18px 22px">
+        <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:46px;height:46px;border-radius:12px;background:#fef3c7;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <i class="ti ti-user-edit" style="font-size:24px;color:#d97706"></i>
+            </div>
+            <div>
+                <div style="font-size:18px;font-weight:800;color:#1e293b">Edit Profil</div>
+                <div style="font-size:12px;color:#64748b;margin-top:2px">Perbarui informasi akun Anda</div>
+            </div>
+        </div>
     </div>
-    <a href="{{ route('profil.show') }}" class="btn btn-outline-secondary">
-        <i class="ti ti-arrow-left"></i> Kembali
-    </a>
 </div>
 
 <div style="max-width:560px;margin:0 auto">
@@ -111,7 +115,7 @@ $roleBg    = $user->role === 'direktur' ? '#dbeafe' : ($user->role === 'admin' ?
         @endif
 
         <div style="display:flex;gap:8px">
-            <a href="{{ route('profil.show') }}" class="btn btn-outline-secondary" style="flex:1;justify-content:center">Batal</a>
+            <a href="{{ route('profil.show') }}" class="btn" style="flex:1;justify-content:center;background:white;border:1.5px solid #94a3b8;color:black;font-weight:700">Batal</a>
             <button type="submit" class="btn btn-primary" style="flex:2;justify-content:center">
                 <i class="ti ti-device-floppy"></i> Simpan Perubahan
             </button>

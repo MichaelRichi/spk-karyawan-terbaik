@@ -10,14 +10,21 @@ $roleColor = $user->role === 'direktur' ? '#1d4ed8' : ($user->role === 'admin' ?
 $roleBg    = $user->role === 'direktur' ? '#dbeafe' : ($user->role === 'admin' ? '#f3f4f6' : '#dcfce7');
 @endphp
 
-<div class="ph">
-    <div>
-        <div class="ph-title">Profil Saya</div>
-        <div class="ph-sub">Informasi akun dan data diri</div>
+<div class="card" style="margin:0 auto 16px;max-width:600px">
+    <div style="padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:46px;height:46px;border-radius:12px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <i class="ti ti-user-circle" style="font-size:24px;color:#2563eb"></i>
+            </div>
+            <div>
+                <div style="font-size:18px;font-weight:800;color:#1e293b">Profil Saya</div>
+                <div style="font-size:12px;color:#64748b;margin-top:2px">Informasi akun dan data diri</div>
+            </div>
+        </div>
+        <a href="{{ route('profil.edit') }}" class="btn btn-primary">
+            <i class="ti ti-pencil"></i> Edit Profil
+        </a>
     </div>
-    <a href="{{ route('profil.edit') }}" class="btn btn-primary">
-        <i class="ti ti-pencil"></i> Edit Profil
-    </a>
 </div>
 
 @if(session('success'))
