@@ -22,7 +22,6 @@ return new class extends Migration {
             $table->decimal('nilai_terbobot', 10, 6)->nullable();
 
             $table->text('catatan')->nullable();
-            $table->foreignId('dinilai_oleh')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
             $table->unique(['periode_id', 'karyawan_id', 'periode_kriteria_id'], 'uq_penilaian');

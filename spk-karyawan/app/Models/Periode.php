@@ -11,7 +11,7 @@ class Periode extends Model
     protected $table = 'periode';
 
     protected $fillable = [
-        'nama', 'bulan', 'tahun', 'status', 'keterangan', 'dibuat_oleh',
+        'nama', 'bulan', 'tahun', 'status', 'keterangan',
     ];
 
     protected $casts = [
@@ -32,11 +32,6 @@ class Periode extends Model
     public function hasilRanking(): HasMany
     {
         return $this->hasMany(HasilRanking::class)->orderBy('ranking');
-    }
-
-    public function dibuatOleh(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'dibuat_oleh');
     }
 
     /** Nama bulan dalam Bahasa Indonesia */

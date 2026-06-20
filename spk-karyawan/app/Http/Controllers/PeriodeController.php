@@ -6,7 +6,6 @@ use App\Http\Requests\StorePeriodeRequest;
 use App\Models\Kriteria;
 use App\Models\Periode;
 use App\Services\PeriodeService;
-use Illuminate\Support\Facades\Auth;
 
 class PeriodeController extends Controller
 {
@@ -73,7 +72,6 @@ class PeriodeController extends Controller
 
         $data = array_merge($request->validated(), [
             'nama'        => $namaBulan[$request->bulan] . ' ' . $request->tahun,
-            'dibuat_oleh' => Auth::user()->id,
             'status'      => 'aktif', // langsung aktif
         ]);
 

@@ -15,7 +15,9 @@ return new class extends Migration {
     {
         Schema::create('periode_sub_kriteria', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('periode_id')->constrained('periode')->cascadeOnDelete();
+            // periode_id disimpan sebagai referensi pendukung (tanpa foreign key);
+            // relasi ke periode bersifat transitif melalui periode_kriteria_id
+            $table->unsignedBigInteger('periode_id');
             $table->foreignId('periode_kriteria_id')->constrained('periode_kriteria')->cascadeOnDelete();
             $table->foreignId('sub_kriteria_id')->nullable()->constrained('sub_kriteria')->nullOnDelete();
 

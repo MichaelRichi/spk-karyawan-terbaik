@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float|null $nilai_normalisasi
  * @property float|null $nilai_terbobot
  * @property string|null $catatan
- * @property int|null $dinilai_oleh
  */
 class Penilaian extends Model
 {
@@ -25,7 +24,7 @@ class Penilaian extends Model
         'periode_id', 'karyawan_id', 'periode_kriteria_id',
         'periode_sub_kriteria_id', 'nilai',
         'nilai_normalisasi', 'nilai_terbobot',
-        'catatan', 'dinilai_oleh',
+        'catatan',
     ];
 
     protected $casts = [
@@ -52,10 +51,5 @@ class Penilaian extends Model
     public function periodeSubKriteria(): BelongsTo
     {
         return $this->belongsTo(PeriodeSubKriteria::class);
-    }
-
-    public function dinilaiOleh(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'dinilai_oleh');
     }
 }

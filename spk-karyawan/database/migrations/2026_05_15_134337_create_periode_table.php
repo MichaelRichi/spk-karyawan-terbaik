@@ -17,7 +17,6 @@ return new class extends Migration {
             // selesai = sudah dihitung & dikunci (READ-ONLY)
             $table->enum('status', ['draft', 'aktif', 'selesai'])->default('draft');
             $table->text('keterangan')->nullable();
-            $table->foreignId('dibuat_oleh')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
             $table->unique(['bulan', 'tahun']);
