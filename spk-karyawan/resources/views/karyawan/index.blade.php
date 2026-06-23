@@ -63,6 +63,7 @@
                 <td style="color:#475569;font-size:13px;font-weight:600">{{ $loop->iteration }}</td>
                 <td>
                     <div style="font-weight:700;color:#1e293b;font-size:14px">{{ $k->nama }}</div>
+                    <div style="font-size:11px;color:#94a3b8;font-weight:500">ID: {{ $k->id }}</div>
                     
                     @if($k->status=='tidak_aktif')
                     <span style="font-size:9px;color:#A32D2D;font-weight:400">(tidak aktif)</span>

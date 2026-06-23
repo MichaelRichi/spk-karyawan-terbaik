@@ -119,7 +119,7 @@
                 <tr>
                     <td>
                         <div style="font-weight:700;color:#1e293b;font-size:14px">{{ $k->nama }}</div>
-                        <div style="font-size:10px;color:#64748b">{{ $k->divisi }}</div>
+                        <div style="font-size:11px;color:#94a3b8;font-weight:500">ID: {{ $k->id }}</div>
                     </td>
                     @foreach($periode->periodeKriteria as $pk)
                     @php $p = $nilaiKaryawan[$k->id][$pk->id] ?? null; @endphp
