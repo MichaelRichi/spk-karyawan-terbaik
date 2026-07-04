@@ -28,9 +28,9 @@
     $skorOtomatis = []; // [periode_kriteria_id => skor]
     $infoOtomatis = []; // [periode_kriteria_id => info display]
 
-    foreach ($periode->periodeKriteria as $pk) {
+    foreach ($periodeKriteria as $pk) {
         // Cek apakah kriteria ini has_rentang
-        $kriteriaModel = \App\Models\Kriteria::where('nama', $pk->nama_kriteria)->first();
+        $kriteriaModel = \App\Models\Kriteria::where('nama', $pk->nama_kriteria)->where('tipe', $pk->tipe)->first();
         if (!$kriteriaModel || !$kriteriaModel->has_rentang) continue;
 
         $satuan = $kriteriaModel->satuan_rentang ?? '';
@@ -84,7 +84,7 @@
         if (isset($skorOtomatis[$pk->id])) $infoOtomatis[$pk->id] = $infoText;
     }
     @endphp
-    @foreach($periode->periodeKriteria as $pk)
+    @foreach($periodeKriteria as $pk)
 
         <div class="col-md-6">
             <div class="card h-100">

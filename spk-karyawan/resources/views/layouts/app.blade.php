@@ -235,6 +235,11 @@ body{background:#f1f5f9;font-size:13px;font-family:-apple-system,BlinkMacSystemF
             <i class="ti ti-alert-circle"></i>{{ session('error') }}
         </div>
         @endif
+        @if(session('warning'))
+        <div class="alert-spk al-warn">
+            <i class="ti ti-alert-triangle"></i>{{ session('warning') }}
+        </div>
+        @endif
 
         @yield('content')
     </div>

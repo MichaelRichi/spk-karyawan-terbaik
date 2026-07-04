@@ -47,15 +47,31 @@
     <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <div>
             <div style="font-size:18px;font-weight:800;color:#1e293b">Detail Hasil Ranking — {{ (['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$periode->bulan] ?? $periode->bulan).' '.$periode->tahun }}</div>
-            <div style="font-size:12px;color:#64748b;margin-top:2px">Perhitungan nilai selesai · Periode dikunci</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">
+                @if($periode->isLocked())
+                Perhitungan nilai selesai · <span style="color:#16a34a;font-weight:700">Periode dikunci</span>
+                @else
+                <span style="color:#b45309;font-weight:700">Periode terbuka untuk koreksi</span> · jalankan Hitung Penilaian untuk mengunci kembali
+                @endif
+            </div>
         </div>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
             <a href="{{ route('ranking.index') }}" class="btn btn-outline-secondary">
                 <i class="ti ti-arrow-left"></i> Kembali
             </a>
             <a href="{{ route('ranking.cetak', $periode) }}" class="btn btn-info-soft" target="_blank">
                 <i class="ti ti-file-text"></i> Cetak PDF
             </a>
+            @if($periode->isLocked())
+            <button type="button" class="btn" style="background:#f59e0b;border-color:#f59e0b;color:#fff" onclick="document.getElementById('form-buka').submit()">
+                <i class="ti ti-lock-open"></i> Buka Kunci
+            </button>
+            <form id="form-buka" method="POST" action="{{ route('periode.buka', $periode) }}" style="display:none">@csrf</form>
+            @else
+            <a href="{{ route('penilaian.index', $periode) }}" class="btn btn-primary" style="background:#2563eb">
+                <i class="ti ti-calculator"></i> Ke Hitung Penilaian
+            </a>
+            @endif
         </div>
     </div>
 </div>
@@ -70,6 +86,19 @@
     <div class="step done"><i class="ti ti-check"></i> Hitung Penilaian</div>
     <span class="step-arr">›</span>
     <div class="step done"><i class="ti ti-lock"></i> Selesai</div>
+</div>
+
+@if(empty($detailPerTipe))
+<div class="alert-spk al-warn"><i class="ti ti-alert-triangle"></i> Belum ada hasil ranking yang dihitung. Jalankan Hitung Penilaian pada tab tipe karyawan terlebih dahulu.</div>
+@endif
+
+@foreach($detailPerTipe as $tipeKey => $detail)
+@php $periodeKriteria = $kriteriaPerTipe[$tipeKey]; $tipeLabelRk = $tipeKey==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap'; @endphp
+
+<div style="display:flex;align-items:center;gap:10px;margin:24px 0 12px">
+    <span class="badge {{ $tipeKey=='tetap'?'bg-info-soft':'bg-warning-soft' }}" style="font-size:13px;padding:6px 14px;font-weight:800">{{ $tipeLabelRk }}</span>
+    <div style="flex:1;height:1px;background:#e2e8f0"></div>
+    <span style="font-size:12px;color:#64748b">{{ count($detail) }} karyawan</span>
 </div>
 
 <div class="rk-stats">
@@ -310,10 +339,14 @@
                         @endforeach
                         <td class="text-center vi-c">{{ number_format($d['nilai_preferensi'], 3) }}</td>
                         <td class="text-center">
+                            @if(!$periode->isLocked())
                             <a href="{{ route('ranking.edit-nilai', [$periode, $d['karyawan']->id]) }}"
                                 class="btn btn-sm" style="background:#f59e0b;border-color:#f59e0b;color:#fff;font-size:10px">
                                 <i class="ti ti-pencil"></i> Edit
                             </a>
+                            @else
+                            <span style="font-size:13px;color:#cbd5e1" title="Periode terkunci"><i class="ti ti-lock"></i></span>
+                            @endif
                         </td>
                     </tr>
                     @endforeach
@@ -325,6 +358,8 @@
         </div>
     </div>
 </div>
+
+@endforeach
 
 @push('scripts')
 <script>

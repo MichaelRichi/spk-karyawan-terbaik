@@ -69,7 +69,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
     }
 
     $top3Periode = $periodeSelesai->where('id', $r->periode_id)->first();
-    $top3 = $top3Periode ? $top3Periode->hasilRanking->where('ranking', '<=', 3)->sortBy('ranking') : collect();
+    $top3 = $top3Periode ? $top3Periode->hasilRanking->where('tipe', $karyawan->tipe)->where('ranking', '<=', 3)->sortBy('ranking') : collect();
     $nilaiku = $top3Periode ? $top3Periode->hasilRanking->where('karyawan_id', $karyawan->id)->first() : null;
 @endphp
 
@@ -96,7 +96,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
 
     {{-- Kartu per kriteria --}}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px">
-        @foreach($r->periode->periodeKriteria as $i => $pk)
+        @foreach($r->periode->periodeKriteria->where('tipe', $karyawan->tipe) as $i => $pk)
         @php
             $p = $penilaian[$pk->id] ?? null;
             $skor = $p?->periodeSubKriteria?->skor ?? 0;
@@ -134,7 +134,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
             style="width:100%;background:none;border:none;cursor:pointer;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;text-align:left">
             <span style="font-weight:600;color:#1e293b;font-size:13px">
                 <i class="ti ti-medal" style="color:#d97706;margin-right:6px"></i>
-                Top 3 Karyawan Terbaik Periode Ini
+                Top 3 Karyawan {{ $karyawan->tipe_label }} Terbaik Periode Ini
             </span>
             <i class="ti ti-chevron-down" id="chevron-{{ $r->id }}" style="color:#64748b;transition:transform .2s"></i>
         </button>
@@ -164,7 +164,7 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
             <div style="padding:10px 14px;border-top:0.5px solid #e2e8f0;display:flex;align-items:center;gap:10px">
                 <div style="width:32px;height:32px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#1d4ed8;flex-shrink:0">#{{ $nilaiku->ranking }}</div>
                 <span style="font-size:12px;color:#64748b">
-                    Posisi Anda dari <strong>{{ $top3Periode->hasilRanking->count() }}</strong> karyawan
+                    Posisi Anda dari <strong>{{ $top3Periode->hasilRanking->where('tipe', $karyawan->tipe)->count() }}</strong> karyawan
                     &nbsp;·&nbsp; Nilai Akhir: <strong style="color:#7c3aed">{{ number_format($nilaiku->nilai_preferensi, 3) }}</strong>
                 </span>
             </div>

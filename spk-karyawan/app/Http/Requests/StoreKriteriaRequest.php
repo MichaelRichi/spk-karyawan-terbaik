@@ -15,6 +15,7 @@ class StoreKriteriaRequest extends FormRequest
     {
         return [
             'nama'           => ['required', 'string', 'max:100'],
+            'tipe'           => ['required', 'in:tetap,tidak_tetap'],
             'jenis'          => ['required', 'in:benefit,cost'],
             'bobot'          => ['required', 'numeric', 'min:0', 'max:100'],
             'has_rentang'    => ['nullable', 'boolean'],

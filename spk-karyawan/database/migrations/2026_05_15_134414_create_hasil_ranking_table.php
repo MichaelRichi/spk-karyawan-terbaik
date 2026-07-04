@@ -11,6 +11,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('periode_id')->constrained('periode')->cascadeOnDelete();
             $table->foreignId('karyawan_id')->constrained('karyawan')->cascadeOnDelete();
+            // tipe: ranking dipisah per jenis kepegawaian dalam satu periode
+            $table->enum('tipe', ['tetap', 'tidak_tetap'])->default('tetap');
             $table->decimal('nilai_preferensi', 10, 6);
             $table->integer('ranking');
             $table->timestamps();

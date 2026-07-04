@@ -11,7 +11,7 @@ class HasilRanking extends Model
     protected $table = 'hasil_ranking';
 
     protected $fillable = [
-        'periode_id', 'karyawan_id',
+        'periode_id', 'karyawan_id', 'tipe',
         'nilai_preferensi', 'ranking',
     ];
 

@@ -1,53 +1,54 @@
 @extends('layouts.app')
 @section('title','Buat Periode Baru')
 @section('content')
+@php $tipeLabels = ['tetap'=>'Karyawan Tetap','tidak_tetap'=>'Karyawan Tidak Tetap']; @endphp
 
 <div class="card" style="margin-bottom:16px;max-width:560px;margin-left:auto;margin-right:auto">
     <div style="padding:20px 24px">
         <div style="font-size:18px;font-weight:800;color:#1e293b">Buat Periode Baru</div>
-        <div style="font-size:12px;color:#64748b;margin-top:2px">Periode akan langsung aktif menggunakan kriteria & bobot yang berlaku saat ini</div>
+        <div style="font-size:12px;color:#64748b;margin-top:2px">Satu periode mencakup seluruh karyawan. Pemisahan tetap &amp; tidak tetap dilakukan saat input penilaian. Kedua set kriteria harus bertotal 100%.</div>
     </div>
 </div>
 
 <div style="max-width:560px;margin:0 auto">
 
+@if($errors->any())
+<div class="alert-spk al-danger" style="background:#FCEBEB;border-color:#ef4444;color:#791F1F;margin-bottom:14px">
+    <i class="ti ti-alert-circle"></i>
+    <div>
+        <strong>Periode gagal dibuat:</strong>
+        <ul style="margin:4px 0 0 16px;padding:0">
+            @foreach($errors->all() as $e)<li style="font-size:12px">{{ $e }}</li>@endforeach
+        </ul>
+    </div>
+</div>
+@endif
+
 @if(!$bisaBuat)
-{{-- Tidak bisa buat periode --}}
+{{-- Belum bisa buat periode: tampilkan status tiap set --}}
 <div class="card" style="border-color:#fca5a5;overflow:hidden">
-    <div style="background:linear-gradient(135deg,#fee2e2,#fef2f2);padding:32px 24px;text-align:center;border-bottom:1px solid #fca5a5">
+    <div style="background:linear-gradient(135deg,#fee2e2,#fef2f2);padding:28px 24px;text-align:center;border-bottom:1px solid #fca5a5">
         <div style="width:64px;height:64px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 12px rgba(239,68,68,.2)">
             <i class="ti ti-alert-triangle" style="font-size:32px;color:#ef4444"></i>
         </div>
-        @if($kriteria->isEmpty())
-        <div style="font-weight:700;font-size:16px;color:#1e293b;margin-bottom:6px">Belum Ada Kriteria</div>
-        <div style="color:#64748b;font-size:13px">Tambahkan kriteria penilaian beserta sub-kriteria dan bobotnya terlebih dahulu.</div>
-        @else
-        <div style="font-weight:700;font-size:16px;color:#1e293b;margin-bottom:6px">Total Bobot Belum 100%</div>
-        <div style="color:#64748b;font-size:13px">
-            Total bobot saat ini <strong style="color:#ef4444">{{ $totalBobot }}%</strong> — harus tepat <strong>100%</strong>.
-        </div>
-        @endif
+        <div style="font-weight:700;font-size:16px;color:#1e293b;margin-bottom:6px">Kriteria Belum Siap</div>
+        <div style="color:#64748b;font-size:13px">Pastikan kedua set kriteria (Tetap &amp; Tidak Tetap) tidak kosong dan bertotal 100%.</div>
     </div>
     <div style="padding:20px 24px">
-        @if(!$kriteria->isEmpty())
-        <div style="margin-bottom:16px">
-            @foreach($kriteria as $k)
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;{{ !$loop->last?'border-bottom:0.5px solid #f1f5f9':'' }}">
-                <div style="display:flex;align-items:center;gap:8px">
-                    <span style="font-size:13px;font-weight:600;color:#1e293b">{{ $k->nama }}</span>
-                    <span class="badge {{ $k->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }}" style="font-size:9px">{{ $k->jenis }}</span>
-                </div>
-                <span style="font-weight:700;color:#185FA5">{{ $k->bobot }}%</span>
-            </div>
-            @endforeach
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:2px solid #e2e8f0;margin-top:4px">
-                <span style="font-weight:700;color:#1e293b">Total</span>
-                <span style="font-weight:700;color:#ef4444">{{ $totalBobot }}%</span>
+        @foreach(['tetap','tidak_tetap'] as $tp)
+        @php $set = $setKriteria[$tp]; @endphp
+        <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span class="badge {{ $tp=='tetap'?'bg-info-soft':'bg-warning-soft' }}" style="font-size:11px">{{ $tipeLabels[$tp] }}</span>
+                <span style="font-weight:700;font-size:13px;color:{{ $set['valid']?'#16a34a':'#ef4444' }}">
+                    {{ $set['kriteria']->isEmpty() ? 'Belum ada kriteria' : $set['totalBobot'].'%' }}
+                    {!! $set['valid'] ? '✓' : '' !!}
+                </span>
             </div>
         </div>
-        @endif
-        <a href="{{ route('kriteria.index') }}" class="btn btn-primary w-100">
-            <i class="ti ti-adjustments-horizontal"></i> Atur Kriteria & Bobot
+        @endforeach
+        <a href="{{ route('kriteria.index') }}" class="btn btn-primary w-100" style="margin-top:6px">
+            <i class="ti ti-adjustments-horizontal"></i> Atur Kriteria &amp; Bobot
         </a>
     </div>
 </div>
@@ -55,7 +56,6 @@
 @else
 {{-- Bisa buat periode --}}
 <div class="card" style="overflow:hidden">
-    {{-- Header card --}}
     <div style="background:linear-gradient(135deg,#1d4ed8,#2563eb);padding:24px;text-align:center">
         <div style="width:56px;height:56px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:2px solid rgba(255,255,255,.3)">
             <i class="ti ti-calendar-plus" style="font-size:28px;color:#fff"></i>
@@ -65,14 +65,15 @@
     </div>
 
     <div style="padding:20px 24px">
-
-        {{-- Ringkasan kriteria --}}
-        <div style="background:#f8fafc;border-radius:10px;border:0.5px solid #e2e8f0;overflow:hidden;margin-bottom:20px">
+        {{-- Ringkasan kedua set kriteria --}}
+        @foreach(['tetap','tidak_tetap'] as $tp)
+        @php $set = $setKriteria[$tp]; @endphp
+        <div style="background:#f8fafc;border-radius:10px;border:0.5px solid #e2e8f0;overflow:hidden;margin-bottom:14px">
             <div style="background:#f1f5f9;padding:8px 14px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.6px;border-bottom:0.5px solid #e2e8f0">
-                <i class="ti ti-list-check" style="font-size:11px"></i> Kriteria yang Akan Dipakai
+                <i class="ti ti-list-check" style="font-size:11px"></i> Kriteria {{ $tipeLabels[$tp] }}
             </div>
             <div style="padding:0 14px">
-                @foreach($kriteria as $k)
+                @foreach($set['kriteria'] as $k)
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;{{ !$loop->last?'border-bottom:0.5px solid #f1f5f9':'' }}">
                     <div style="display:flex;align-items:center;gap:8px">
                         <div style="width:6px;height:6px;border-radius:50%;background:{{ $k->jenis=='benefit'?'#16a34a':'#ef4444' }}"></div>
@@ -88,9 +89,10 @@
                 </div>
             </div>
         </div>
+        @endforeach
 
         {{-- Form --}}
-        <form method="POST" action="{{ route('periode.store') }}">
+        <form method="POST" action="{{ route('periode.store') }}" style="margin-top:6px">
             @csrf
             <div class="row g-3 mb-4">
                 <div class="col-7">
@@ -116,7 +118,7 @@
             <div style="display:flex;gap:8px">
                 <a href="{{ route('periode.index') }}" class="btn btn-outline-secondary" style="flex:1;justify-content:center">Batal</a>
                 <button type="submit" class="btn btn-primary" style="flex:2;justify-content:center;background:#2563eb">
-                    <i class="ti ti-player-play"></i> Buat & Aktifkan Periode
+                    <i class="ti ti-player-play"></i> Buat &amp; Aktifkan Periode
                 </button>
             </div>
         </form>

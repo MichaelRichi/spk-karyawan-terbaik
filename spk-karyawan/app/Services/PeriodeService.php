@@ -26,7 +26,8 @@ class PeriodeService
 
     public function salinSnapshot(Periode $periode): void
     {
-        // Ambil semua kriteria beserta sub-kriterianya
+        // Ambil SELURUH kriteria (kedua tipe) beserta sub-kriterianya.
+        // Pemisahan tetap/tidak tetap terjadi di dalam periode lewat kolom tipe.
         $kriteriaList = Kriteria::with('subKriteria')->get();
 
         if ($kriteriaList->isEmpty()) {
@@ -38,6 +39,7 @@ class PeriodeService
             $pk = PeriodeKriteria::create([
                 'periode_id'    => $periode->id,
                 'kriteria_id'   => $k->id,
+                'tipe'          => $k->tipe,
                 'nama_kriteria' => $k->nama,
                 'jenis'         => $k->jenis,
                 'bobot'         => $k->bobot,
@@ -63,9 +65,11 @@ class PeriodeService
             throw new \Exception('Hanya periode berstatus aktif yang dapat diselesaikan.');
         }
 
-        if (!$periode->isBobotValid()) {
-            $total = $periode->periodeKriteria()->sum('bobot');
-            throw new \Exception("Total bobot harus 100%. Saat ini: {$total}%.");
+        foreach (Periode::tipeList() as $tipe) {
+            if ($periode->periodeKriteria()->where('tipe', $tipe)->exists() && !$periode->isBobotValid($tipe)) {
+                $total = $periode->periodeKriteria()->where('tipe', $tipe)->sum('bobot');
+                throw new \Exception('Total bobot ' . Periode::tipeLabel($tipe) . " harus 100%. Saat ini: {$total}%.");
+            }
         }
 
         if (!$periode->hasilRanking()->exists()) {

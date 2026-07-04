@@ -10,6 +10,8 @@ return new class extends Migration {
         Schema::create('periode', function (Blueprint $table) {
             $table->id();
             $table->string('nama', 50);          // "Januari 2025"
+            // Periode dijalankan untuk satu jenis kepegawaian (tetap / tidak tetap)
+            $table->enum('tipe_karyawan', ['tetap', 'tidak_tetap'])->default('tetap');
             $table->tinyInteger('bulan');         // 1–12
             $table->year('tahun');
             // draft = belum input penilaian
@@ -19,7 +21,7 @@ return new class extends Migration {
             $table->text('keterangan')->nullable();
             $table->timestamps();
 
-            $table->unique(['bulan', 'tahun']);
+            $table->unique(['bulan', 'tahun', 'tipe_karyawan']);
         });
     }
 

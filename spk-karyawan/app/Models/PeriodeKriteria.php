@@ -11,7 +11,7 @@ class PeriodeKriteria extends Model
     protected $table = 'periode_kriteria';
 
     protected $fillable = [
-        'periode_id', 'kriteria_id',
+        'periode_id', 'kriteria_id', 'tipe',
         'nama_kriteria', 'jenis', 'bobot',
     ];
 

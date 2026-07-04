@@ -168,13 +168,16 @@ table.ranking tbody tr.genap  { background: #ffffff; }
     <div class="judul-periode">Periode {{ $labelBulan }}</div>
 </div>
 
-{{-- TABEL --}}
+{{-- TABEL per tipe --}}
+@foreach($detailPerTipe as $tipeKey => $detail)
+@php $pkList = $kriteriaPerTipe[$tipeKey]; $tipeLabelRk = $tipeKey==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap'; @endphp
+<div class="judul-periode" style="margin:14px 0 4px;font-weight:bold;text-align:left">Ranking {{ $tipeLabelRk }}</div>
 <table class="ranking">
     <thead>
         <tr>
             <th style="width:35px">Rank</th>
             <th style="text-align:left;width:120px">Nama Karyawan</th>
-            @foreach($periode->periodeKriteria as $pk)
+            @foreach($pkList as $pk)
             <th>{{ $pk->nama_kriteria }}<br>
                 <span style="font-weight:normal;font-size:7.5pt">({{ $pk->bobot }}%)</span>
             </th>
@@ -187,9 +190,7 @@ table.ranking tbody tr.genap  { background: #ffffff; }
         @php $rowClass = $d['ranking'] % 2 == 1 ? 'ganjil' : 'genap'; @endphp
         <tr class="{{ $rowClass }}">
             <td><span class="rank-num">{{ $d['ranking'] }}</span></td>
-            <td class="left">
-                {{ $d['karyawan']->nama }}
-            </td>
+            <td class="left">{{ $d['karyawan']->nama }}</td>
             @foreach($d['detail_kriteria'] as $dk)
             <td style="font-weight:600">{{ $dk['nilai'] }}</td>
             @endforeach
@@ -198,6 +199,7 @@ table.ranking tbody tr.genap  { background: #ffffff; }
         @endforeach
     </tbody>
 </table>
+@endforeach
 
 {{-- KETERANGAN --}}
 

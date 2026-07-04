@@ -50,7 +50,7 @@ class KaryawanController extends Controller
 
     public function update(StoreKaryawanRequest $request, Karyawan $karyawan)
     {
-        $karyawan->update($request->only(['nama','tgl_lahir','jenis_kelamin','tgl_masuk','status','no_telepon','alamat']));
+        $karyawan->update($request->only(['nama','tgl_lahir','jenis_kelamin','tgl_masuk','status','tipe','no_telepon','alamat']));
 
         // Sync is_active user mengikuti status karyawan
         if ($karyawan->user) {

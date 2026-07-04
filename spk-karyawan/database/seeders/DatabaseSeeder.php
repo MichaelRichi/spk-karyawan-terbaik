@@ -74,6 +74,10 @@ Kecamatan ilir timur tiga'],
             ['nama' => 'ARI',           'jenis_kelamin' => 'Laki-laki', 'tgl_masuk' => '2025-03-02', 'tgl_lahir' => '2000-08-18', 'no_telepon' => '0895621685648', 'alamat' => 'Jl. Surya Sakti No.1997'],
         ];
 
+        // Pembagian manual jenis kepegawaian. Silakan sesuaikan daftar nama
+        // berikut dengan kondisi nyata PT Cempaka Indah Abadi.
+        $karyawanTidakTetap = ['DAWI', 'BOBO', 'JAYA', 'ARI', 'WANDA', 'SUNAR', 'MISRAN', 'SELAMET SUPIR'];
+
         foreach ($dataKaryawan as $k) {
             \App\Models\Karyawan::create([
                 'nama'           => $k['nama'],
@@ -81,62 +85,72 @@ Kecamatan ilir timur tiga'],
                 'tgl_masuk'      => $k['tgl_masuk'],
                 'tgl_lahir'      => $k['tgl_lahir'] ?? null,
                 'status'         => 'aktif',
+                'tipe'           => in_array($k['nama'], $karyawanTidakTetap) ? 'tidak_tetap' : 'tetap',
                 'no_telepon'     => $k['no_telepon'] ?? null,
                 'alamat'         => $k['alamat'] ?? null,
             ]);
         }
 
-        // ── KRITERIA & SUB-KRITERIA ───────────────────────────────────
-        $kriteriaData = [
-            ['nama' => 'Kehadiran',      'jenis' => 'benefit', 'bobot' => 30, 'has_rentang' => true,  'satuan_rentang' => 'hari'],
-            ['nama' => 'Masa Kerja',     'jenis' => 'benefit', 'bobot' => 15, 'has_rentang' => true,  'satuan_rentang' => 'tahun'],
-            ['nama' => 'Kedisiplinan',   'jenis' => 'cost',    'bobot' => 20, 'has_rentang' => true,  'satuan_rentang' => 'kali'],
-            ['nama' => 'Tanggung Jawab', 'jenis' => 'benefit', 'bobot' => 20, 'has_rentang' => false, 'satuan_rentang' => null],
-            ['nama' => 'Komunikasi',     'jenis' => 'benefit', 'bobot' => 15, 'has_rentang' => false, 'satuan_rentang' => null],
+        // ── KRITERIA & SUB-KRITERIA (DIPISAH PER TIPE KARYAWAN) ───────
+        // Skala (sub-kriteria) yang dipakai bersama oleh kedua set.
+        $subKehadiran = [
+            ['skor' => 5, 'nama' => '≥ 26 hari',   'nilai_min' => 26, 'nilai_max' => 99],
+            ['skor' => 4, 'nama' => '23 – 25 hari', 'nilai_min' => 23, 'nilai_max' => 25],
+            ['skor' => 3, 'nama' => '20 – 22 hari', 'nilai_min' => 20, 'nilai_max' => 22],
+            ['skor' => 2, 'nama' => '17 – 19 hari', 'nilai_min' => 17, 'nilai_max' => 19],
+            ['skor' => 1, 'nama' => '< 17 hari',    'nilai_min' => 0,  'nilai_max' => 16],
+        ];
+        $subMasaKerja = [
+            ['skor' => 5, 'nama' => '> 10 tahun',     'nilai_min' => 10.01, 'nilai_max' => 99],
+            ['skor' => 4, 'nama' => '> 5 – 10 tahun', 'nilai_min' => 5.01,  'nilai_max' => 10],
+            ['skor' => 3, 'nama' => '> 3 – 5 tahun',  'nilai_min' => 3.01,  'nilai_max' => 5],
+            ['skor' => 2, 'nama' => '1 – 3 tahun',    'nilai_min' => 1,     'nilai_max' => 3],
+            ['skor' => 1, 'nama' => '< 1 tahun',      'nilai_min' => 0,     'nilai_max' => 0],
+        ];
+        $subKedisiplinan = [
+            ['skor' => 1, 'nama' => 'Tidak pernah terlambat', 'nilai_min' => 0, 'nilai_max' => 0],
+            ['skor' => 2, 'nama' => '1 kali terlambat',        'nilai_min' => 1, 'nilai_max' => 1],
+            ['skor' => 3, 'nama' => '2 kali terlambat',        'nilai_min' => 2, 'nilai_max' => 2],
+            ['skor' => 4, 'nama' => '3 kali terlambat',        'nilai_min' => 3, 'nilai_max' => 3],
+            ['skor' => 5, 'nama' => '> 3 kali terlambat',      'nilai_min' => 4, 'nilai_max' => 99],
+        ];
+        $subKualitatif = [
+            ['skor' => 5, 'nama' => 'Sangat bagus'],
+            ['skor' => 4, 'nama' => 'Bagus'],
+            ['skor' => 3, 'nama' => 'Cukup'],
+            ['skor' => 2, 'nama' => 'Kurang'],
+            ['skor' => 1, 'nama' => 'Sangat kurang'],
         ];
 
-        $subKriteriaData = [
-            'Kehadiran' => [
-                ['skor' => 5, 'nama' => '≥ 26 hari',   'nilai_min' => 26, 'nilai_max' => 99],
-                ['skor' => 4, 'nama' => '23 – 25 hari', 'nilai_min' => 23, 'nilai_max' => 25],
-                ['skor' => 3, 'nama' => '20 – 22 hari', 'nilai_min' => 20, 'nilai_max' => 22],
-                ['skor' => 2, 'nama' => '17 – 19 hari', 'nilai_min' => 17, 'nilai_max' => 19],
-                ['skor' => 1, 'nama' => '< 17 hari',    'nilai_min' => 0,  'nilai_max' => 16],
-            ],
-            'Masa Kerja' => [
-                ['skor' => 5, 'nama' => '> 10 tahun',     'nilai_min' => 10.01, 'nilai_max' => 99],
-                ['skor' => 4, 'nama' => '> 5 – 10 tahun', 'nilai_min' => 5.01,  'nilai_max' => 10],
-                ['skor' => 3, 'nama' => '> 3 – 5 tahun',  'nilai_min' => 3.01,  'nilai_max' => 5],
-                ['skor' => 2, 'nama' => '1 – 3 tahun',    'nilai_min' => 1,     'nilai_max' => 3],
-                ['skor' => 1, 'nama' => '< 1 tahun',      'nilai_min' => 0,     'nilai_max' => 0],
-            ],
-            'Kedisiplinan' => [
-                ['skor' => 1, 'nama' => 'Tidak pernah terlambat', 'nilai_min' => 0, 'nilai_max' => 0],
-                ['skor' => 2, 'nama' => '1 kali terlambat',        'nilai_min' => 1, 'nilai_max' => 1],
-                ['skor' => 3, 'nama' => '2 kali terlambat',        'nilai_min' => 2, 'nilai_max' => 2],
-                ['skor' => 4, 'nama' => '3 kali terlambat',        'nilai_min' => 3, 'nilai_max' => 3],
-                ['skor' => 5, 'nama' => '> 3 kali terlambat',      'nilai_min' => 4, 'nilai_max' => 99],
-            ],
-            'Tanggung Jawab' => [
-                ['skor' => 5, 'nama' => 'Sangat bagus'],
-                ['skor' => 4, 'nama' => 'Bagus'],
-                ['skor' => 3, 'nama' => 'Cukup'],
-                ['skor' => 2, 'nama' => 'Kurang'],
-                ['skor' => 1, 'nama' => 'Sangat kurang'],
-            ],
-            'Komunikasi' => [
-                ['skor' => 5, 'nama' => 'Sangat bagus'],
-                ['skor' => 4, 'nama' => 'Bagus'],
-                ['skor' => 3, 'nama' => 'Cukup'],
-                ['skor' => 2, 'nama' => 'Kurang'],
-                ['skor' => 1, 'nama' => 'Sangat kurang'],
-            ],
+        // SET 1 — KARYAWAN TETAP (total bobot 100%)
+        // SET 2 — KARYAWAN TIDAK TETAP (total bobot 100%); Masa Kerja
+        //         dihilangkan karena tidak relevan, bobotnya dialihkan ke
+        //         kriteria kinerja. >>> SILAKAN SESUAIKAN bobot/kriteria <<<
+        $kriteriaData = [
+            // Tetap
+            ['tipe' => 'tetap',       'nama' => 'Kehadiran',      'jenis' => 'benefit', 'bobot' => 30, 'has_rentang' => true,  'satuan_rentang' => 'hari',  'sub' => $subKehadiran],
+            ['tipe' => 'tetap',       'nama' => 'Masa Kerja',     'jenis' => 'benefit', 'bobot' => 15, 'has_rentang' => true,  'satuan_rentang' => 'tahun', 'sub' => $subMasaKerja],
+            ['tipe' => 'tetap',       'nama' => 'Kedisiplinan',   'jenis' => 'cost',    'bobot' => 20, 'has_rentang' => true,  'satuan_rentang' => 'kali',  'sub' => $subKedisiplinan],
+            ['tipe' => 'tetap',       'nama' => 'Tanggung Jawab', 'jenis' => 'benefit', 'bobot' => 20, 'has_rentang' => false, 'satuan_rentang' => null,    'sub' => $subKualitatif],
+            ['tipe' => 'tetap',       'nama' => 'Komunikasi',     'jenis' => 'benefit', 'bobot' => 15, 'has_rentang' => false, 'satuan_rentang' => null,    'sub' => $subKualitatif],
+            // Tidak Tetap
+            ['tipe' => 'tidak_tetap', 'nama' => 'Kehadiran',      'jenis' => 'benefit', 'bobot' => 30, 'has_rentang' => true,  'satuan_rentang' => 'hari',  'sub' => $subKehadiran],
+            ['tipe' => 'tidak_tetap', 'nama' => 'Kedisiplinan',   'jenis' => 'cost',    'bobot' => 25, 'has_rentang' => true,  'satuan_rentang' => 'kali',  'sub' => $subKedisiplinan],
+            ['tipe' => 'tidak_tetap', 'nama' => 'Tanggung Jawab', 'jenis' => 'benefit', 'bobot' => 25, 'has_rentang' => false, 'satuan_rentang' => null,    'sub' => $subKualitatif],
+            ['tipe' => 'tidak_tetap', 'nama' => 'Komunikasi',     'jenis' => 'benefit', 'bobot' => 20, 'has_rentang' => false, 'satuan_rentang' => null,    'sub' => $subKualitatif],
         ];
 
         foreach ($kriteriaData as $kd) {
-            $kriteria = Kriteria::create($kd);
+            $kriteria = Kriteria::create([
+                'nama'           => $kd['nama'],
+                'tipe'           => $kd['tipe'],
+                'jenis'          => $kd['jenis'],
+                'bobot'          => $kd['bobot'],
+                'has_rentang'    => $kd['has_rentang'],
+                'satuan_rentang' => $kd['satuan_rentang'],
+            ]);
 
-            foreach ($subKriteriaData[$kd['nama']] ?? [] as $sk) {
+            foreach ($kd['sub'] as $sk) {
                 SubKriteria::create([
                     'kriteria_id' => $kriteria->id,
                     'nama'        => $sk['nama'],

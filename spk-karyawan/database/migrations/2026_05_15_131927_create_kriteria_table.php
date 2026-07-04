@@ -10,6 +10,8 @@ return new class extends Migration {
         Schema::create('kriteria', function (Blueprint $table) {
             $table->id();
             $table->string('nama', 100);
+            // Set kriteria dipisah per jenis kepegawaian (revisi penguji)
+            $table->enum('tipe', ['tetap', 'tidak_tetap'])->default('tetap');
             $table->enum('jenis', ['benefit', 'cost']);
             $table->decimal('bobot', 5, 2);
             $table->boolean('has_rentang')->default(false);

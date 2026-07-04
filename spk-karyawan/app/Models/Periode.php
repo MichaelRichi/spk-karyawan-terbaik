@@ -52,22 +52,41 @@ class Periode extends Model
         return $this->status === 'selesai';
     }
 
+    /** Daftar tipe kepegawaian yang didukung */
+    public static function tipeList(): array
+    {
+        return ['tetap', 'tidak_tetap'];
+    }
+
+    public static function tipeLabel(string $tipe): string
+    {
+        return $tipe === 'tetap' ? 'Karyawan Tetap' : 'Karyawan Tidak Tetap';
+    }
+
+    /** Snapshot kriteria untuk satu tipe kepegawaian */
+    public function periodeKriteriaTipe(string $tipe)
+    {
+        return $this->periodeKriteria()->where('tipe', $tipe);
+    }
+
     /**
-     * Cari periode_kriteria berdasarkan satuan rentang, lalu fallback ke nama.
-     * Dipakai untuk auto-isi nilai dari data absensi.
+     * Cari periode_kriteria (dalam satu tipe) berdasarkan satuan rentang,
+     * lalu fallback ke nama. Dipakai untuk auto-isi nilai dari data absensi.
      */
-    public function cariKriteria(?string $satuan, string $namaLike)
+    public function cariKriteria(?string $satuan, string $namaLike, string $tipe = 'tetap')
     {
         $kriteria = null;
 
         if ($satuan) {
             $kriteria = $this->periodeKriteria()->with('periodeSubKriteria')
+                ->where('tipe', $tipe)
                 ->whereHas('kriteria', fn($k) => $k->where('satuan_rentang', $satuan))
                 ->first();
         }
 
         if (!$kriteria) {
             $kriteria = $this->periodeKriteria()->with('periodeSubKriteria')
+                ->where('tipe', $tipe)
                 ->whereRaw('LOWER(nama_kriteria) LIKE ?', ['%' . strtolower($namaLike) . '%'])
                 ->first();
         }
@@ -75,31 +94,41 @@ class Periode extends Model
         return $kriteria;
     }
 
-    /** Kriteria Kehadiran (satuan 'hari') */
-    public function kriteriaKehadiran()
+    /** Kriteria Kehadiran (satuan 'hari') untuk tipe tertentu */
+    public function kriteriaKehadiran(string $tipe = 'tetap')
     {
-        return $this->cariKriteria('hari', 'kehadiran');
+        return $this->cariKriteria('hari', 'kehadiran', $tipe);
     }
 
-    /** Kriteria Kedisiplinan (satuan 'kali') */
-    public function kriteriaKedisiplinan()
+    /** Kriteria Kedisiplinan (satuan 'kali') untuk tipe tertentu */
+    public function kriteriaKedisiplinan(string $tipe = 'tetap')
     {
-        return $this->cariKriteria('kali', 'disiplin');
+        return $this->cariKriteria('kali', 'disiplin', $tipe);
     }
 
-    /** Validasi: total bobot kriteria harus = 100% */
-    public function isBobotValid(): bool
+    /** Validasi: total bobot kriteria satu tipe harus = 100% */
+    public function isBobotValid(string $tipe): bool
     {
-        $total = $this->periodeKriteria()->sum('bobot');
+        $total = $this->periodeKriteria()->where('tipe', $tipe)->sum('bobot');
         return abs($total - 100) < 0.01;
     }
 
-    /** Cek apakah semua karyawan aktif sudah dinilai */
-    public function isInputLengkap(): bool
+    /** Cek apakah semua karyawan aktif tipe tertentu sudah dinilai lengkap */
+    public function isInputLengkap(string $tipe): bool
     {
-        $jumlahKaryawan  = Karyawan::aktif()->count();
-        $jumlahKriteria  = $this->periodeKriteria()->count();
-        $jumlahPenilaian = $this->penilaian()->count();
+        $karyawanIds     = Karyawan::aktif()->tipe($tipe)->pluck('id');
+        $jumlahKaryawan  = $karyawanIds->count();
+        $jumlahKriteria  = $this->periodeKriteria()->where('tipe', $tipe)->count();
+        if ($jumlahKaryawan === 0 || $jumlahKriteria === 0) {
+            return false;
+        }
+        $jumlahPenilaian = $this->penilaian()->whereIn('karyawan_id', $karyawanIds)->count();
         return $jumlahPenilaian >= ($jumlahKaryawan * $jumlahKriteria);
+    }
+
+    /** Apakah ranking tipe tertentu sudah dihitung */
+    public function sudahDihitung(string $tipe): bool
+    {
+        return $this->hasilRanking()->where('tipe', $tipe)->exists();
     }
 }

@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
             $table->date('tgl_masuk');
             $table->enum('status', ['aktif', 'tidak_aktif'])->default('aktif');
+            // Jenis kepegawaian: menentukan set kriteria penilaian yang dipakai
+            $table->enum('tipe', ['tetap', 'tidak_tetap'])->default('tetap');
             $table->string('no_telepon', 20)->nullable();
             $table->text('alamat')->nullable();
             $table->timestamps();

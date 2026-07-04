@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\HasilRanking;
+use App\Models\Karyawan;
 use App\Models\Penilaian;
 use App\Models\Periode;
 use Illuminate\Support\Facades\DB;
@@ -10,43 +11,48 @@ use Illuminate\Support\Facades\DB;
 class SawService
 {
     /**
-     * Jalankan perhitungan SAW untuk satu periode.
+     * Jalankan perhitungan SAW untuk satu periode pada SATU tipe kepegawaian
+     * (tetap / tidak_tetap). Pemisahan terjadi di dalam periode.
      *
      * Rumus:
      *   Benefit : Rij = Xij / max(Xij)
      *   Cost    : Rij = min(Xij) / Xij
      *   Vi      = Σ (Wj × Rij)
      */
-    public function hitungUlang(Periode $periode): array
+    public function hitungUlang(Periode $periode, string $tipe): array
     {
-        // Hitung ulang tanpa cek isLocked — untuk koreksi nilai
-        return $this->prosesHitung($periode);
+        return $this->prosesHitung($periode, $tipe);
     }
 
-    public function hitung(Periode $periode): array
+    public function hitung(Periode $periode, string $tipe): array
     {
-        if ($periode->isLocked()) {
-            throw new \Exception('Periode sudah selesai dan tidak dapat dihitung ulang.');
-        }
-
-        return $this->prosesHitung($periode);
+        return $this->prosesHitung($periode, $tipe);
     }
 
-    private function prosesHitung(Periode $periode): array
+    private function prosesHitung(Periode $periode, string $tipe): array
     {
-        $periodeKriteria = $periode->periodeKriteria()->get();
+        $label = Periode::tipeLabel($tipe);
 
+        $periodeKriteria = $periode->periodeKriteria()->where('tipe', $tipe)->get();
         if ($periodeKriteria->isEmpty()) {
-            throw new \Exception('Belum ada kriteria yang dikonfigurasi untuk periode ini.');
+            throw new \Exception("Belum ada kriteria {$label} untuk periode ini.");
         }
 
-        $semuaPenilaian = Penilaian::where('periode_id', $periode->id)->get();
+        // Karyawan aktif sesuai tipe
+        $karyawanIds = Karyawan::aktif()->tipe($tipe)->pluck('id');
+        if ($karyawanIds->isEmpty()) {
+            throw new \Exception("Tidak ada karyawan {$label} yang dapat dihitung.");
+        }
+
+        $semuaPenilaian = Penilaian::where('periode_id', $periode->id)
+            ->whereIn('karyawan_id', $karyawanIds)
+            ->get();
 
         if ($semuaPenilaian->isEmpty()) {
-            throw new \Exception('Belum ada data penilaian yang diinput.');
+            throw new \Exception("Belum ada data penilaian {$label} yang diinput.");
         }
 
-        // Kelompokkan nilai per kriteria untuk mencari max / min
+        // Kelompokkan nilai per kriteria (snapshot tipe ini) untuk max/min
         $nilaiPerKriteria = [];
         foreach ($semuaPenilaian as $p) {
             $nilaiPerKriteria[$p->periode_kriteria_id][] = (float) $p->nilai;
@@ -56,7 +62,8 @@ class SawService
         try {
             // STEP 1 & 2: Normalisasi
             foreach ($semuaPenilaian as $p) { /** @var Penilaian $p */
-                $pk    = $periodeKriteria->firstWhere('id', $p->periode_kriteria_id);
+                $pk = $periodeKriteria->firstWhere('id', $p->periode_kriteria_id);
+                if (!$pk) { continue; } // pengaman: nilai di luar tipe ini
                 $nilai = (float) $p->nilai;
                 $kolom = $nilaiPerKriteria[$p->periode_kriteria_id] ?? [$nilai];
 
@@ -77,13 +84,13 @@ class SawService
                 ]);
             }
 
-            // STEP 3: Vi = Σ(nilai_terbobot) per karyawan
-            $karyawanIds = $semuaPenilaian->pluck('karyawan_id')->unique();
+            // STEP 3: Vi = Σ(nilai_terbobot) per karyawan (hanya kriteria tipe ini)
+            $pkIds = $periodeKriteria->pluck('id');
             $rankingData = [];
-
             foreach ($karyawanIds as $karyawanId) {
                 $vi = $semuaPenilaian
                     ->where('karyawan_id', $karyawanId)
+                    ->whereIn('periode_kriteria_id', $pkIds)
                     ->sum('nilai_terbobot');
 
                 $rankingData[] = [
@@ -95,22 +102,26 @@ class SawService
             // STEP 4: Urutkan Vi tertinggi = ranking 1
             usort($rankingData, fn($a, $b) => $b['nilai_preferensi'] <=> $a['nilai_preferensi']);
 
-            // STEP 5: Simpan hasil ranking
-            HasilRanking::where('periode_id', $periode->id)->delete();
-
+            // STEP 5: Simpan hasil ranking tipe ini (ganti yang lama untuk tipe ini saja)
+            HasilRanking::where('periode_id', $periode->id)->where('tipe', $tipe)->delete();
             foreach ($rankingData as $rank => $data) {
                 HasilRanking::create([
                     'periode_id'       => $periode->id,
                     'karyawan_id'      => $data['karyawan_id'],
+                    'tipe'             => $tipe,
                     'nilai_preferensi' => $data['nilai_preferensi'],
                     'ranking'          => $rank + 1,
                 ]);
             }
 
-            // STEP 6: Set status selesai
-            if ($periode->status !== 'selesai') {
-                $periode->update(['status' => 'selesai']);
-            }
+            // STEP 6: Periode dianggap selesai bila SEMUA tipe yang memiliki
+            // karyawan sudah dihitung rankingnya.
+            $tipeBerkaryawan = collect(Periode::tipeList())
+                ->filter(fn($t) => Karyawan::aktif()->tipe($t)->exists());
+            $semuaSelesai = $tipeBerkaryawan->every(
+                fn($t) => $periode->hasilRanking()->where('tipe', $t)->exists()
+            );
+            $periode->update(['status' => $semuaSelesai ? 'selesai' : 'aktif']);
 
             DB::commit();
             return $rankingData;
@@ -122,19 +133,23 @@ class SawService
     }
 
     /**
-     * Ambil detail ranking lengkap dengan breakdown per kriteria.
+     * Detail ranking + breakdown per kriteria, untuk satu tipe.
      */
-    public function getDetailRanking(Periode $periode): array
+    public function getDetailRanking(Periode $periode, string $tipe): array
     {
         $ranking = HasilRanking::where('periode_id', $periode->id)
+            ->where('tipe', $tipe)
             ->with('karyawan')
             ->orderBy('ranking')
             ->get();
+
+        $pkIds = $periode->periodeKriteria()->where('tipe', $tipe)->pluck('id');
 
         $result = [];
         foreach ($ranking as $r) {
             $detailPenilaian = Penilaian::where('periode_id', $periode->id)
                 ->where('karyawan_id', $r->karyawan_id)
+                ->whereIn('periode_kriteria_id', $pkIds)
                 ->with(['periodeKriteria', 'periodeSubKriteria'])
                 ->get();
 

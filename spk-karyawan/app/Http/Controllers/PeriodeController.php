@@ -40,28 +40,41 @@ class PeriodeController extends Controller
 
     public function create()
     {
-        // Cek kriteria sudah ada dan total bobot = 100
-        $kriteria    = Kriteria::with('subKriteria')->get();
-        $totalBobot  = $kriteria->sum('bobot');
-        $bisaBuat    = $kriteria->isNotEmpty() && $totalBobot == 100;
+        // Periode mencakup kedua tipe; tiap set kriteria harus 100%.
+        $setKriteria = [];
+        $bisaBuat    = true;
+        foreach (Periode::tipeList() as $tipe) {
+            $kriteria   = Kriteria::with('subKriteria')->where('tipe', $tipe)->get();
+            $totalBobot = $kriteria->sum('bobot');
+            $valid      = $kriteria->isNotEmpty() && $totalBobot == 100;
+            $setKriteria[$tipe] = [
+                'kriteria'   => $kriteria,
+                'totalBobot' => $totalBobot,
+                'valid'      => $valid,
+            ];
+            if (!$valid) { $bisaBuat = false; }
+        }
 
-        return view('periode.create', compact('kriteria', 'totalBobot', 'bisaBuat'));
+        return view('periode.create', compact('setKriteria', 'bisaBuat'));
     }
 
     /**
-     * Buat periode baru → snapshot kriteria → langsung status aktif
+     * Buat periode baru (per bulan) → snapshot KEDUA set kriteria → status aktif.
+     * Pemisahan tetap/tidak tetap terjadi di dalam penilaian.
      */
     public function store(StorePeriodeRequest $request)
     {
-        // Validasi server: bobot harus 100% sebelum buat periode
-        $totalBobot = Kriteria::sum('bobot');
-        if ($totalBobot != 100) {
-            return back()->with('error', "Total bobot kriteria harus 100%. Saat ini {$totalBobot}%. Atur di menu Kriteria terlebih dahulu.");
-        }
-
-        $kriteria = Kriteria::with('subKriteria')->get();
-        if ($kriteria->isEmpty()) {
-            return back()->with('error', 'Belum ada kriteria. Tambahkan kriteria di menu Kriteria terlebih dahulu.');
+        // Validasi server: tiap set kriteria harus 100% dan tidak kosong
+        foreach (Periode::tipeList() as $tipe) {
+            $label      = Periode::tipeLabel($tipe);
+            $kriteria   = Kriteria::where('tipe', $tipe)->get();
+            $totalBobot = $kriteria->sum('bobot');
+            if ($kriteria->isEmpty()) {
+                return back()->with('error', "Belum ada kriteria untuk {$label}. Tambahkan di menu Kriteria terlebih dahulu.")->withInput();
+            }
+            if ($totalBobot != 100) {
+                return back()->with('error', "Total bobot kriteria {$label} harus 100%. Saat ini {$totalBobot}%. Atur di menu Kriteria terlebih dahulu.")->withInput();
+            }
         }
 
         $namaBulan = [
@@ -71,8 +84,8 @@ class PeriodeController extends Controller
         ];
 
         $data = array_merge($request->validated(), [
-            'nama'        => $namaBulan[$request->bulan] . ' ' . $request->tahun,
-            'status'      => 'aktif', // langsung aktif
+            'nama'   => $namaBulan[$request->bulan] . ' ' . $request->tahun,
+            'status' => 'aktif', // langsung aktif
         ]);
 
         $periode = $this->periodeService->buat($data);
@@ -98,6 +111,17 @@ class PeriodeController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
+    }
+
+    /** Buka kembali periode yang terkunci agar nilai dapat dikoreksi */
+    public function buka(Periode $periode)
+    {
+        if ($periode->status !== 'selesai') {
+            return back()->with('error', 'Periode ini tidak dalam keadaan terkunci.');
+        }
+        $periode->update(['status' => 'aktif']);
+        return redirect()->route('ranking.hasil', $periode)
+            ->with('warning', "Periode {$periode->nama} dibuka kembali. Silakan koreksi nilai, lalu jalankan Hitung Penilaian untuk memperbarui ranking dan mengunci kembali.");
     }
 
     /** Hapus periode aktif beserta semua data terkait */

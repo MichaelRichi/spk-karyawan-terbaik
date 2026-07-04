@@ -19,6 +19,7 @@ class StoreKaryawanRequest extends FormRequest
             'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
             'tgl_masuk'     => ['required', 'date'],
             'status'        => ['required', 'in:aktif,tidak_aktif'],
+            'tipe'          => ['required', 'in:tetap,tidak_tetap'],
             'no_telepon'    => ['nullable', 'string', 'max:20'],
             'alamat'        => ['nullable', 'string', 'max:500'],
         ];

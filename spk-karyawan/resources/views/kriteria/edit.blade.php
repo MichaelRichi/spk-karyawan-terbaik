@@ -27,6 +27,12 @@
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="satuan_rentang" id="inp-satuan-final">
+                <input type="hidden" name="tipe" value="{{ $kriteria->tipe }}">
+
+                <div class="mb-3" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;font-size:12px;color:#475569">
+                    <i class="ti ti-users"></i> Set kriteria untuk:
+                    <span class="badge {{ $kriteria->tipe=='tetap'?'bg-info-soft':'bg-warning-soft' }}" style="font-size:11px;margin-left:4px">{{ $kriteria->tipe=='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap' }}</span>
+                </div>
 
                 <div class="mb-3">
                     <label class="form-label">Nama Kriteria <span style="color:#ef4444">*</span></label>

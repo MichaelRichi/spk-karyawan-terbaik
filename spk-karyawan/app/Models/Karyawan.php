@@ -12,7 +12,7 @@ class Karyawan extends Model
 
     protected $fillable = [
         'nama', 'tgl_lahir', 'jenis_kelamin',
-        'tgl_masuk', 'status',
+        'tgl_masuk', 'status', 'tipe',
         'no_telepon', 'alamat',
     ];
 
@@ -24,6 +24,12 @@ class Karyawan extends Model
     public function scopeAktif(Builder $query)
     {
         return $query->where('status', 'aktif');
+    }
+
+    // Scope berdasarkan jenis kepegawaian (tetap / tidak_tetap)
+    public function scopeTipe(Builder $query, string $tipe)
+    {
+        return $query->where('tipe', $tipe);
     }
 
     // Relasi
@@ -47,5 +53,11 @@ class Karyawan extends Model
     public function isAktif(): bool
     {
         return $this->status === 'aktif';
+    }
+
+    /** Label jenis kepegawaian untuk tampilan */
+    public function getTipeLabelAttribute(): string
+    {
+        return $this->tipe === 'tetap' ? 'Tetap' : 'Tidak Tetap';
     }
 }

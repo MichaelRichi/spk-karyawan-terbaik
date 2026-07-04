@@ -86,6 +86,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/periode',                      [PeriodeController::class, 'store'])->name('periode.store');
         Route::get('/periode/{periode}',             [PeriodeController::class, 'show'])->name('periode.show');
         Route::post('/periode/{periode}/selesaikan', [PeriodeController::class, 'selesaikan'])->name('periode.selesaikan');
+        Route::post('/periode/{periode}/buka',       [PeriodeController::class, 'buka'])->name('periode.buka');
         Route::delete('/periode/{periode}/hapus',    [PeriodeController::class, 'hapus'])->name('periode.hapus');
 
         Route::get('/periode/{periode}/penilaian',                    [PenilaianController::class, 'index'])->name('penilaian.index');

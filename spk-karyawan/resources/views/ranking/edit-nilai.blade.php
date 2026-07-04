@@ -26,8 +26,10 @@ $labelBulan = ($namaBulan[$periode->bulan] ?? $periode->bulan).' '.$periode->tah
             <div style="font-weight:600;color:#1e293b">{{ $karyawan->nama }}</div>
         </div>
         <div>
-            <div style="font-size:10px;color:#64748b">Divisi</div>
-            <div style="font-weight:600;color:#1e293b">{{ $karyawan->divisi }}</div>
+            <div style="font-size:10px;color:#64748b">Tipe Karyawan</div>
+            <div style="font-weight:600;color:#1e293b">
+                <span class="badge {{ $karyawan->tipe=='tetap'?'bg-info-soft':'bg-warning-soft' }}" style="font-size:11px">{{ $karyawan->tipe_label }}</span>
+            </div>
         </div>
         <div>
             <div style="font-size:10px;color:#64748b">Periode</div>

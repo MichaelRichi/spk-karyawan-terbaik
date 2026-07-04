@@ -15,105 +15,64 @@
 </div>
 @endif
 <style>
-.select-wrap { position:relative; }
-.select-wrap::after {
-    content:'';
-    position:absolute;
-    right:12px;
-    top:50%;
-    transform:translateY(-50%);
-    width:0;
-    height:0;
-    border-left:5px solid transparent;
-    border-right:5px solid transparent;
-    border-top:6px solid #64748b;
-    pointer-events:none;
-}
-.select-wrap select {
-    appearance:none;
-    -webkit-appearance:none;
-    padding-right:32px;
-    cursor:pointer;
-}
-#modalKriteria .form-label {
-    font-weight:700;
-    color:#1e293b;
-    font-size:13px;
-}
+.pb{background:#eef2f7;border-radius:6px;height:8px;overflow:hidden}
+.pf{background:#2563eb;height:100%;border-radius:6px}
 </style>
+
 <div class="card" style="margin-bottom:16px">
-    <div style="padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
-        <div>
-            <div style="font-size:18px;font-weight:800;color:#1e293b">Kriteria & Bobot</div>
-            <div style="font-size:12px;color:#64748b;margin-top:2px">Atur kriteria, bobot, dan sub-kriteria di sini sebelum membuat periode penilaian</div>
-        </div>
-        <a href="{{ route('kriteria.create') }}" class="btn btn-primary" style="padding:8px 14px;font-size:12px;font-weight:600">
-            <i class="ti ti-plus"></i> Tambah Kriteria
-        </a>
+    <div style="padding:20px 24px">
+        <div style="font-size:18px;font-weight:800;color:#1e293b">Kriteria &amp; Bobot</div>
+        <div style="font-size:12px;color:#64748b;margin-top:2px">Kriteria penilaian dipisahkan menurut jenis kepegawaian. Tiap set bobotnya harus tepat <strong>100%</strong> sebelum periode penilaian dapat dibuat.</div>
     </div>
 </div>
-
-@php $totalBobot = $kriteria->sum('bobot'); $kurang = 100 - $totalBobot; @endphp
-
-{{-- Status bobot total --}}
-<style>
-.kr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
-.kr-stat{background:var(--cb,#fff);border:1px solid var(--brd,#e9eef5);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-left:4px solid var(--ac)}
-.kr-stat-lbl{font-size:12px;color:#64748b;font-weight:600;margin-bottom:5px}
-.kr-stat-val{font-size:24px;font-weight:800;line-height:1}
-.kr-stat-ic{width:46px;height:46px;border-radius:12px;background:var(--icbg,var(--ac));display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.kr-stat-ic i{font-size:23px;color:var(--ac)}
-@media(max-width:640px){.kr-stats{grid-template-columns:1fr}}
-</style>
 
 @php
-    $tbOk = $totalBobot == 100;
-    $tbAc = $tbOk ? '#16a34a' : '#dc2626';  $tbCb = $tbOk ? '#dcfce7' : '#fde2e2';
-    $kgOk = $kurang == 0;
-    $kgAc = $kgOk ? '#16a34a' : '#dc2626';   $kgCb = $kgOk ? '#dcfce7' : '#fde2e2';
-    $kgLbl = $kurang < 0 ? 'Kelebihan Bobot' : 'Kekurangan Bobot';
+    $sets   = ['tetap' => $kriteriaTetap, 'tidak_tetap' => $kriteriaTidakTetap];
+    $labels = ['tetap' => 'Karyawan Tetap', 'tidak_tetap' => 'Karyawan Tidak Tetap'];
 @endphp
-<div class="kr-stats">
-    <div class="kr-stat" style="--ac:#2563eb;--icbg:#dbeafe">
-        <div>
-            <div class="kr-stat-lbl">Jumlah Kriteria</div>
-            <div class="kr-stat-val" style="color:#1e293b">{{ $kriteria->count() }}</div>
-        </div>
-        <div class="kr-stat-ic"><i class="ti ti-list-check"></i></div>
-    </div>
-    <div class="kr-stat" style="--ac:{{ $tbAc }};--cb:{{ $tbCb }};--brd:{{ $tbAc }};--icbg:#fff">
-        <div>
-            <div class="kr-stat-lbl" style="color:{{ $tbAc }}">Total Bobot</div>
-            <div class="kr-stat-val" style="color:{{ $tbAc }}">{{ $totalBobot }}%</div>
-        </div>
-        <div class="kr-stat-ic"><i class="ti ti-percentage"></i></div>
-    </div>
-    <div class="kr-stat" style="--ac:{{ $kgAc }};--cb:{{ $kgCb }};--brd:{{ $kgAc }};--icbg:#fff">
-        <div>
-            <div class="kr-stat-lbl" style="color:{{ $kgAc }}">{{ $kgLbl }}</div>
-            <div class="kr-stat-val" style="color:{{ $kgAc }}">{{ abs($kurang) }}%</div>
-        </div>
-        <div class="kr-stat-ic"><i class="ti ti-scale"></i></div>
-    </div>
-</div>
 
-@if($totalBobot != 100)
-<div class="alert-spk al-warn" style="margin-bottom:12px">
-    <i class="ti ti-alert-triangle"></i>
-    <span>Total bobot harus <strong>100%</strong> sebelum bisa membuat periode penilaian. Saat ini <strong>{{ $totalBobot }}%</strong> — {{ $kurang > 0 ? 'kurang '.$kurang.'%' : 'kelebihan '.abs($kurang).'%' }}. Sesuaikan bobot di bawah.</span>
-</div>
-@else
-<div class="alert-spk al-ok" style="margin-bottom:12px">
-    <i class="ti ti-check-circle"></i>
-    <span>Total bobot sudah <strong>100%</strong>. Periode penilaian dapat dibuat.</span>
-</div>
-@endif
-
-<div class="card">
-    <div class="card-header">
-        <span style="font-size:16px;font-weight:700"><i class="ti ti-adjustments-horizontal"></i> Daftar Kriteria</span>
-        
+@foreach($sets as $tipe => $list)
+@php
+    $totalBobot = $list->sum('bobot');
+    $kurang     = 100 - $totalBobot;
+    $tbOk       = $totalBobot == 100;
+@endphp
+<div class="card" style="margin-bottom:24px">
+    <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <span style="font-size:16px;font-weight:700">
+            <i class="ti ti-adjustments-horizontal"></i> Kriteria {{ $labels[$tipe] }}
+            <span class="badge {{ $tipe=='tetap'?'bg-info-soft':'bg-warning-soft' }}" style="font-size:10px;margin-left:6px">{{ $list->count() }} kriteria</span>
+        </span>
+        <a href="{{ route('kriteria.create', ['tipe'=>$tipe]) }}" class="btn btn-primary btn-sm" style="font-size:12px;font-weight:600">
+            <i class="ti ti-plus" style="color:#fff"></i> Tambah Kriteria
+        </a>
     </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 16px 0">
+        <div style="background:#fff;border:1px solid #e2e8f0;border-left:3px solid #2563eb;border-radius:10px;padding:14px 16px">
+            <div style="font-size:12px;color:#64748b;font-weight:600">Jumlah Kriteria</div>
+            <div style="font-size:24px;font-weight:800;color:#1e293b;margin-top:2px">{{ $list->count() }}</div>
+        </div>
+        <div style="background:{{ $tbOk?'#f0fdf4':'#fef2f2' }};border:1px solid {{ $tbOk?'#bbf7d0':'#fecaca' }};border-left:3px solid {{ $tbOk?'#22c55e':'#ef4444' }};border-radius:10px;padding:14px 16px">
+            <div style="font-size:12px;color:{{ $tbOk?'#15803d':'#b91c1c' }};font-weight:600">Total Bobot</div>
+            <div style="font-size:24px;font-weight:800;color:{{ $tbOk?'#16a34a':'#dc2626' }};margin-top:2px">{{ $totalBobot }}%</div>
+        </div>
+        <div style="background:{{ $tbOk?'#fff':'#fef2f2' }};border:1px solid {{ $tbOk?'#e2e8f0':'#fecaca' }};border-left:3px solid {{ $tbOk?'#94a3b8':'#ef4444' }};border-radius:10px;padding:14px 16px">
+            <div style="font-size:12px;color:{{ $tbOk?'#64748b':'#b91c1c' }};font-weight:600">{{ $kurang >= 0 ? 'Kekurangan' : 'Kelebihan' }} Bobot</div>
+            <div style="font-size:24px;font-weight:800;color:{{ $tbOk?'#1e293b':'#dc2626' }};margin-top:2px">{{ abs($kurang) }}%</div>
+        </div>
+    </div>
+
+    <div style="padding:14px 16px 0">
+    @if($list->isEmpty())
+        <div class="alert-spk al-warn" style="margin-bottom:12px"><i class="ti ti-alert-triangle"></i><span>Belum ada kriteria untuk {{ $labels[$tipe] }}. Tambahkan kriteria terlebih dahulu.</span></div>
+    @elseif(!$tbOk)
+        <div class="alert-spk al-warn" style="margin-bottom:12px"><i class="ti ti-alert-triangle"></i><span>Total bobot harus <strong>100%</strong>. Saat ini <strong>{{ $totalBobot }}%</strong> — {{ $kurang > 0 ? 'kurang '.$kurang.'%' : 'kelebihan '.abs($kurang).'%' }}. Sesuaikan bobot di bawah.</span></div>
+    @else
+        <div class="alert-spk al-ok" style="margin-bottom:12px"><i class="ti ti-check-circle"></i><span>Total bobot sudah <strong>100%</strong>. Periode penilaian untuk {{ $labels[$tipe] }} dapat dibuat.</span></div>
+    @endif
+    </div>
+
     <table class="table mb-0">
         <thead>
             <tr>
@@ -126,7 +85,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($kriteria as $k)
+            @forelse($list as $k)
             <tr>
                 <td style="font-weight:700;color:#1e293b;font-size:14px">{{ $k->nama }}</td>
                 <td><span class="badge {{ $k->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }}" style="font-size:12px;padding:4px 11px">{{ ucfirst($k->jenis) }}</span></td>
@@ -153,19 +112,13 @@
             </tr>
             @empty
             <tr><td colspan="6" class="text-center py-4" style="color:#64748b">
-                Belum ada kriteria. Tambahkan kriteria terlebih dahulu.
+                Belum ada kriteria untuk {{ $labels[$tipe] }}.
             </td></tr>
             @endforelse
         </tbody>
-        <tfoot>
-            <tr style="background:#f8fafc">
-                <td colspan="2" style="font-weight:700;font-size:12px">Total Bobot</td>
-                <td class="text-center" style="font-weight:700;color:{{ $totalBobot==100?'#27500A':'#ef4444' }}">{{ $totalBobot }}%</td>
-                <td colspan="3"></td>
-            </tr>
-        </tfoot>
     </table>
 </div>
+@endforeach
 
 {{-- Modal Konfirmasi Hapus --}}
 <div id="modal-hapus-kriteria" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;align-items:center;justify-content:center">

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class PenilaianController extends Controller
 {
-    public function index(Periode $periode)
+    public function index(Periode $periode, Request $request)
     {
         if ($periode->status === 'draft') {
             return redirect()->route('periode.show', $periode)
@@ -23,33 +23,62 @@ class PenilaianController extends Controller
 
         if ($periode->status === 'selesai') {
             return redirect()->route('ranking.hasil', $periode)
-                ->with('info', 'Periode ini sudah selesai dan terkunci. Berikut adalah hasil rankingnya.');
+                ->with('info', 'Periode ini sudah selesai. Berikut hasil rankingnya.');
         }
 
-        // Hanya karyawan AKTIF yang bisa dinilai
-        $karyawan = Karyawan::aktif()->orderBy('nama')->get();
+        // Tab tipe kepegawaian yang dinilai (default: tetap)
+        $tipe = $request->input('tipe') === 'tidak_tetap' ? 'tidak_tetap' : 'tetap';
 
-        $jumlahKriteria = $periode->periodeKriteria()->count();
+        // Karyawan AKTIF sesuai tipe tab
+        $karyawan = Karyawan::aktif()->tipe($tipe)->orderBy('id')->get();
 
-        // ID karyawan yang sudah dinilai lengkap (semua kriteria)
+        // Kriteria snapshot untuk tipe ini (kolom tabel)
+        $periodeKriteria = $periode->periodeKriteria()->where('tipe', $tipe)->get();
+        $jumlahKriteria  = $periodeKriteria->count();
+
+        $karyawanIds = $karyawan->pluck('id');
+
+        // ID karyawan yang sudah dinilai lengkap (semua kriteria tipe ini)
         $penilaianSelesai = Penilaian::where('periode_id', $periode->id)
+            ->whereIn('karyawan_id', $karyawanIds)
             ->select('karyawan_id', DB::raw('count(*) as jumlah'))
             ->groupBy('karyawan_id')
-            ->having('jumlah', '>=', $jumlahKriteria)
+            ->having('jumlah', '>=', max($jumlahKriteria, 1))
             ->pluck('jumlah', 'karyawan_id')
             ->keys();
 
-        // Nilai yang sudah diinput per karyawan per kriteria
+        // Nilai tersimpan per karyawan per kriteria
         $nilaiKaryawan = [];
         $penilaianAll = Penilaian::where('periode_id', $periode->id)
+            ->whereIn('karyawan_id', $karyawanIds)
             ->with('periodeSubKriteria')
             ->get();
         foreach ($penilaianAll as $p) {
             $nilaiKaryawan[$p->karyawan_id][$p->periode_kriteria_id] = $p;
         }
 
+        // Ringkasan jumlah & progres untuk kedua tab
+        $ringkasanTab = [];
+        foreach (Periode::tipeList() as $t) {
+            $jmlK   = Karyawan::aktif()->tipe($t)->count();
+            $jmlKr  = $periode->periodeKriteria()->where('tipe', $t)->count();
+            $idsT   = Karyawan::aktif()->tipe($t)->pluck('id');
+            $selesai = Penilaian::where('periode_id', $periode->id)
+                ->whereIn('karyawan_id', $idsT)
+                ->select('karyawan_id', DB::raw('count(*) as jumlah'))
+                ->groupBy('karyawan_id')
+                ->having('jumlah', '>=', max($jmlKr, 1))
+                ->get()->count();
+            $ringkasanTab[$t] = [
+                'total'   => $jmlK,
+                'selesai' => $selesai,
+                'dihitung'=> $periode->sudahDihitung($t),
+            ];
+        }
+
         return view('penilaian.index', compact(
-            'periode', 'karyawan', 'penilaianSelesai', 'jumlahKriteria', 'nilaiKaryawan'
+            'periode', 'karyawan', 'penilaianSelesai', 'jumlahKriteria',
+            'nilaiKaryawan', 'periodeKriteria', 'tipe', 'ringkasanTab'
         ));
     }
 
@@ -66,7 +95,9 @@ class PenilaianController extends Controller
                 ->with('error', "Karyawan {$karyawan->nama} tidak aktif dan tidak dapat dinilai.");
         }
 
+        // Kriteria snapshot sesuai tipe kepegawaian karyawan ini
         $periodeKriteria = $periode->periodeKriteria()
+            ->where('tipe', $karyawan->tipe)
             ->with('periodeSubKriteria')
             ->get();
 
@@ -117,7 +148,7 @@ class PenilaianController extends Controller
             return back()->with('error', 'Gagal menyimpan penilaian: ' . $e->getMessage());
         }
 
-        return redirect()->route('penilaian.index', $periode)
+        return redirect()->route('penilaian.index', ['periode' => $periode->id, 'tipe' => $karyawan->tipe])
             ->with('success', "Penilaian {$karyawan->nama} berhasil disimpan.");
     }
 }

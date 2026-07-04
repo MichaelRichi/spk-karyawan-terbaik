@@ -5,11 +5,24 @@
 <div class="card" style="max-width:700px;margin:0 auto 16px">
     <div style="padding:20px 24px">
         <div style="font-size:18px;font-weight:800;color:#1e293b">Sub-Kriteria</div>
-        <div style="font-size:12px;color:#64748b;margin-top:2px">Semua skala penilaian dari seluruh kriteria</div>
+        <div style="font-size:12px;color:#64748b;margin-top:2px">Skala penilaian dipisah per jenis kepegawaian. Pilih tab untuk melihat sub-kriteria masing-masing.</div>
     </div>
 </div>
 
-@foreach($kriteria as $k)
+{{-- TAB tipe kepegawaian --}}
+<div style="display:flex;gap:8px;max-width:700px;margin:0 auto 16px;flex-wrap:wrap">
+    @foreach(['tetap','tidak_tetap'] as $t)
+    @php $aktif = $t===$tipe; $lbl = $t==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap'; @endphp
+    <a href="{{ route('sub-kriteria.index', ['tipe'=>$t]) }}"
+       style="flex:1;justify-content:center;text-decoration:none;display:flex;align-items:center;gap:8px;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:700;
+              {{ $aktif ? 'background:#2563eb;color:#fff;box-shadow:0 2px 6px rgba(37,99,235,.35)' : 'background:#e2e8f0;color:#475569;border:1px solid #cbd5e1' }}">
+        {{ $lbl }}
+        <span style="font-size:11px;font-weight:700;padding:1px 8px;border-radius:20px;{{ $aktif?'background:rgba(255,255,255,.25);color:#fff':'background:#cbd5e1;color:#475569' }}">{{ $jumlah[$t] }}</span>
+    </a>
+    @endforeach
+</div>
+
+@forelse($kriteria as $k)
 <div class="card" style="margin-bottom:16px;max-width:700px;margin-left:auto;margin-right:auto">
 
     {{-- Header kriteria --}}
@@ -67,7 +80,13 @@
         @endforelse
     </div>
 </div>
-@endforeach
+@empty
+<div class="card" style="max-width:700px;margin:0 auto">
+    <div style="text-align:center;padding:32px;color:#64748b;font-size:13px">
+        Belum ada kriteria untuk {{ $tipe==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap' }}.
+    </div>
+</div>
+@endforelse
 
 
 {{-- Modal Konfirmasi Hapus --}}

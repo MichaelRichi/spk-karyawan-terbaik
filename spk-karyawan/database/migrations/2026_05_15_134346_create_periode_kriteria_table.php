@@ -25,9 +25,14 @@ return new class extends Migration {
         Schema::create('periode_kriteria', function (Blueprint $table) {
             $table->id();
             $table->foreignId('periode_id')->constrained('periode')->cascadeOnDelete();
-            $table->foreignId('kriteria_id')->constrained('kriteria')->cascadeOnDelete();
+            // nullOnDelete (bukan cascade): bila kriteria master dihapus, baris
+            // snapshot periode lama TETAP ada (kriteria_id jadi NULL) sehingga
+            // hasil ranking periode yang sudah selesai tidak berubah.
+            $table->foreignId('kriteria_id')->nullable()->constrained('kriteria')->nullOnDelete();
 
             // ---- SNAPSHOT KRITERIA (tidak berubah walau master diubah) ----
+            // tipe: menandai snapshot ini milik set kriteria karyawan tetap / tidak tetap
+            $table->enum('tipe', ['tetap', 'tidak_tetap'])->default('tetap');
             $table->string('nama_kriteria', 100);
             $table->enum('jenis', ['benefit', 'cost']);
             $table->decimal('bobot', 5, 2);   // bobot (%) untuk periode ini, total harus = 100

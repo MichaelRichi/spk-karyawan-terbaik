@@ -81,6 +81,19 @@
                 </div>
             </div>
 
+            {{-- Tipe Karyawan --}}
+            <div class="mb-3">
+                <label class="form-label">Tipe Karyawan <span style="color:#ef4444">*</span></label>
+                <div style="position:relative">
+                <select name="tipe" class="form-select @error('tipe') is-invalid @enderror" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer" required>
+                    <option value="tetap"       {{ old('tipe','tetap')=='tetap'       ?'selected':'' }}>Tetap</option>
+                    <option value="tidak_tetap" {{ old('tipe')=='tidak_tetap'         ?'selected':'' }}>Tidak Tetap</option>
+                </select>
+                <i class="ti ti-chevron-down" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b;font-size:13px"></i>
+                </div>
+                @error('tipe')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+            </div>
+
             {{-- No. Telepon --}}
             <div class="mb-3">
                 <label class="form-label">No. Telepon</label>
