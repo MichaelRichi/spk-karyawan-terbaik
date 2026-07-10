@@ -100,26 +100,26 @@
             <tr><th>Kriteria</th><th>Tipe</th><th class="text-center">Bobot</th><th>Distribusi</th></tr>
         </thead>
         <tbody>
-            @foreach($periode->periodeKriteria as $pk)
+            @foreach(['tetap','tidak_tetap'] as $tp)
+            @php $grup = $periode->periodeKriteria->where('tipe',$tp); $lbl = $tp==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap'; @endphp
+            @if($grup->count())
+            <tr style="background:#f1f5f9"><td colspan="4" style="font-weight:800;color:#334155;font-size:12px;letter-spacing:.3px">{{ $lbl }}</td></tr>
+            @foreach($grup as $pk)
             <tr>
                 <td style="font-weight:600">{{ $pk->nama_kriteria }}</td>
                 <td><span class="badge {{ $pk->jenis=='benefit'?'bg-success-soft':'bg-danger-soft' }}">{{ $pk->jenis }}</span></td>
                 <td class="text-center" style="font-weight:600;color:#185FA5">{{ $pk->bobot }}%</td>
-                <td style="min-width:120px">
-                    <div class="pb"><div class="pf" style="width:{{ $pk->bobot }}%"></div></div>
-                </td>
+                <td style="min-width:120px"><div class="pb"><div class="pf" style="width:{{ $pk->bobot }}%"></div></div></td>
             </tr>
             @endforeach
-        </tbody>
-        <tfoot>
             <tr style="background:#f8fafc">
-                <td colspan="2" style="font-weight:600">Total Bobot</td>
-                <td class="text-center" style="font-weight:600;color:{{ $periode->periodeKriteria->sum('bobot')==100?'#27500A':'#A32D2D' }}">
-                    {{ $periode->periodeKriteria->sum('bobot') }}%
-                </td>
+                <td colspan="2" style="font-weight:600">Total Bobot {{ $lbl }}</td>
+                <td class="text-center" style="font-weight:700;color:{{ $grup->sum('bobot')==100?'#27500A':'#A32D2D' }}">{{ $grup->sum('bobot') }}%</td>
                 <td></td>
             </tr>
-        </tfoot>
+            @endif
+            @endforeach
+        </tbody>
     </table>
 
 </div>

@@ -17,14 +17,20 @@
             <a href="{{ route('periode.show', $periode) }}" class="btn" style="background:#475569;border:1px solid #475569;color:#fff;font-weight:600">
                 <i class="ti ti-arrow-left"></i> Kembali
             </a>
-            @if($selesaiSemua)
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHitungSAW">
-                <i class="ti ti-calculator"></i> Hitung {{ ($tipe==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap') }}
+            @php
+                $tipeSiap = collect($ringkasanTab)->filter(fn($r)=>$r['total']>0);
+                $semuaTipeSiap = $tipeSiap->count()>0 && $tipeSiap->every(fn($r)=>$r['selesai']>=$r['total']);
+            @endphp
+            @if($tipeSiap->count() > 0)
+            @if($semuaTipeSiap)
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHitungSemua">
+                <i class="ti ti-calculator"></i> Hitung Nilai
             </button>
             @else
-            <button class="btn btn-primary" style="opacity:.4;cursor:not-allowed" disabled>
-                <i class="ti ti-calculator"></i> Hitung {{ ($tipe==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap') }}
+            <button class="btn btn-primary" style="opacity:.4;cursor:not-allowed" disabled title="Semua karyawan pada setiap tipe harus selesai dinilai dulu">
+                <i class="ti ti-calculator"></i> Hitung Nilai
             </button>
+            @endif
             @endif
         </div>
     </div>
@@ -49,12 +55,12 @@
 @elseif(!$selesaiSemua)
 <div class="alert-spk al-warn">
     <i class="ti ti-alert-triangle"></i>
-    {{ $belum }} karyawan {{ ($tipe==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap') }} belum dinilai. Tombol Hitung akan aktif setelah semua selesai dinilai.
+    {{ $belum }} karyawan {{ ($tipe==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap') }} belum dinilai. Tombol Hitung Nilai akan aktif setelah semua karyawan pada setiap tipe selesai dinilai.
 </div>
 @else
 <div class="alert-spk al-ok">
     <i class="ti ti-check-circle"></i>
-    Semua karyawan {{ ($tipe==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap') }} sudah dinilai. Klik <strong>Hitung {{ ($tipe==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap') }}</strong> untuk memproses ranking kelompok ini.
+    Semua karyawan {{ ($tipe==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap') }} sudah dinilai. Bila semua tipe sudah lengkap, klik <strong>Hitung Nilai</strong> untuk memproses ranking seluruh tipe sekaligus.
 </div>
 @endif
 
@@ -137,41 +143,38 @@
     </div>
 </div>
 
-{{-- Modal Konfirmasi Hitung Penilaian (tab aktif) --}}
-<div class="modal fade" id="modalHitungSAW" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered" style="max-width:400px">
+{{-- Modal Hitung Nilai --}}
+<div class="modal fade" id="modalHitungSemua" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px">
         <div class="modal-content" style="border:none;border-radius:14px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,.15)">
-            <div style="background:linear-gradient(135deg,#1d4ed8,#2563eb);padding:28px 24px;text-align:center">
+            <div style="background:linear-gradient(135deg,#6d28d9,#7c3aed);padding:28px 24px;text-align:center">
                 <div style="width:60px;height:60px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:2px solid rgba(255,255,255,.3)">
                     <i class="ti ti-calculator" style="font-size:30px;color:#fff"></i>
                 </div>
-                <div style="color:#fff;font-weight:700;font-size:17px;margin-bottom:4px">Hitung {{ ($tipe==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap') }}</div>
+                <div style="color:#fff;font-weight:700;font-size:17px;margin-bottom:4px">Hitung Nilai</div>
+                <div style="color:#ede9fe;font-size:12px">SAW dihitung untuk seluruh jenis kepegawaian sekaligus</div>
             </div>
             <div style="padding:20px 24px">
                 <div style="background:#f8fafc;border-radius:10px;border:0.5px solid #e2e8f0;overflow:hidden;margin-bottom:14px">
-                    <div style="background:#f1f5f9;padding:8px 14px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.6px;border-bottom:0.5px solid #e2e8f0">Ringkasan Penilaian</div>
+                    <div style="background:#f1f5f9;padding:8px 14px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.6px;border-bottom:0.5px solid #e2e8f0">Ringkasan</div>
                     <div style="padding:0 14px">
+                        @foreach($ringkasanTab as $t=>$r)
+                        @if($r['total']>0)
                         <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid #f1f5f9">
-                            <span style="font-size:12px;color:#64748b">Kelompok</span>
-                            <span style="font-size:13px;font-weight:700;color:#1d4ed8;background:#dbeafe;padding:2px 10px;border-radius:20px">{{ ($tipe==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap') }}</span>
+                            <span style="font-size:12px;color:#64748b">{{ $t==='tetap'?'Karyawan Tetap':'Karyawan Tidak Tetap' }}</span>
+                            <span style="font-size:13px;font-weight:700;color:#16a34a;background:#dcfce7;padding:2px 10px;border-radius:20px">{{ $r['selesai'] }} / {{ $r['total'] }} dinilai</span>
                         </div>
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid #f1f5f9">
-                            <span style="font-size:12px;color:#64748b">Karyawan dinilai</span>
-                            <span style="font-size:13px;font-weight:700;color:#16a34a;background:#dcfce7;padding:2px 10px;border-radius:20px">{{ $karyawan->count() }} / {{ $karyawan->count() }}</span>
-                        </div>
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0">
-                            <span style="font-size:12px;color:#64748b">Total kriteria</span>
-                            <span style="font-size:13px;font-weight:700;color:#1d4ed8;background:#dbeafe;padding:2px 10px;border-radius:20px">{{ $periodeKriteria->count() }} kriteria</span>
-                        </div>
+                        @endif
+                        @endforeach
                     </div>
                 </div>
                 <div style="display:flex;gap:8px">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="flex:1;justify-content:center;padding:8px">Batal</button>
                     <form method="POST" action="{{ route('ranking.hitung', $periode) }}" style="flex:1.5">
                         @csrf
-                        <input type="hidden" name="tipe" value="{{ $tipe }}">
-                        <button type="submit" class="btn btn-primary w-100" style="justify-content:center;padding:8px;background:#2563eb;border-color:#2563eb">
-                            <i class="ti ti-calculator"></i> Ya, Hitung Sekarang
+                        <input type="hidden" name="tipe" value="semua">
+                        <button type="submit" class="btn w-100" style="justify-content:center;padding:8px;background:#7c3aed;border-color:#7c3aed;color:#fff">
+                            <i class="ti ti-calculator"></i> Ya, Hitung Semua
                         </button>
                     </form>
                 </div>
@@ -179,4 +182,5 @@
         </div>
     </div>
 </div>
+
 @endsection

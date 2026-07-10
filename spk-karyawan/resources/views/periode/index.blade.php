@@ -58,18 +58,29 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
         <span style="font-size:16px;font-weight:700"><i class="ti ti-calendar"></i> Daftar Periode</span>
         <span style="font-size:13px;color:#64748b">{{ $periode->total() }} Periode</span>
     </div>
-    <table class="table mb-0">
+    <style>
+        .tabel-periode tbody td { border-bottom: 2px solid #d7dee8 !important; vertical-align: middle; }
+        .tabel-periode tbody tr:last-child td { border-bottom: none !important; }
+    </style>
+    <table class="table mb-0 tabel-periode">
         <thead>
             <tr>
                 <th style="color:#475569;font-weight:700"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-calendar"></i> Periode</span></th>
                 <th style="width:110px;color:#475569;font-weight:700" class="text-center"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-circle-check"></i> Status</span></th>
-                <th style="color:#475569;font-weight:700"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-info-circle"></i> Info</span></th>
+                <th style="color:#475569;font-weight:700;padding-left:110px"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-info-circle"></i> Info</span></th>
                 <th style="width:160px;color:#475569;font-weight:700" class="text-center"><span style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-settings"></i> Aksi</span></th>
             </tr>
         </thead>
         <tbody>
+            @php $tahunSekarang = null; @endphp
             @forelse($periode as $p)
             @php $labelBulan = ($namaBulan[$p->bulan] ?? $p->bulan).' '.$p->tahun; @endphp
+            @if($tahunSekarang !== $p->tahun)
+            @php $tahunSekarang = $p->tahun; @endphp
+            <tr style="background:#f1f5f9">
+                <td colspan="4" style="font-weight:800;color:#334155;font-size:12px;letter-spacing:.5px;padding:8px 14px"><i class="ti ti-calendar-stats"></i> Tahun {{ $p->tahun }}</td>
+            </tr>
+            @endif
             <tr>
                 <td style="font-weight:600;font-size:14px;color:#1e293b">{{ $labelBulan }}</td>
                 <td class="text-center">
@@ -87,9 +98,22 @@ $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agust
                             <span style="font-weight:600;color:{{ $dinilai==$total?'#16a34a':'#854F0B' }}">{{ $dinilai }}/{{ $total }} karyawan</span>
                         </div>
                     @elseif($p->status === 'selesai')
-                        @php $terbaik = $p->hasilRanking->where('ranking',1)->first(); @endphp
-                        Terbaik: <strong style="color:#1e293b">{{ $terbaik?->karyawan?->nama ?? '—' }}</strong>
-                        · Nilai: <strong style="color:#185FA5">{{ $terbaik ? number_format($terbaik->nilai_preferensi, 3) : '—' }}</strong>
+                        @php
+                            $terbaikTetap = $p->hasilRanking->where('tipe','tetap')->where('ranking',1)->first();
+                            $terbaikTT    = $p->hasilRanking->where('tipe','tidak_tetap')->where('ranking',1)->first();
+                        @endphp
+                        <div style="font-size:12px;display:flex;flex-direction:column;gap:5px;max-width:340px">
+                            <div style="background:#eff6ff;border-left:3px solid #2563eb;border-radius:8px;padding:5px 10px;display:flex;align-items:center;gap:8px">
+                                <span style="color:#2563eb;font-size:9px;font-weight:700;letter-spacing:.5px;white-space:nowrap;display:inline-block;min-width:78px">TETAP</span>
+                                <strong style="color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $terbaikTetap?->karyawan?->nama ?? '—' }}</strong>
+                                <span style="margin-left:auto;background:#dbeafe;color:#185FA5;font-weight:700;font-size:11px;padding:2px 9px;border-radius:20px;white-space:nowrap">{{ $terbaikTetap ? number_format($terbaikTetap->nilai_preferensi, 3) : '—' }}</span>
+                            </div>
+                            <div style="background:#f0fdfa;border-left:3px solid #0d9488;border-radius:8px;padding:5px 10px;display:flex;align-items:center;gap:8px">
+                                <span style="color:#0d9488;font-size:9px;font-weight:700;letter-spacing:.5px;white-space:nowrap;display:inline-block;min-width:78px">TIDAK TETAP</span>
+                                <strong style="color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $terbaikTT?->karyawan?->nama ?? '—' }}</strong>
+                                <span style="margin-left:auto;background:#ccfbf1;color:#0f766e;font-weight:700;font-size:11px;padding:2px 9px;border-radius:20px;white-space:nowrap">{{ $terbaikTT ? number_format($terbaikTT->nilai_preferensi, 3) : '—' }}</span>
+                            </div>
+                        </div>
                     @else
                         <span style="color:#94a3b8">Menunggu aktivasi</span>
                     @endif

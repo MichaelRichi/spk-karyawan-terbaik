@@ -35,6 +35,35 @@ class RankingController extends Controller
     /** Jalankan perhitungan SAW untuk satu tipe */
     public function hitung(Request $request, Periode $periode)
     {
+        // Hitung SEMUA tipe kepegawaian sekaligus
+        if ($request->input('tipe') === 'semua') {
+            $berhasil = [];
+            $gagal    = [];
+            foreach (Periode::tipeList() as $t) {
+                // Lewati tipe yang tidak punya karyawan aktif
+                if (!Karyawan::aktif()->tipe($t)->exists()) {
+                    continue;
+                }
+                try {
+                    $this->sawService->hitung($periode, $t);
+                    $berhasil[] = Periode::tipeLabel($t);
+                } catch (\Exception $e) {
+                    $gagal[] = Periode::tipeLabel($t) . ' — ' . $e->getMessage();
+                }
+            }
+
+            if (empty($berhasil)) {
+                return back()->with('error', 'Tidak ada tipe yang dapat dihitung. ' . implode('; ', $gagal));
+            }
+
+            $pesan = 'Perhitungan SAW selesai untuk: ' . implode(' & ', $berhasil) . '.';
+            if (!empty($gagal)) {
+                $pesan .= ' Belum dapat dihitung: ' . implode('; ', $gagal) . '.';
+            }
+            return redirect()->route('ranking.hasil', $periode)->with('success', $pesan);
+        }
+
+        // Hitung satu tipe sesuai tab
         $tipe  = $this->tipeDari($request);
         $label = Periode::tipeLabel($tipe);
         try {

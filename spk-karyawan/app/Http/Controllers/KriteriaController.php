@@ -151,7 +151,8 @@ class KriteriaController extends Controller
         ], ['skor.unique' => 'Skor ini sudah ada untuk kriteria tersebut.']);
 
         $kriteria->subKriteria()->create($data);
-        return back()->with('success', 'Skala penilaian berhasil ditambahkan.');
+        return redirect()->route('kriteria.sub-kriteria', $kriteria)
+            ->with('success', 'Skala penilaian berhasil ditambahkan.');
     }
 
     public function subKriteriaUpdate(Request $request, int $kriteriaId, SubKriteria $subKriteria)
